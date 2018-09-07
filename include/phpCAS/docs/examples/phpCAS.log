@@ -1,0 +1,1870 @@
+BA1E .START (2018-03-26 16:58:57) phpCAS-1.3.5 ****************** [CAS.php:468]
+BA1E .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+BA1E .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+BA1E .|    |    Starting a new session rdvjcovvphqnrkvet6dh8vtq97 [Client.php:932]
+BA1E .|    |    Session is not authenticated [Client.php:938]
+BA1E .|    <= ''
+BA1E .<= ''
+BA1E .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+BA1E .<= ''
+BA1E .=> phpCAS::forceAuthentication() [example_simple.php:40]
+BA1E .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+BA1E .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+BA1E .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+BA1E .|    |    |    |    no user found [Client.php:1635]
+BA1E .|    |    |    <= false
+BA1E .|    |    |    no ticket found [Client.php:1494]
+BA1E .|    |    <= false
+BA1E .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+BA1E .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+BA1E .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+BA1E .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+BA1E .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+BA1E .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+BA1E .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+BA1E .|    |    |    exit()
+BA1E .|    |    |    -
+BA1E .|    |    -
+BA1E .|    -
+57C7 .START (2018-03-26 22:04:35) phpCAS-1.3.5 ****************** [CAS.php:468]
+57C7 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+57C7 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+57C7 .|    |    Starting a new session rdvjcovvphqnrkvet6dh8vtq97 [Client.php:932]
+57C7 .|    |    Session is not authenticated [Client.php:938]
+57C7 .|    <= ''
+57C7 .<= ''
+57C7 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+57C7 .<= ''
+57C7 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+57C7 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+57C7 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+57C7 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+57C7 .|    |    |    |    no user found [Client.php:1635]
+57C7 .|    |    |    <= false
+57C7 .|    |    |    no ticket found [Client.php:1494]
+57C7 .|    |    <= false
+57C7 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+57C7 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+57C7 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+57C7 .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+57C7 .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+57C7 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+57C7 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+57C7 .|    |    |    exit()
+57C7 .|    |    |    -
+57C7 .|    |    -
+57C7 .|    -
+5757 .START (2018-03-26 22:07:45) phpCAS-1.3.5 ****************** [CAS.php:468]
+5757 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+5757 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+5757 .|    |    Starting a new session rdvjcovvphqnrkvet6dh8vtq97 [Client.php:932]
+5757 .|    |    Session is not authenticated [Client.php:938]
+5757 .|    <= ''
+5757 .<= ''
+5757 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+5757 .<= ''
+5757 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+5757 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+5757 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+5757 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+5757 .|    |    |    |    no user found [Client.php:1635]
+5757 .|    |    |    <= false
+5757 .|    |    |    no ticket found [Client.php:1494]
+5757 .|    |    <= false
+5757 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+5757 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+5757 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+5757 .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+5757 .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+5757 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+5757 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+5757 .|    |    |    exit()
+5757 .|    |    |    -
+5757 .|    |    -
+5757 .|    -
+1274 .START (2018-03-26 22:08:09) phpCAS-1.3.5 ****************** [CAS.php:468]
+1274 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+1274 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+1274 .|    |    Starting a new session b0arqigmfkid5av871gjck2u40 [Client.php:932]
+1274 .|    |    Session is not authenticated [Client.php:938]
+1274 .|    <= ''
+1274 .<= ''
+1274 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+1274 .<= ''
+1274 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+1274 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+1274 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+1274 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+1274 .|    |    |    |    no user found [Client.php:1635]
+1274 .|    |    |    <= false
+1274 .|    |    |    no ticket found [Client.php:1494]
+1274 .|    |    <= false
+1274 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+1274 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+1274 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+1274 .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+1274 .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+1274 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+1274 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+1274 .|    |    |    exit()
+1274 .|    |    |    -
+1274 .|    |    -
+1274 .|    -
+24CD .START (2018-03-27 19:41:41) phpCAS-1.3.5 ****************** [CAS.php:468]
+24CD .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+24CD .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+24CD .|    |    Starting a new session rdvjcovvphqnrkvet6dh8vtq97 [Client.php:932]
+24CD .|    |    Session is not authenticated [Client.php:938]
+24CD .|    <= ''
+24CD .<= ''
+24CD .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+24CD .<= ''
+24CD .=> phpCAS::forceAuthentication() [example_simple.php:40]
+24CD .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+24CD .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+24CD .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+24CD .|    |    |    |    no user found [Client.php:1635]
+24CD .|    |    |    <= false
+24CD .|    |    |    no ticket found [Client.php:1494]
+24CD .|    |    <= false
+24CD .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+24CD .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+24CD .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+24CD .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+24CD .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+24CD .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+24CD .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+24CD .|    |    |    exit()
+24CD .|    |    |    -
+24CD .|    |    -
+24CD .|    -
+5CFA .START (2018-03-27 19:46:59) phpCAS-1.3.5 ****************** [CAS.php:468]
+5CFA .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+5CFA .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+5CFA .|    |    Starting a new session rdvjcovvphqnrkvet6dh8vtq97 [Client.php:932]
+5CFA .|    |    Session is not authenticated [Client.php:938]
+5CFA .|    <= ''
+5CFA .<= ''
+5CFA .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+5CFA .<= ''
+5CFA .=> phpCAS::forceAuthentication() [example_simple.php:40]
+5CFA .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+5CFA .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+5CFA .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+5CFA .|    |    |    |    no user found [Client.php:1635]
+5CFA .|    |    |    <= false
+5CFA .|    |    |    no ticket found [Client.php:1494]
+5CFA .|    |    <= false
+5CFA .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+5CFA .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+5CFA .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+5CFA .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+5CFA .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+5CFA .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+5CFA .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+5CFA .|    |    |    exit()
+5CFA .|    |    |    -
+5CFA .|    |    -
+5CFA .|    -
+B7E4 .START (2018-03-27 19:50:38) phpCAS-1.3.5 ****************** [CAS.php:468]
+B7E4 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+B7E4 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+B7E4 .|    |    Starting a new session rdvjcovvphqnrkvet6dh8vtq97 [Client.php:932]
+B7E4 .|    |    Session is not authenticated [Client.php:938]
+B7E4 .|    <= ''
+B7E4 .<= ''
+B7E4 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+B7E4 .<= ''
+B7E4 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+B7E4 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+B7E4 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+B7E4 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+B7E4 .|    |    |    |    no user found [Client.php:1635]
+B7E4 .|    |    |    <= false
+B7E4 .|    |    |    no ticket found [Client.php:1494]
+B7E4 .|    |    <= false
+B7E4 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+B7E4 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+B7E4 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+B7E4 .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+B7E4 .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+B7E4 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+B7E4 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+B7E4 .|    |    |    exit()
+B7E4 .|    |    |    -
+B7E4 .|    |    -
+B7E4 .|    -
+12B9 .START (2018-03-27 20:06:56) phpCAS-1.3.5 ****************** [CAS.php:468]
+12B9 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+12B9 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+12B9 .|    |    Starting a new session a5c866dqtunt25sbhej011iif1 [Client.php:932]
+12B9 .|    |    Session is not authenticated [Client.php:938]
+12B9 .|    <= ''
+12B9 .<= ''
+12B9 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+12B9 .<= ''
+12B9 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+12B9 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+12B9 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+12B9 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+12B9 .|    |    |    |    no user found [Client.php:1635]
+12B9 .|    |    |    <= false
+12B9 .|    |    |    no ticket found [Client.php:1494]
+12B9 .|    |    <= false
+12B9 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+12B9 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+12B9 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+12B9 .|    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+12B9 .|    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+12B9 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+12B9 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+12B9 .|    |    |    exit()
+12B9 .|    |    |    -
+12B9 .|    |    -
+12B9 .|    -
+F8F1 .START (2018-03-27 20:06:57) phpCAS-1.3.5 ****************** [CAS.php:468]
+F8F1 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+F8F1 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+F8F1 .|    |    Starting a new session a5c866dqtunt25sbhej011iif1 [Client.php:932]
+F8F1 .|    |    Session is not authenticated [Client.php:938]
+F8F1 .|    |    Ticket 'ST-25-7TGIYjcTNWjn9atfCNod-cast2' found [Client.php:1020]
+F8F1 .|    <= ''
+F8F1 .<= ''
+F8F1 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+F8F1 .<= ''
+F8F1 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+F8F1 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+F8F1 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+F8F1 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+F8F1 .|    |    |    |    no user found [Client.php:1635]
+F8F1 .|    |    |    <= false
+F8F1 .|    |    |    CAS 2.0 ticket `ST-25-7TGIYjcTNWjn9atfCNod-cast2' is present [Client.php:1447]
+F8F1 .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL, false) [Client.php:1450]
+F8F1 .|    |    |    |     [Client.php:3169]
+F8F1 .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3176]
+F8F1 .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+F8F1 .|    |    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+F8F1 .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+F8F1 .|    |    |    |    <= 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+F8F1 .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-25-7TGIYjcTNWjn9atfCNod-cast2', NULL, NULL, NULL) [Client.php:3191]
+F8F1 .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+F8F1 .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+F8F1 .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+F8F1 .|    |    |    |    |    <= false
+F8F1 .|    |    |    |    <= false
+F8F1 .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-25-7TGIYjcTNWjn9atfCNod-cast2' to validate (CURL error #77: error setting certificate verify locations:
+F8F1 .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+F8F1 .|    |    |    |      CApath: none) [Client.php:3194]
+F8F1 .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'Ticket not validated', 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-25-7TGIYjcTNWjn9atfCNod-cast2', true) [Client.php:3198]
+F8F1 .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+F8F1 .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+F8F1 .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-25-7TGIYjcTNWjn9atfCNod-cast2 [AuthenticationException.php:80]
+F8F1 .|    |    |    |    |    Authentication failure: Ticket not validated [AuthenticationException.php:81]
+F8F1 .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+F8F1 .|    |    |    |    |    exit()
+F8F1 .|    |    |    |    |    -
+F8F1 .|    |    |    |    -
+F8F1 .|    |    |    -
+F8F1 .|    |    -
+F8F1 .|    -
+29C2 .START (2018-03-27 20:09:40) phpCAS-1.3.5 ****************** [CAS.php:468]
+29C2 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+29C2 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+29C2 .|    |    Starting a new session a5c866dqtunt25sbhej011iif1 [Client.php:932]
+29C2 .|    |    Session is not authenticated [Client.php:938]
+29C2 .|    |    Ticket 'ST-25-7TGIYjcTNWjn9atfCNod-cast2' found [Client.php:1020]
+29C2 .|    <= ''
+29C2 .<= ''
+29C2 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+29C2 .<= ''
+29C2 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+29C2 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+29C2 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+29C2 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+29C2 .|    |    |    |    no user found [Client.php:1635]
+29C2 .|    |    |    <= false
+29C2 .|    |    |    CAS 2.0 ticket `ST-25-7TGIYjcTNWjn9atfCNod-cast2' is present [Client.php:1447]
+29C2 .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL, false) [Client.php:1450]
+29C2 .|    |    |    |     [Client.php:3169]
+29C2 .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3176]
+29C2 .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+29C2 .|    |    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+29C2 .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+29C2 .|    |    |    |    <= 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+29C2 .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-25-7TGIYjcTNWjn9atfCNod-cast2', NULL, NULL, NULL) [Client.php:3191]
+29C2 .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+29C2 .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+29C2 .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+29C2 .|    |    |    |    |    <= false
+29C2 .|    |    |    |    <= false
+29C2 .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-25-7TGIYjcTNWjn9atfCNod-cast2' to validate (CURL error #77: error setting certificate verify locations:
+29C2 .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+29C2 .|    |    |    |      CApath: none) [Client.php:3194]
+29C2 .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'Ticket not validated', 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-25-7TGIYjcTNWjn9atfCNod-cast2', true) [Client.php:3198]
+29C2 .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+29C2 .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+29C2 .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-25-7TGIYjcTNWjn9atfCNod-cast2 [AuthenticationException.php:80]
+29C2 .|    |    |    |    |    Authentication failure: Ticket not validated [AuthenticationException.php:81]
+29C2 .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+29C2 .|    |    |    |    |    exit()
+29C2 .|    |    |    |    |    -
+29C2 .|    |    |    |    -
+29C2 .|    |    |    -
+29C2 .|    |    -
+29C2 .|    -
+8D46 .START (2018-03-27 20:09:46) phpCAS-1.3.5 ****************** [CAS.php:468]
+8D46 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+8D46 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+8D46 .|    |    Starting a new session 7i7p4ht787hjb0n37a02cb7vu4 [Client.php:932]
+8D46 .|    |    Session is not authenticated [Client.php:938]
+8D46 .|    |    Ticket 'ST-25-7TGIYjcTNWjn9atfCNod-cast2' found [Client.php:1020]
+8D46 .|    <= ''
+8D46 .<= ''
+8D46 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+8D46 .<= ''
+8D46 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+8D46 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+8D46 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+8D46 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+8D46 .|    |    |    |    no user found [Client.php:1635]
+8D46 .|    |    |    <= false
+8D46 .|    |    |    CAS 2.0 ticket `ST-25-7TGIYjcTNWjn9atfCNod-cast2' is present [Client.php:1447]
+8D46 .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL, false) [Client.php:1450]
+8D46 .|    |    |    |     [Client.php:3169]
+8D46 .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3176]
+8D46 .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+8D46 .|    |    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+8D46 .|    |    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+8D46 .|    |    |    |    <= 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+8D46 .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-25-7TGIYjcTNWjn9atfCNod-cast2', NULL, NULL, NULL) [Client.php:3191]
+8D46 .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+8D46 .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+8D46 .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+8D46 .|    |    |    |    |    <= false
+8D46 .|    |    |    |    <= false
+8D46 .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-25-7TGIYjcTNWjn9atfCNod-cast2' to validate (CURL error #77: error setting certificate verify locations:
+8D46 .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+8D46 .|    |    |    |      CApath: none) [Client.php:3194]
+8D46 .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'Ticket not validated', 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-25-7TGIYjcTNWjn9atfCNod-cast2', true) [Client.php:3198]
+8D46 .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+8D46 .|    |    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+8D46 .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-25-7TGIYjcTNWjn9atfCNod-cast2 [AuthenticationException.php:80]
+8D46 .|    |    |    |    |    Authentication failure: Ticket not validated [AuthenticationException.php:81]
+8D46 .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+8D46 .|    |    |    |    |    exit()
+8D46 .|    |    |    |    |    -
+8D46 .|    |    |    |    -
+8D46 .|    |    |    -
+8D46 .|    |    -
+8D46 .|    -
+BCC8 .START (2018-03-27 20:10:15) phpCAS-1.3.5 ****************** [CAS.php:468]
+BCC8 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+BCC8 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+BCC8 .|    |    Starting a new session 7i7p4ht787hjb0n37a02cb7vu4 [Client.php:932]
+BCC8 .|    |    Session is not authenticated [Client.php:938]
+BCC8 .|    <= ''
+BCC8 .<= ''
+BCC8 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+BCC8 .<= ''
+BCC8 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+BCC8 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+BCC8 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+BCC8 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+BCC8 .|    |    |    |    no user found [Client.php:1635]
+BCC8 .|    |    |    <= false
+BCC8 .|    |    |    no ticket found [Client.php:1494]
+BCC8 .|    |    <= false
+BCC8 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+BCC8 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+BCC8 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+BCC8 .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+BCC8 .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+BCC8 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+BCC8 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+BCC8 .|    |    |    exit()
+BCC8 .|    |    |    -
+BCC8 .|    |    -
+BCC8 .|    -
+5FDD .START (2018-03-27 20:10:55) phpCAS-1.3.5 ****************** [CAS.php:468]
+5FDD .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+5FDD .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+5FDD .|    |    Starting a new session 7i7p4ht787hjb0n37a02cb7vu4 [Client.php:932]
+5FDD .|    |    Session is not authenticated [Client.php:938]
+5FDD .|    <= ''
+5FDD .<= ''
+5FDD .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+5FDD .<= ''
+5FDD .=> phpCAS::forceAuthentication() [example_simple.php:40]
+5FDD .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+5FDD .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+5FDD .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+5FDD .|    |    |    |    no user found [Client.php:1635]
+5FDD .|    |    |    <= false
+5FDD .|    |    |    no ticket found [Client.php:1494]
+5FDD .|    |    <= false
+5FDD .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+5FDD .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+5FDD .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+5FDD .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+5FDD .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+5FDD .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+5FDD .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+5FDD .|    |    |    exit()
+5FDD .|    |    |    -
+5FDD .|    |    -
+5FDD .|    -
+6EA5 .START (2018-03-27 20:10:55) phpCAS-1.3.5 ****************** [CAS.php:468]
+6EA5 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+6EA5 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+6EA5 .|    |    Starting a new session 7i7p4ht787hjb0n37a02cb7vu4 [Client.php:932]
+6EA5 .|    |    Session is not authenticated [Client.php:938]
+6EA5 .|    |    Ticket 'ST-26-hplqy9k7xTmiIJR6vB9x-cast2' found [Client.php:1020]
+6EA5 .|    <= ''
+6EA5 .<= ''
+6EA5 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+6EA5 .<= ''
+6EA5 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+6EA5 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+6EA5 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+6EA5 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+6EA5 .|    |    |    |    no user found [Client.php:1635]
+6EA5 .|    |    |    <= false
+6EA5 .|    |    |    CAS 2.0 ticket `ST-26-hplqy9k7xTmiIJR6vB9x-cast2' is present [Client.php:1447]
+6EA5 .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL, false) [Client.php:1450]
+6EA5 .|    |    |    |     [Client.php:3169]
+6EA5 .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3176]
+6EA5 .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+6EA5 .|    |    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+6EA5 .|    |    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+6EA5 .|    |    |    |    <= 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+6EA5 .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-26-hplqy9k7xTmiIJR6vB9x-cast2', NULL, NULL, NULL) [Client.php:3191]
+6EA5 .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+6EA5 .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+6EA5 .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+6EA5 .|    |    |    |    |    <= false
+6EA5 .|    |    |    |    <= false
+6EA5 .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-26-hplqy9k7xTmiIJR6vB9x-cast2' to validate (CURL error #77: error setting certificate verify locations:
+6EA5 .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+6EA5 .|    |    |    |      CApath: none) [Client.php:3194]
+6EA5 .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'Ticket not validated', 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-26-hplqy9k7xTmiIJR6vB9x-cast2', true) [Client.php:3198]
+6EA5 .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+6EA5 .|    |    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+6EA5 .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-26-hplqy9k7xTmiIJR6vB9x-cast2 [AuthenticationException.php:80]
+6EA5 .|    |    |    |    |    Authentication failure: Ticket not validated [AuthenticationException.php:81]
+6EA5 .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+6EA5 .|    |    |    |    |    exit()
+6EA5 .|    |    |    |    |    -
+6EA5 .|    |    |    |    -
+6EA5 .|    |    |    -
+6EA5 .|    |    -
+6EA5 .|    -
+7BE8 .START (2018-03-27 20:13:15) phpCAS-1.3.5 ****************** [CAS.php:468]
+7BE8 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+7BE8 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+7BE8 .|    |    Starting a new session l325b9gs7gp5hk55a1h1pdffd7 [Client.php:932]
+7BE8 .|    |    Session is not authenticated [Client.php:938]
+7BE8 .|    <= ''
+7BE8 .<= ''
+7BE8 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+7BE8 .<= ''
+7BE8 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+7BE8 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+7BE8 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+7BE8 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+7BE8 .|    |    |    |    no user found [Client.php:1635]
+7BE8 .|    |    |    <= false
+7BE8 .|    |    |    no ticket found [Client.php:1494]
+7BE8 .|    |    <= false
+7BE8 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+7BE8 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+7BE8 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+7BE8 .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+7BE8 .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+7BE8 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+7BE8 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+7BE8 .|    |    |    exit()
+7BE8 .|    |    |    -
+7BE8 .|    |    -
+7BE8 .|    -
+FDED .START (2018-03-27 20:13:26) phpCAS-1.3.5 ****************** [CAS.php:468]
+FDED .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+FDED .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+FDED .|    |    Starting a new session l325b9gs7gp5hk55a1h1pdffd7 [Client.php:932]
+FDED .|    |    Session is not authenticated [Client.php:938]
+FDED .|    |    Ticket 'ST-27-ufJYTsOoAfoOyezxcRhB-cast2' found [Client.php:1020]
+FDED .|    <= ''
+FDED .<= ''
+FDED .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+FDED .<= ''
+FDED .=> phpCAS::forceAuthentication() [example_simple.php:40]
+FDED .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+FDED .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+FDED .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+FDED .|    |    |    |    no user found [Client.php:1635]
+FDED .|    |    |    <= false
+FDED .|    |    |    CAS 2.0 ticket `ST-27-ufJYTsOoAfoOyezxcRhB-cast2' is present [Client.php:1447]
+FDED .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL, false) [Client.php:1450]
+FDED .|    |    |    |     [Client.php:3169]
+FDED .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3176]
+FDED .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+FDED .|    |    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+FDED .|    |    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+FDED .|    |    |    |    <= 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+FDED .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-27-ufJYTsOoAfoOyezxcRhB-cast2', NULL, NULL, NULL) [Client.php:3191]
+FDED .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+FDED .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+FDED .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+FDED .|    |    |    |    |    <= false
+FDED .|    |    |    |    <= false
+FDED .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-27-ufJYTsOoAfoOyezxcRhB-cast2' to validate (CURL error #77: error setting certificate verify locations:
+FDED .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+FDED .|    |    |    |      CApath: none) [Client.php:3194]
+FDED .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'Ticket not validated', 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-27-ufJYTsOoAfoOyezxcRhB-cast2', true) [Client.php:3198]
+FDED .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+FDED .|    |    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+FDED .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-27-ufJYTsOoAfoOyezxcRhB-cast2 [AuthenticationException.php:80]
+FDED .|    |    |    |    |    Authentication failure: Ticket not validated [AuthenticationException.php:81]
+FDED .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+FDED .|    |    |    |    |    exit()
+FDED .|    |    |    |    |    -
+FDED .|    |    |    |    -
+FDED .|    |    |    -
+FDED .|    |    -
+FDED .|    -
+4416 .START (2018-03-27 20:14:45) phpCAS-1.3.5 ****************** [CAS.php:468]
+4416 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+4416 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+4416 .|    |    Starting a new session e09p43hi7ic0b8eh773p64b9p4 [Client.php:932]
+4416 .|    |    Session is not authenticated [Client.php:938]
+4416 .|    |    Ticket 'ST-27-ufJYTsOoAfoOyezxcRhB-cast2' found [Client.php:1020]
+4416 .|    <= ''
+4416 .<= ''
+4416 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+4416 .<= ''
+4416 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+4416 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+4416 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+4416 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+4416 .|    |    |    |    no user found [Client.php:1635]
+4416 .|    |    |    <= false
+4416 .|    |    |    CAS 2.0 ticket `ST-27-ufJYTsOoAfoOyezxcRhB-cast2' is present [Client.php:1447]
+4416 .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL, false) [Client.php:1450]
+4416 .|    |    |    |     [Client.php:3169]
+4416 .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3176]
+4416 .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+4416 .|    |    |    |    |    |    Final URI: http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+4416 .|    |    |    |    |    <= 'http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+4416 .|    |    |    |    <= 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+4416 .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-27-ufJYTsOoAfoOyezxcRhB-cast2', NULL, NULL, NULL) [Client.php:3191]
+4416 .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+4416 .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+4416 .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+4416 .|    |    |    |    |    <= false
+4416 .|    |    |    |    <= false
+4416 .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-27-ufJYTsOoAfoOyezxcRhB-cast2' to validate (CURL error #77: error setting certificate verify locations:
+4416 .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+4416 .|    |    |    |      CApath: none) [Client.php:3194]
+4416 .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'Ticket not validated', 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-27-ufJYTsOoAfoOyezxcRhB-cast2', true) [Client.php:3198]
+4416 .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+4416 .|    |    |    |    |    <= 'http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+4416 .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-27-ufJYTsOoAfoOyezxcRhB-cast2 [AuthenticationException.php:80]
+4416 .|    |    |    |    |    Authentication failure: Ticket not validated [AuthenticationException.php:81]
+4416 .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+4416 .|    |    |    |    |    exit()
+4416 .|    |    |    |    |    -
+4416 .|    |    |    |    -
+4416 .|    |    |    -
+4416 .|    |    -
+4416 .|    -
+ECE3 .START (2018-03-27 20:15:05) phpCAS-1.3.5 ****************** [CAS.php:468]
+ECE3 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+ECE3 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+ECE3 .|    |    Starting a new session r4u2ugc5dr0dc29cmqdjgphdd1 [Client.php:932]
+ECE3 .|    |    Session is not authenticated [Client.php:938]
+ECE3 .|    <= ''
+ECE3 .<= ''
+ECE3 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+ECE3 .<= ''
+ECE3 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+ECE3 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+ECE3 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+ECE3 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+ECE3 .|    |    |    |    no user found [Client.php:1635]
+ECE3 .|    |    |    <= false
+ECE3 .|    |    |    no ticket found [Client.php:1494]
+ECE3 .|    |    <= false
+ECE3 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+ECE3 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+ECE3 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+ECE3 .|    |    |    |    |    Final URI: http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+ECE3 .|    |    |    |    <= 'http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+ECE3 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+ECE3 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+ECE3 .|    |    |    exit()
+ECE3 .|    |    |    -
+ECE3 .|    |    -
+ECE3 .|    -
+6D81 .START (2018-03-27 20:16:27) phpCAS-1.3.5 ****************** [CAS.php:468]
+6D81 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+6D81 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+6D81 .|    |    Starting a new session r4u2ugc5dr0dc29cmqdjgphdd1 [Client.php:932]
+6D81 .|    |    Session is not authenticated [Client.php:938]
+6D81 .|    <= ''
+6D81 .<= ''
+6D81 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+6D81 .<= ''
+6D81 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+6D81 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+6D81 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+6D81 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+6D81 .|    |    |    |    no user found [Client.php:1635]
+6D81 .|    |    |    <= false
+6D81 .|    |    |    no ticket found [Client.php:1494]
+6D81 .|    |    <= false
+6D81 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+6D81 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+6D81 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+6D81 .|    |    |    |    |    Final URI: http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+6D81 .|    |    |    |    <= 'http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+6D81 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+6D81 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+6D81 .|    |    |    exit()
+6D81 .|    |    |    -
+6D81 .|    |    -
+6D81 .|    -
+41C9 .START (2018-03-27 20:16:38) phpCAS-1.3.5 ****************** [CAS.php:468]
+41C9 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+41C9 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+41C9 .|    |    Starting a new session e09p43hi7ic0b8eh773p64b9p4 [Client.php:932]
+41C9 .|    |    Session is not authenticated [Client.php:938]
+41C9 .|    <= ''
+41C9 .<= ''
+41C9 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+41C9 .<= ''
+41C9 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+41C9 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+41C9 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+41C9 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+41C9 .|    |    |    |    no user found [Client.php:1635]
+41C9 .|    |    |    <= false
+41C9 .|    |    |    no ticket found [Client.php:1494]
+41C9 .|    |    <= false
+41C9 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+41C9 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+41C9 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+41C9 .|    |    |    |    |    Final URI: http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+41C9 .|    |    |    |    <= 'http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+41C9 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+41C9 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+41C9 .|    |    |    exit()
+41C9 .|    |    |    -
+41C9 .|    |    -
+41C9 .|    -
+2703 .START (2018-03-27 20:16:38) phpCAS-1.3.5 ****************** [CAS.php:468]
+2703 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+2703 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+2703 .|    |    Starting a new session e09p43hi7ic0b8eh773p64b9p4 [Client.php:932]
+2703 .|    |    Session is not authenticated [Client.php:938]
+2703 .|    |    Ticket 'ST-28-6PJbPVtJccaBwat0ipYi-cast2' found [Client.php:1020]
+2703 .|    <= ''
+2703 .<= ''
+2703 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+2703 .<= ''
+2703 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+2703 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+2703 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+2703 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+2703 .|    |    |    |    no user found [Client.php:1635]
+2703 .|    |    |    <= false
+2703 .|    |    |    CAS 2.0 ticket `ST-28-6PJbPVtJccaBwat0ipYi-cast2' is present [Client.php:1447]
+2703 .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL, false) [Client.php:1450]
+2703 .|    |    |    |     [Client.php:3169]
+2703 .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3176]
+2703 .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+2703 .|    |    |    |    |    |    Final URI: http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+2703 .|    |    |    |    |    <= 'http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+2703 .|    |    |    |    <= 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+2703 .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-28-6PJbPVtJccaBwat0ipYi-cast2', NULL, NULL, NULL) [Client.php:3191]
+2703 .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+2703 .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+2703 .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+2703 .|    |    |    |    |    <= false
+2703 .|    |    |    |    <= false
+2703 .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-28-6PJbPVtJccaBwat0ipYi-cast2' to validate (CURL error #77: error setting certificate verify locations:
+2703 .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+2703 .|    |    |    |      CApath: none) [Client.php:3194]
+2703 .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'Ticket not validated', 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-28-6PJbPVtJccaBwat0ipYi-cast2', true) [Client.php:3198]
+2703 .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+2703 .|    |    |    |    |    <= 'http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+2703 .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-28-6PJbPVtJccaBwat0ipYi-cast2 [AuthenticationException.php:80]
+2703 .|    |    |    |    |    Authentication failure: Ticket not validated [AuthenticationException.php:81]
+2703 .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+2703 .|    |    |    |    |    exit()
+2703 .|    |    |    |    |    -
+2703 .|    |    |    |    -
+2703 .|    |    |    -
+2703 .|    |    -
+2703 .|    -
+6561 .START (2018-03-28 15:51:55) phpCAS-1.3.5 ****************** [CAS.php:468]
+6561 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+6561 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+6561 .|    |    Starting a new session rdvjcovvphqnrkvet6dh8vtq97 [Client.php:932]
+6561 .|    |    Session is not authenticated [Client.php:938]
+6561 .|    <= ''
+6561 .<= ''
+6561 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+6561 .<= ''
+6561 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+6561 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+6561 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+6561 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+6561 .|    |    |    |    no user found [Client.php:1635]
+6561 .|    |    |    <= false
+6561 .|    |    |    no ticket found [Client.php:1494]
+6561 .|    |    <= false
+6561 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+6561 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+6561 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+6561 .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+6561 .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+6561 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+6561 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+6561 .|    |    |    exit()
+6561 .|    |    |    -
+6561 .|    |    -
+6561 .|    -
+5094 .START (2018-03-28 18:43:32) phpCAS-1.3.5 ****************** [CAS.php:468]
+5094 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+5094 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+5094 .|    |    Starting a new session on89s0b0j7no816bss4thh1rk6 [Client.php:932]
+5094 .|    |    Session is not authenticated [Client.php:938]
+5094 .|    <= ''
+5094 .<= ''
+5094 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+5094 .<= ''
+5094 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+5094 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+5094 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+5094 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+5094 .|    |    |    |    no user found [Client.php:1635]
+5094 .|    |    |    <= false
+5094 .|    |    |    no ticket found [Client.php:1494]
+5094 .|    |    <= false
+5094 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+5094 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+5094 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+5094 .|    |    |    |    |    Final URI: http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+5094 .|    |    |    |    <= 'http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+5094 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+5094 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+5094 .|    |    |    exit()
+5094 .|    |    |    -
+5094 .|    |    -
+5094 .|    -
+364E .START (2018-03-28 18:43:57) phpCAS-1.3.5 ****************** [CAS.php:468]
+364E .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+364E .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+364E .|    |    Starting a new session on89s0b0j7no816bss4thh1rk6 [Client.php:932]
+364E .|    |    Session is not authenticated [Client.php:938]
+364E .|    |    Ticket 'ST-32-v09vJE0crN7vcwo7maaq-cast2' found [Client.php:1020]
+364E .|    <= ''
+364E .<= ''
+364E .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+364E .<= ''
+364E .=> phpCAS::forceAuthentication() [example_simple.php:40]
+364E .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+364E .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+364E .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+364E .|    |    |    |    no user found [Client.php:1635]
+364E .|    |    |    <= false
+364E .|    |    |    CAS 2.0 ticket `ST-32-v09vJE0crN7vcwo7maaq-cast2' is present [Client.php:1447]
+364E .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL, false) [Client.php:1450]
+364E .|    |    |    |     [Client.php:3169]
+364E .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3176]
+364E .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+364E .|    |    |    |    |    |    Final URI: http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+364E .|    |    |    |    |    <= 'http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+364E .|    |    |    |    <= 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+364E .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-32-v09vJE0crN7vcwo7maaq-cast2', NULL, NULL, NULL) [Client.php:3191]
+364E .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+364E .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+364E .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+364E .|    |    |    |    |    <= false
+364E .|    |    |    |    <= false
+364E .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-32-v09vJE0crN7vcwo7maaq-cast2' to validate (CURL error #77: error setting certificate verify locations:
+364E .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+364E .|    |    |    |      CApath: none) [Client.php:3194]
+364E .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'Ticket not validated', 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-32-v09vJE0crN7vcwo7maaq-cast2', true) [Client.php:3198]
+364E .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+364E .|    |    |    |    |    <= 'http://ellsworth158-065.ellsworth.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+364E .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fellsworth158-065.ellsworth.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-32-v09vJE0crN7vcwo7maaq-cast2 [AuthenticationException.php:80]
+364E .|    |    |    |    |    Authentication failure: Ticket not validated [AuthenticationException.php:81]
+364E .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+364E .|    |    |    |    |    exit()
+364E .|    |    |    |    |    -
+364E .|    |    |    |    -
+364E .|    |    |    -
+364E .|    |    -
+364E .|    -
+C49F .START (2018-03-28 18:48:35) phpCAS-1.3.5 ****************** [CAS.php:468]
+C49F .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+C49F .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+C49F .|    |    Starting a new session cd9e88p8gg7tima1941dajvc52 [Client.php:932]
+C49F .|    |    Session is not authenticated [Client.php:938]
+C49F .|    |    Ticket 'ST-32-v09vJE0crN7vcwo7maaq-cast2' found [Client.php:1020]
+C49F .|    <= ''
+C49F .<= ''
+C49F .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+C49F .<= ''
+C49F .=> phpCAS::forceAuthentication() [example_simple.php:40]
+C49F .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+C49F .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+C49F .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+C49F .|    |    |    |    no user found [Client.php:1635]
+C49F .|    |    |    <= false
+C49F .|    |    |    CAS 2.0 ticket `ST-32-v09vJE0crN7vcwo7maaq-cast2' is present [Client.php:1447]
+C49F .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL, false) [Client.php:1450]
+C49F .|    |    |    |     [Client.php:3169]
+C49F .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3176]
+C49F .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+C49F .|    |    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+C49F .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+C49F .|    |    |    |    <= 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+C49F .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-32-v09vJE0crN7vcwo7maaq-cast2', NULL, NULL, NULL) [Client.php:3191]
+C49F .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+C49F .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+C49F .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+C49F .|    |    |    |    |    <= false
+C49F .|    |    |    |    <= false
+C49F .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-32-v09vJE0crN7vcwo7maaq-cast2' to validate (CURL error #77: error setting certificate verify locations:
+C49F .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+C49F .|    |    |    |      CApath: none) [Client.php:3194]
+C49F .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'Ticket not validated', 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-32-v09vJE0crN7vcwo7maaq-cast2', true) [Client.php:3198]
+C49F .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+C49F .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+C49F .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-32-v09vJE0crN7vcwo7maaq-cast2 [AuthenticationException.php:80]
+C49F .|    |    |    |    |    Authentication failure: Ticket not validated [AuthenticationException.php:81]
+C49F .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+C49F .|    |    |    |    |    exit()
+C49F .|    |    |    |    |    -
+C49F .|    |    |    |    -
+C49F .|    |    |    -
+C49F .|    |    -
+C49F .|    -
+4279 .START (2018-03-28 18:49:06) phpCAS-1.3.5 ****************** [CAS.php:468]
+4279 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+4279 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+4279 .|    |    Starting a new session cd9e88p8gg7tima1941dajvc52 [Client.php:932]
+4279 .|    |    Session is not authenticated [Client.php:938]
+4279 .|    <= ''
+4279 .<= ''
+4279 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+4279 .<= ''
+4279 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+4279 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+4279 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+4279 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+4279 .|    |    |    |    no user found [Client.php:1635]
+4279 .|    |    |    <= false
+4279 .|    |    |    no ticket found [Client.php:1494]
+4279 .|    |    <= false
+4279 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+4279 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+4279 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+4279 .|    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+4279 .|    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+4279 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+4279 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+4279 .|    |    |    exit()
+4279 .|    |    |    -
+4279 .|    |    -
+4279 .|    -
+10FA .START (2018-03-28 18:49:06) phpCAS-1.3.5 ****************** [CAS.php:468]
+10FA .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+10FA .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+10FA .|    |    Starting a new session cd9e88p8gg7tima1941dajvc52 [Client.php:932]
+10FA .|    |    Session is not authenticated [Client.php:938]
+10FA .|    |    Ticket 'ST-34-1xK71ee77cWdQM7YTxNa-cast2' found [Client.php:1020]
+10FA .|    <= ''
+10FA .<= ''
+10FA .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+10FA .<= ''
+10FA .=> phpCAS::forceAuthentication() [example_simple.php:40]
+10FA .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+10FA .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+10FA .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+10FA .|    |    |    |    no user found [Client.php:1635]
+10FA .|    |    |    <= false
+10FA .|    |    |    CAS 2.0 ticket `ST-34-1xK71ee77cWdQM7YTxNa-cast2' is present [Client.php:1447]
+10FA .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL, false) [Client.php:1450]
+10FA .|    |    |    |     [Client.php:3169]
+10FA .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3176]
+10FA .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+10FA .|    |    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+10FA .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+10FA .|    |    |    |    <= 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+10FA .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-34-1xK71ee77cWdQM7YTxNa-cast2', NULL, NULL, NULL) [Client.php:3191]
+10FA .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+10FA .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+10FA .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+10FA .|    |    |    |    |    <= false
+10FA .|    |    |    |    <= false
+10FA .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-34-1xK71ee77cWdQM7YTxNa-cast2' to validate (CURL error #77: error setting certificate verify locations:
+10FA .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+10FA .|    |    |    |      CApath: none) [Client.php:3194]
+10FA .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'Ticket not validated', 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-34-1xK71ee77cWdQM7YTxNa-cast2', true) [Client.php:3198]
+10FA .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+10FA .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+10FA .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-34-1xK71ee77cWdQM7YTxNa-cast2 [AuthenticationException.php:80]
+10FA .|    |    |    |    |    Authentication failure: Ticket not validated [AuthenticationException.php:81]
+10FA .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+10FA .|    |    |    |    |    exit()
+10FA .|    |    |    |    |    -
+10FA .|    |    |    |    -
+10FA .|    |    |    -
+10FA .|    |    -
+10FA .|    -
+1E17 .START (2018-03-28 18:55:17) phpCAS-1.3.5 ****************** [CAS.php:468]
+1E17 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+1E17 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+1E17 .|    |    Starting a new session ch65lo1d8pbfrrjiulr4fkgjm1 [Client.php:932]
+1E17 .|    |    Session is not authenticated [Client.php:938]
+1E17 .|    <= ''
+1E17 .<= ''
+1E17 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+1E17 .<= ''
+1E17 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+1E17 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+1E17 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+1E17 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+1E17 .|    |    |    |    no user found [Client.php:1635]
+1E17 .|    |    |    <= false
+1E17 .|    |    |    no ticket found [Client.php:1494]
+1E17 .|    |    <= false
+1E17 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+1E17 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+1E17 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+1E17 .|    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+1E17 .|    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+1E17 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+1E17 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+1E17 .|    |    |    exit()
+1E17 .|    |    |    -
+1E17 .|    |    -
+1E17 .|    -
+14FD .START (2018-03-28 18:55:34) phpCAS-1.3.5 ****************** [CAS.php:468]
+14FD .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+14FD .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+14FD .|    |    Starting a new session ch65lo1d8pbfrrjiulr4fkgjm1 [Client.php:932]
+14FD .|    |    Session is not authenticated [Client.php:938]
+14FD .|    |    Ticket 'ST-15-c3lQKBNVDM5rcICmRy0o-cast1' found [Client.php:1020]
+14FD .|    <= ''
+14FD .<= ''
+14FD .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+14FD .<= ''
+14FD .=> phpCAS::forceAuthentication() [example_simple.php:40]
+14FD .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+14FD .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+14FD .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+14FD .|    |    |    |    no user found [Client.php:1635]
+14FD .|    |    |    <= false
+14FD .|    |    |    CAS 2.0 ticket `ST-15-c3lQKBNVDM5rcICmRy0o-cast1' is present [Client.php:1447]
+14FD .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL, false) [Client.php:1450]
+14FD .|    |    |    |     [Client.php:3169]
+14FD .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3176]
+14FD .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+14FD .|    |    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+14FD .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+14FD .|    |    |    |    <= 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+14FD .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-15-c3lQKBNVDM5rcICmRy0o-cast1', NULL, NULL, NULL) [Client.php:3191]
+14FD .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+14FD .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+14FD .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+14FD .|    |    |    |    |    <= false
+14FD .|    |    |    |    <= false
+14FD .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-15-c3lQKBNVDM5rcICmRy0o-cast1' to validate (CURL error #77: error setting certificate verify locations:
+14FD .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+14FD .|    |    |    |      CApath: none) [Client.php:3194]
+14FD .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'Ticket not validated', 'https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-15-c3lQKBNVDM5rcICmRy0o-cast1', true) [Client.php:3198]
+14FD .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+14FD .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+14FD .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/serviceValidate?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php&ticket=ST-15-c3lQKBNVDM5rcICmRy0o-cast1 [AuthenticationException.php:80]
+14FD .|    |    |    |    |    Authentication failure: Ticket not validated [AuthenticationException.php:81]
+14FD .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+14FD .|    |    |    |    |    exit()
+14FD .|    |    |    |    |    -
+14FD .|    |    |    |    -
+14FD .|    |    |    -
+14FD .|    |    -
+14FD .|    -
+9171 .START (2018-03-29 15:24:10) phpCAS-1.3.5 ****************** [CAS.php:468]
+9171 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+9171 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+9171 .|    |    Starting a new session rdvjcovvphqnrkvet6dh8vtq97 [Client.php:932]
+9171 .|    |    Session is not authenticated [Client.php:938]
+9171 .|    <= ''
+9171 .<= ''
+9171 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+9171 .<= ''
+9171 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+9171 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+9171 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+9171 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+9171 .|    |    |    |    no user found [Client.php:1635]
+9171 .|    |    |    <= false
+9171 .|    |    |    no ticket found [Client.php:1494]
+9171 .|    |    <= false
+9171 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+9171 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+9171 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+9171 .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+9171 .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+9171 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+9171 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+9171 .|    |    |    exit()
+9171 .|    |    |    -
+9171 .|    |    -
+9171 .|    -
+3177 .START (2018-03-29 15:30:20) phpCAS-1.3.5 ****************** [CAS.php:468]
+3177 .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+3177 .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+3177 .|    |    Starting a new session rdvjcovvphqnrkvet6dh8vtq97 [Client.php:932]
+3177 .|    |    Session is not authenticated [Client.php:938]
+3177 .|    <= ''
+3177 .<= ''
+3177 .=> phpCAS::setCasServerCACert('../../cacert.pem') [example_simple.php:32]
+3177 .<= ''
+3177 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+3177 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+3177 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+3177 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+3177 .|    |    |    |    no user found [Client.php:1635]
+3177 .|    |    |    <= false
+3177 .|    |    |    no ticket found [Client.php:1494]
+3177 .|    |    <= false
+3177 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+3177 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+3177 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+3177 .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+3177 .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+3177 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+3177 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+3177 .|    |    |    exit()
+3177 .|    |    |    -
+3177 .|    |    -
+3177 .|    -
+95FA .START (2018-03-29 15:35:22) phpCAS-1.3.5 ****************** [CAS.php:468]
+95FA .=> phpCAS::client('2.0', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+95FA .|    => CAS_Client::__construct('2.0', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+95FA .|    |    Starting a new session jsv8ttncvp6uae1cqkp26m8dq0 [Client.php:932]
+95FA .|    |    Session is not authenticated [Client.php:938]
+95FA .|    <= ''
+95FA .<= ''
+95FA .=> phpCAS::setCasServerCACert('../../cacert.pem') [example_simple.php:32]
+95FA .<= ''
+95FA .=> phpCAS::forceAuthentication() [example_simple.php:40]
+95FA .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+95FA .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+95FA .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+95FA .|    |    |    |    no user found [Client.php:1635]
+95FA .|    |    |    <= false
+95FA .|    |    |    no ticket found [Client.php:1494]
+95FA .|    |    <= false
+95FA .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+95FA .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+95FA .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+95FA .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+95FA .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+95FA .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+95FA .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+95FA .|    |    |    exit()
+95FA .|    |    |    -
+95FA .|    |    -
+95FA .|    -
+3597 .START (2018-03-29 15:47:03) phpCAS-1.3.5 ****************** [CAS.php:468]
+3597 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+3597 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+3597 .|    |    Starting a new session jsv8ttncvp6uae1cqkp26m8dq0 [Client.php:932]
+3597 .|    |    Session is not authenticated [Client.php:938]
+3597 .|    <= ''
+3597 .<= ''
+3597 .=> phpCAS::setCasServerCACert('../../cacert.pem') [example_simple.php:32]
+3597 .<= ''
+3597 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+3597 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+3597 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+3597 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+3597 .|    |    |    |    no user found [Client.php:1635]
+3597 .|    |    |    <= false
+3597 .|    |    |    no ticket found [Client.php:1494]
+3597 .|    |    <= false
+3597 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+3597 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+3597 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+3597 .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+3597 .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+3597 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+3597 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+3597 .|    |    |    exit()
+3597 .|    |    |    -
+3597 .|    |    -
+3597 .|    -
+9163 .START (2018-03-29 15:49:07) phpCAS-1.3.5 ****************** [CAS.php:468]
+9163 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+9163 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+9163 .|    |    Starting a new session jsv8ttncvp6uae1cqkp26m8dq0 [Client.php:932]
+9163 .|    |    Session is not authenticated [Client.php:938]
+9163 .|    <= ''
+9163 .<= ''
+9163 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+9163 .<= ''
+9163 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+9163 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+9163 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+9163 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+9163 .|    |    |    |    no user found [Client.php:1635]
+9163 .|    |    |    <= false
+9163 .|    |    |    no ticket found [Client.php:1494]
+9163 .|    |    <= false
+9163 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+9163 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+9163 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+9163 .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+9163 .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+9163 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+9163 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+9163 .|    |    |    exit()
+9163 .|    |    |    -
+9163 .|    |    -
+9163 .|    -
+AE1C .START (2018-03-29 15:55:05) phpCAS-1.3.5 ****************** [CAS.php:468]
+AE1C .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+AE1C .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+AE1C .|    |    Starting a new session rdvjcovvphqnrkvet6dh8vtq97 [Client.php:932]
+AE1C .|    |    Session is not authenticated [Client.php:938]
+AE1C .|    <= ''
+AE1C .<= ''
+AE1C .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+AE1C .<= ''
+AE1C .=> phpCAS::forceAuthentication() [example_simple.php:40]
+AE1C .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+AE1C .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+AE1C .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+AE1C .|    |    |    |    no user found [Client.php:1635]
+AE1C .|    |    |    <= false
+AE1C .|    |    |    no ticket found [Client.php:1494]
+AE1C .|    |    <= false
+AE1C .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+AE1C .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+AE1C .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+AE1C .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+AE1C .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+AE1C .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+AE1C .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+AE1C .|    |    |    exit()
+AE1C .|    |    |    -
+AE1C .|    |    -
+AE1C .|    -
+095D .START (2018-03-29 19:41:10) phpCAS-1.3.5 ****************** [CAS.php:468]
+095D .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+095D .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+095D .|    |    Starting a new session rdvjcovvphqnrkvet6dh8vtq97 [Client.php:932]
+095D .|    |    Session is not authenticated [Client.php:938]
+095D .|    <= ''
+095D .<= ''
+095D .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+095D .<= ''
+095D .=> phpCAS::forceAuthentication() [example_simple.php:40]
+095D .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+095D .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+095D .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+095D .|    |    |    |    no user found [Client.php:1635]
+095D .|    |    |    <= false
+095D .|    |    |    no ticket found [Client.php:1494]
+095D .|    |    <= false
+095D .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+095D .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+095D .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+095D .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+095D .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+095D .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+095D .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+095D .|    |    |    exit()
+095D .|    |    |    -
+095D .|    |    -
+095D .|    -
+BB49 .START (2018-03-29 20:02:08) phpCAS-1.3.5 ****************** [CAS.php:468]
+BB49 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+BB49 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+BB49 .|    |    Starting a new session r2gn15nl8oun0chhl9ltsv0s94 [Client.php:932]
+BB49 .|    |    Session is not authenticated [Client.php:938]
+BB49 .|    <= ''
+BB49 .<= ''
+BB49 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+BB49 .<= ''
+BB49 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+BB49 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+BB49 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+BB49 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+BB49 .|    |    |    |    no user found [Client.php:1635]
+BB49 .|    |    |    <= false
+BB49 .|    |    |    no ticket found [Client.php:1494]
+BB49 .|    |    <= false
+BB49 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+BB49 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+BB49 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+BB49 .|    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+BB49 .|    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+BB49 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+BB49 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+BB49 .|    |    |    exit()
+BB49 .|    |    |    -
+BB49 .|    |    -
+BB49 .|    -
+BB8C .START (2018-03-29 20:02:20) phpCAS-1.3.5 ****************** [CAS.php:468]
+BB8C .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+BB8C .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+BB8C .|    |    Starting a new session r2gn15nl8oun0chhl9ltsv0s94 [Client.php:932]
+BB8C .|    |    Session is not authenticated [Client.php:938]
+BB8C .|    <= ''
+BB8C .<= ''
+BB8C .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+BB8C .<= ''
+BB8C .=> phpCAS::forceAuthentication() [example_simple.php:40]
+BB8C .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+BB8C .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+BB8C .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+BB8C .|    |    |    |    no user found [Client.php:1635]
+BB8C .|    |    |    <= false
+BB8C .|    |    |    no ticket found [Client.php:1494]
+BB8C .|    |    <= false
+BB8C .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+BB8C .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+BB8C .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+BB8C .|    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+BB8C .|    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+BB8C .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+BB8C .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+BB8C .|    |    |    exit()
+BB8C .|    |    |    -
+BB8C .|    |    -
+BB8C .|    -
+027D .START (2018-03-29 20:03:22) phpCAS-1.3.5 ****************** [CAS.php:468]
+027D .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+027D .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+027D .|    |    Starting a new session rdvjcovvphqnrkvet6dh8vtq97 [Client.php:932]
+027D .|    |    Session is not authenticated [Client.php:938]
+027D .|    <= ''
+027D .<= ''
+027D .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+027D .<= ''
+027D .=> phpCAS::forceAuthentication() [example_simple.php:40]
+027D .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+027D .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+027D .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+027D .|    |    |    |    no user found [Client.php:1635]
+027D .|    |    |    <= false
+027D .|    |    |    no ticket found [Client.php:1494]
+027D .|    |    <= false
+027D .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+027D .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+027D .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+027D .|    |    |    |    |    Final URI: http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+027D .|    |    |    |    <= 'http://141.218.158.65/include/phpCAS/docs/examples/example_simple.php'
+027D .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+027D .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2F141.218.158.65%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+027D .|    |    |    exit()
+027D .|    |    |    -
+027D .|    |    -
+027D .|    -
+7943 .START (2018-03-29 20:03:27) phpCAS-1.3.5 ****************** [CAS.php:468]
+7943 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+7943 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+7943 .|    |    Starting a new session r2gn15nl8oun0chhl9ltsv0s94 [Client.php:932]
+7943 .|    |    Session is not authenticated [Client.php:938]
+7943 .|    <= ''
+7943 .<= ''
+7943 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+7943 .<= ''
+7943 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+7943 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+7943 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+7943 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+7943 .|    |    |    |    no user found [Client.php:1635]
+7943 .|    |    |    <= false
+7943 .|    |    |    no ticket found [Client.php:1494]
+7943 .|    |    <= false
+7943 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+7943 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+7943 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+7943 .|    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+7943 .|    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+7943 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+7943 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+7943 .|    |    |    exit()
+7943 .|    |    |    -
+7943 .|    |    -
+7943 .|    -
+FFC4 .START (2018-03-29 20:03:35) phpCAS-1.3.5 ****************** [CAS.php:468]
+FFC4 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+FFC4 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+FFC4 .|    |    Starting a new session r2gn15nl8oun0chhl9ltsv0s94 [Client.php:932]
+FFC4 .|    |    Session is not authenticated [Client.php:938]
+FFC4 .|    |    Ticket 'ST-25-o3cgdRh9hUhJcVKY2mIe-cast1' found [Client.php:1020]
+FFC4 .|    <= ''
+FFC4 .<= ''
+FFC4 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+FFC4 .<= ''
+FFC4 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+FFC4 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+FFC4 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+FFC4 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+FFC4 .|    |    |    |    no user found [Client.php:1635]
+FFC4 .|    |    |    <= false
+FFC4 .|    |    |    SAML 1.1 ticket `ST-25-o3cgdRh9hUhJcVKY2mIe-cast1' is present [Client.php:1476]
+FFC4 .|    |    |    => CAS_Client::validateSA('', NULL, NULL, false) [Client.php:1479]
+FFC4 .|    |    |    |    => CAS_Client::getServerSamlValidateURL() [Client.php:2070]
+FFC4 .|    |    |    |    |    => CAS_Client::getURL() [Client.php:477]
+FFC4 .|    |    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+FFC4 .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+FFC4 .|    |    |    |    <= 'https://webauth.test.wmich.edu/samlValidate?TARGET=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+FFC4 .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/samlValidate?TARGET=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php', NULL, NULL, NULL) [Client.php:2078]
+FFC4 .|    |    |    |    |    => CAS_Client::_buildSAMLPayload() [Client.php:2822]
+FFC4 .|    |    |    |    |    <= '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Header/><SOAP-ENV:Body><samlp:Request xmlns:samlp="urn:oasis:names:tc:SAML:1.0:protocol"  MajorVersion="1" MinorVersion="1" RequestID="_192.168.16.51.1024506224022" IssueInstant="2002-06-19T17:03:44.022Z"><samlp:AssertionArtifact>ST-25-o3cgdRh9hUhJcVKY2mIe-cast1</samlp:AssertionArtifact></samlp:Request></SOAP-ENV:Body></SOAP-ENV:Envelope>'
+FFC4 .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+FFC4 .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+FFC4 .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+FFC4 .|    |    |    |    |    <= false
+FFC4 .|    |    |    |    <= false
+FFC4 .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/samlValidate?TARGET=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php' to validate (CURL error #77: error setting certificate verify locations:
+FFC4 .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+FFC4 .|    |    |    |      CApath: none) [Client.php:2081]
+FFC4 .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'SA not validated', 'https://webauth.test.wmich.edu/samlValidate?TARGET=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php', true) [Client.php:2084]
+FFC4 .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+FFC4 .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+FFC4 .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/samlValidate?TARGET=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [AuthenticationException.php:80]
+FFC4 .|    |    |    |    |    Authentication failure: SA not validated [AuthenticationException.php:81]
+FFC4 .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+FFC4 .|    |    |    |    |    exit()
+FFC4 .|    |    |    |    |    -
+FFC4 .|    |    |    |    -
+FFC4 .|    |    |    -
+FFC4 .|    |    -
+FFC4 .|    -
+3692 .START (2018-03-29 20:05:55) phpCAS-1.3.5 ****************** [CAS.php:468]
+3692 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+3692 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+3692 .|    |    Starting a new session r2gn15nl8oun0chhl9ltsv0s94 [Client.php:932]
+3692 .|    |    Session is not authenticated [Client.php:938]
+3692 .|    |    Ticket 'ST-25-o3cgdRh9hUhJcVKY2mIe-cast1' found [Client.php:1020]
+3692 .|    <= ''
+3692 .<= ''
+3692 .=> phpCAS::setCasServerCACert('../../webauth.test.wmich.edu.pem') [example_simple.php:32]
+3692 .<= ''
+3692 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+3692 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+3692 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+3692 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+3692 .|    |    |    |    no user found [Client.php:1635]
+3692 .|    |    |    <= false
+3692 .|    |    |    SAML 1.1 ticket `ST-25-o3cgdRh9hUhJcVKY2mIe-cast1' is present [Client.php:1476]
+3692 .|    |    |    => CAS_Client::validateSA('', NULL, NULL, false) [Client.php:1479]
+3692 .|    |    |    |    => CAS_Client::getServerSamlValidateURL() [Client.php:2070]
+3692 .|    |    |    |    |    => CAS_Client::getURL() [Client.php:477]
+3692 .|    |    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+3692 .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+3692 .|    |    |    |    <= 'https://webauth.test.wmich.edu/samlValidate?TARGET=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+3692 .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/samlValidate?TARGET=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php', NULL, NULL, NULL) [Client.php:2078]
+3692 .|    |    |    |    |    => CAS_Client::_buildSAMLPayload() [Client.php:2822]
+3692 .|    |    |    |    |    <= '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Header/><SOAP-ENV:Body><samlp:Request xmlns:samlp="urn:oasis:names:tc:SAML:1.0:protocol"  MajorVersion="1" MinorVersion="1" RequestID="_192.168.16.51.1024506224022" IssueInstant="2002-06-19T17:03:44.022Z"><samlp:AssertionArtifact>ST-25-o3cgdRh9hUhJcVKY2mIe-cast1</samlp:AssertionArtifact></samlp:Request></SOAP-ENV:Body></SOAP-ENV:Envelope>'
+3692 .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+3692 .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO ../../webauth.test.wmich.edu.pem [CurlRequest.php:129]
+3692 .|    |    |    |    |    |    curl_exec() failed [CurlRequest.php:77]
+3692 .|    |    |    |    |    <= false
+3692 .|    |    |    |    <= false
+3692 .|    |    |    |    could not open URL 'https://webauth.test.wmich.edu/samlValidate?TARGET=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php' to validate (CURL error #77: error setting certificate verify locations:
+3692 .|    |    |    |      CAfile: ../../webauth.test.wmich.edu.pem
+3692 .|    |    |    |      CApath: none) [Client.php:2081]
+3692 .|    |    |    |    => CAS_AuthenticationException::__construct(CAS_Client, 'SA not validated', 'https://webauth.test.wmich.edu/samlValidate?TARGET=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php', true) [Client.php:2084]
+3692 .|    |    |    |    |    => CAS_Client::getURL() [AuthenticationException.php:77]
+3692 .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+3692 .|    |    |    |    |    CAS URL: https://webauth.test.wmich.edu/samlValidate?TARGET=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [AuthenticationException.php:80]
+3692 .|    |    |    |    |    Authentication failure: SA not validated [AuthenticationException.php:81]
+3692 .|    |    |    |    |    Reason: no response from the CAS server [AuthenticationException.php:83]
+3692 .|    |    |    |    |    exit()
+3692 .|    |    |    |    |    -
+3692 .|    |    |    |    -
+3692 .|    |    |    -
+3692 .|    |    -
+3692 .|    -
+15B6 .START (2018-03-29 20:15:46) phpCAS-1.3.5 ****************** [CAS.php:468]
+15B6 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+15B6 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+15B6 .|    |    Starting a new session r2gn15nl8oun0chhl9ltsv0s94 [Client.php:932]
+15B6 .|    |    Session is not authenticated [Client.php:938]
+15B6 .|    <= ''
+15B6 .<= ''
+15B6 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+15B6 .<= ''
+15B6 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+15B6 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+15B6 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+15B6 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+15B6 .|    |    |    |    no user found [Client.php:1635]
+15B6 .|    |    |    <= false
+15B6 .|    |    |    no ticket found [Client.php:1494]
+15B6 .|    |    <= false
+15B6 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+15B6 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+15B6 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+15B6 .|    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+15B6 .|    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+15B6 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+15B6 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+15B6 .|    |    |    exit()
+15B6 .|    |    |    -
+15B6 .|    |    -
+15B6 .|    -
+A24A .START (2018-03-29 20:15:50) phpCAS-1.3.5 ****************** [CAS.php:468]
+A24A .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+A24A .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+A24A .|    |    Starting a new session r2gn15nl8oun0chhl9ltsv0s94 [Client.php:932]
+A24A .|    |    Session is not authenticated [Client.php:938]
+A24A .|    |    Ticket 'ST-26-1RpXaQowOa4rfAi4NjBa-cast1' found [Client.php:1020]
+A24A .|    <= ''
+A24A .<= ''
+A24A .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+A24A .<= ''
+A24A .=> phpCAS::forceAuthentication() [example_simple.php:40]
+A24A .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+A24A .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+A24A .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+A24A .|    |    |    |    no user found [Client.php:1635]
+A24A .|    |    |    <= false
+A24A .|    |    |    SAML 1.1 ticket `ST-26-1RpXaQowOa4rfAi4NjBa-cast1' is present [Client.php:1476]
+A24A .|    |    |    => CAS_Client::validateSA('', NULL, NULL, false) [Client.php:1479]
+A24A .|    |    |    |    => CAS_Client::getServerSamlValidateURL() [Client.php:2070]
+A24A .|    |    |    |    |    => CAS_Client::getURL() [Client.php:477]
+A24A .|    |    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+A24A .|    |    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+A24A .|    |    |    |    <= 'https://webauth.test.wmich.edu/samlValidate?TARGET=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+A24A .|    |    |    |    => CAS_Client::_readURL('https://webauth.test.wmich.edu/samlValidate?TARGET=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php', NULL, NULL, NULL) [Client.php:2078]
+A24A .|    |    |    |    |    => CAS_Client::_buildSAMLPayload() [Client.php:2822]
+A24A .|    |    |    |    |    <= '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Header/><SOAP-ENV:Body><samlp:Request xmlns:samlp="urn:oasis:names:tc:SAML:1.0:protocol"  MajorVersion="1" MinorVersion="1" RequestID="_192.168.16.51.1024506224022" IssueInstant="2002-06-19T17:03:44.022Z"><samlp:AssertionArtifact>ST-26-1RpXaQowOa4rfAi4NjBa-cast1</samlp:AssertionArtifact></samlp:Request></SOAP-ENV:Body></SOAP-ENV:Envelope>'
+A24A .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+A24A .|    |    |    |    |    |    CURL: Set CURLOPT_CAINFO /wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem [CurlRequest.php:129]
+A24A .|    |    |    |    |    |    Response Body: 
+A24A .|    |    |    |    |    |    <?xml version="1.0" encoding="UTF-8"?>
+A24A .|    |    |    |    |    |    <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Body><saml1p:Response InResponseTo="hige-iefdf-vm.wade.wmich.edu" IssueInstant="2018-03-29T20:15:50.819Z" MajorVersion="1" MinorVersion="1" ResponseID="_50cd0877d8e439ffbad833775edde509" xmlns:saml1p="urn:oasis:names:tc:SAML:1.0:protocol"><saml1p:Status><saml1p:StatusCode Value="saml1p:Success"/></saml1p:Status><saml1:Assertion AssertionID="_69d72ca6184164b6219cdca567170941" IssueInstant="2018-03-29T20:15:50.819Z" Issuer="localhost" MajorVersion="1" MinorVersion="1" xmlns:saml1="urn:oasis:names:tc:SAML:1.0:assertion"><saml1:Conditions NotBefore="2018-03-29T20:15:50.819Z" NotOnOrAfter="2018-03-29T20:16:20.819Z"><saml1:AudienceRestrictionCondition><saml1:Audience>http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php</saml1:Audience></saml1:AudienceRestrictionCondition></saml1:Conditions><saml1:AuthenticationStatement AuthenticationInstant="2018-03-29T20:15:49.745Z" AuthenticationMethod="urn:oasis:names:tc:SAML:1.0:am:unspecified"><saml1:Subject><saml1:NameIdentifier>kgy3763</saml1:NameIdentifier><saml1:SubjectConfirmation><saml1:ConfirmationMethod>urn:oasis:names:tc:SAML:1.0:cm:artifact</saml1:ConfirmationMethod></saml1:SubjectConfirmation></saml1:Subject></saml1:AuthenticationStatement><saml1:AttributeStatement><saml1:Subject><saml1:NameIdentifier>kgy3763</saml1:NameIdentifier><saml1:SubjectConfirmation><saml1:ConfirmationMethod>urn:oasis:names:tc:SAML:1.0:cm:artifact</saml1:ConfirmationMethod></saml1:SubjectConfirmation></saml1:Subject><saml1:Attribute AttributeName="uid" AttributeNamespace="http://www.ja-sig.org/products/cas/"><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">kgy3763</saml1:AttributeValue></saml1:Attribute><saml1:Attribute AttributeName="wmuEduPersonAffiliation" AttributeNamespace="http://www.ja-sig.org/products/cas/"><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Undergraduate Student</saml1:AttributeValue><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Student</saml1:AttributeValue><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Member</saml1:AttributeValue><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Affiliate</saml1:AttributeValue></saml1:Attribute><saml1:Attribute AttributeName="wmuEduPersonPrimaryAffiliation" AttributeNamespace="http://www.ja-sig.org/products/cas/"><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Undergraduate Student</saml1:AttributeValue></saml1:Attribute><saml1:Attribute AttributeName="mail" AttributeNamespace="http://www.ja-sig.org/products/cas/"><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">alan.o.alvarezmares@wmich.edu</saml1:AttributeValue></saml1:Attribute><saml1:Attribute AttributeName="authenticationMethod" AttributeNamespace="http://www.ja-sig.org/products/cas/"><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">LdapAuthenticationHandler</saml1:AttributeValue></saml1:Attribute></saml1:AttributeStatement></saml1:Assertion></saml1p:Response></SOAP-ENV:Body></SOAP-ENV:Envelope>
+A24A .|    |    |    |    |    |     [CurlRequest.php:84]
+A24A .|    |    |    |    |    <= true
+A24A .|    |    |    |    <= true
+A24A .|    |    |    |    server version: S1 [Client.php:2087]
+A24A .|    |    |    |    NameIdentifier found [Client.php:2130]
+A24A .|    |    |    |    user = `kgy3763` [Client.php:2132]
+A24A .|    |    |    |    => CAS_Client::_setSessionAttributes('<?xml version="1.0" encoding="UTF-8"?><SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Body><saml1p:Response InResponseTo="hige-iefdf-vm.wade.wmich.edu" IssueInstant="2018-03-29T20:15:50.819Z" MajorVersion="1" MinorVersion="1" ResponseID="_50cd0877d8e439ffbad833775edde509" xmlns:saml1p="urn:oasis:names:tc:SAML:1.0:protocol"><saml1p:Status><saml1p:StatusCode Value="saml1p:Success"/></saml1p:Status><saml1:Assertion AssertionID="_69d72ca6184164b6219cdca567170941" IssueInstant="2018-03-29T20:15:50.819Z" Issuer="localhost" MajorVersion="1" MinorVersion="1" xmlns:saml1="urn:oasis:names:tc:SAML:1.0:assertion"><saml1:Conditions NotBefore="2018-03-29T20:15:50.819Z" NotOnOrAfter="2018-03-29T20:16:20.819Z"><saml1:AudienceRestrictionCondition><saml1:Audience>http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php</saml1:Audience></saml1:AudienceRestrictionCondition></saml1:Conditions><saml1:AuthenticationStatement AuthenticationInstant="2018-03-29T20:15:49.745Z" AuthenticationMethod="urn:oasis:names:tc:SAML:1.0:am:unspecified"><saml1:Subject><saml1:NameIdentifier>kgy3763</saml1:NameIdentifier><saml1:SubjectConfirmation><saml1:ConfirmationMethod>urn:oasis:names:tc:SAML:1.0:cm:artifact</saml1:ConfirmationMethod></saml1:SubjectConfirmation></saml1:Subject></saml1:AuthenticationStatement><saml1:AttributeStatement><saml1:Subject><saml1:NameIdentifier>kgy3763</saml1:NameIdentifier><saml1:SubjectConfirmation><saml1:ConfirmationMethod>urn:oasis:names:tc:SAML:1.0:cm:artifact</saml1:ConfirmationMethod></saml1:SubjectConfirmation></saml1:Subject><saml1:Attribute AttributeName="uid" AttributeNamespace="http://www.ja-sig.org/products/cas/"><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">kgy3763</saml1:AttributeValue></saml1:Attribute><saml1:Attribute AttributeName="wmuEduPersonAffiliation" AttributeNamespace="http://www.ja-sig.org/products/cas/"><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Undergraduate Student</saml1:AttributeValue><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Student</saml1:AttributeValue><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Member</saml1:AttributeValue><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Affiliate</saml1:AttributeValue></saml1:Attribute><saml1:Attribute AttributeName="wmuEduPersonPrimaryAffiliation" AttributeNamespace="http://www.ja-sig.org/products/cas/"><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Undergraduate Student</saml1:AttributeValue></saml1:Attribute><saml1:Attribute AttributeName="mail" AttributeNamespace="http://www.ja-sig.org/products/cas/"><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">alan.o.alvarezmares@wmich.edu</saml1:AttributeValue></saml1:Attribute><saml1:Attribute AttributeName="authenticationMethod" AttributeNamespace="http://www.ja-sig.org/products/cas/"><saml1:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">LdapAuthenticationHandler</saml1:AttributeValue></saml1:Attribute></saml1:AttributeStatement></saml1:Assertion></saml1p:Response></SOAP-ENV:Body></SOAP-ENV:Envelope>') [Client.php:2134]
+A24A .|    |    |    |    |    * uid=kgy3763 [Client.php:2197]
+A24A .|    |    |    |    |    * wmuEduPersonAffiliation=Array
+A24A .|    |    |    |    |    (
+A24A .|    |    |    |    |        [0] => Undergraduate Student
+A24A .|    |    |    |    |        [1] => Student
+A24A .|    |    |    |    |        [2] => Member
+A24A .|    |    |    |    |        [3] => Affiliate
+A24A .|    |    |    |    |    )
+A24A .|    |    |    |    |     [Client.php:2194]
+A24A .|    |    |    |    |    * wmuEduPersonPrimaryAffiliation=Undergraduate Student [Client.php:2197]
+A24A .|    |    |    |    |    * mail=alan.o.alvarezmares@wmich.edu [Client.php:2197]
+A24A .|    |    |    |    |    * authenticationMethod=LdapAuthenticationHandler [Client.php:2197]
+A24A .|    |    |    |    <= true
+A24A .|    |    |    |    => CAS_Client::_renameSession('ST-26-1RpXaQowOa4rfAi4NjBa-cast1') [Client.php:2147]
+A24A .|    |    |    |    |    Killing session: r2gn15nl8oun0chhl9ltsv0s94 [Client.php:3682]
+A24A .|    |    |    |    |    Starting session: ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:3686]
+A24A .|    |    |    |    |    Restoring old session vars [Client.php:3689]
+A24A .|    |    |    |    <= ''
+A24A .|    |    |    <= true
+A24A .|    |    |    SAML 1.1 ticket `ST-26-1RpXaQowOa4rfAi4NjBa-cast1' was validated [Client.php:1482]
+A24A .|    |    |    => CAS_Client::getURL() [Client.php:1518]
+A24A .|    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+A24A .|    |    |    Prepare redirect to : http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:1518]
+A24A .|    |    |    => CAS_Client::getURL() [Client.php:1520]
+A24A .|    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+A24A .|    |    |    exit()
+A24A .|    |    |    -
+A24A .|    |    -
+A24A .|    -
+7152 .START (2018-03-29 20:15:50) phpCAS-1.3.5 ****************** [CAS.php:468]
+7152 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+7152 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+7152 .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+7152 .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+7152 .|    <= ''
+7152 .<= ''
+7152 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+7152 .<= ''
+7152 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+7152 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+7152 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+7152 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+7152 .|    |    |    |    user = `kgy3763' [Client.php:1622]
+7152 .|    |    |    <= true
+7152 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+7152 .|    |    <= true
+7152 .|    |    no need to authenticate [Client.php:1282]
+7152 .|    <= true
+7152 .<= ''
+C182 .START (2018-03-29 20:25:45) phpCAS-1.3.5 ****************** [CAS.php:468]
+C182 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+C182 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+C182 .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+C182 .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+C182 .|    <= ''
+C182 .<= ''
+C182 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+C182 .<= ''
+C182 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+C182 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+C182 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+C182 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+C182 .|    |    |    |    user = `kgy3763' [Client.php:1622]
+C182 .|    |    |    <= true
+C182 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+C182 .|    |    <= true
+C182 .|    |    no need to authenticate [Client.php:1282]
+C182 .|    <= true
+C182 .<= ''
+7D9F .START (2018-03-29 20:25:55) phpCAS-1.3.5 ****************** [CAS.php:468]
+7D9F .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+7D9F .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+7D9F .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+7D9F .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+7D9F .|    <= ''
+7D9F .<= ''
+7D9F .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+7D9F .<= ''
+7D9F .=> phpCAS::forceAuthentication() [example_simple.php:40]
+7D9F .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+7D9F .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+7D9F .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+7D9F .|    |    |    |    user = `kgy3763' [Client.php:1622]
+7D9F .|    |    |    <= true
+7D9F .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+7D9F .|    |    <= true
+7D9F .|    |    no need to authenticate [Client.php:1282]
+7D9F .|    <= true
+7D9F .<= ''
+F45D .START (2018-03-29 20:26:12) phpCAS-1.3.5 ****************** [CAS.php:468]
+F45D .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+F45D .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+F45D .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+F45D .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+F45D .|    <= ''
+F45D .<= ''
+F45D .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+F45D .<= ''
+F45D .=> phpCAS::forceAuthentication() [example_simple.php:40]
+F45D .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+F45D .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+F45D .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+F45D .|    |    |    |    user = `kgy3763' [Client.php:1622]
+F45D .|    |    |    <= true
+F45D .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+F45D .|    |    <= true
+F45D .|    |    no need to authenticate [Client.php:1282]
+F45D .|    <= true
+F45D .<= ''
+A58A .START (2018-03-29 20:26:14) phpCAS-1.3.5 ****************** [CAS.php:468]
+A58A .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+A58A .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+A58A .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+A58A .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+A58A .|    <= ''
+A58A .<= ''
+A58A .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+A58A .<= ''
+A58A .=> phpCAS::forceAuthentication() [example_simple.php:40]
+A58A .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+A58A .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+A58A .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+A58A .|    |    |    |    user = `kgy3763' [Client.php:1622]
+A58A .|    |    |    <= true
+A58A .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+A58A .|    |    <= true
+A58A .|    |    no need to authenticate [Client.php:1282]
+A58A .|    <= true
+A58A .<= ''
+7420 .START (2018-03-29 20:26:15) phpCAS-1.3.5 ****************** [CAS.php:468]
+7420 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+7420 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+7420 .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+7420 .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+7420 .|    <= ''
+7420 .<= ''
+7420 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+7420 .<= ''
+7420 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+7420 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+7420 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+7420 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+7420 .|    |    |    |    user = `kgy3763' [Client.php:1622]
+7420 .|    |    |    <= true
+7420 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+7420 .|    |    <= true
+7420 .|    |    no need to authenticate [Client.php:1282]
+7420 .|    <= true
+7420 .<= ''
+0B74 .START (2018-03-29 20:27:16) phpCAS-1.3.5 ****************** [CAS.php:468]
+0B74 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+0B74 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+0B74 .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+0B74 .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+0B74 .|    <= ''
+0B74 .<= ''
+0B74 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+0B74 .<= ''
+0B74 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+0B74 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+0B74 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+0B74 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+0B74 .|    |    |    |    user = `kgy3763' [Client.php:1622]
+0B74 .|    |    |    <= true
+0B74 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+0B74 .|    |    <= true
+0B74 .|    |    no need to authenticate [Client.php:1282]
+0B74 .|    <= true
+0B74 .<= ''
+DFCE .START (2018-03-29 20:27:18) phpCAS-1.3.5 ****************** [CAS.php:468]
+DFCE .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+DFCE .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+DFCE .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+DFCE .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+DFCE .|    <= ''
+DFCE .<= ''
+DFCE .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+DFCE .<= ''
+DFCE .=> phpCAS::forceAuthentication() [example_simple.php:40]
+DFCE .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+DFCE .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+DFCE .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+DFCE .|    |    |    |    user = `kgy3763' [Client.php:1622]
+DFCE .|    |    |    <= true
+DFCE .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+DFCE .|    |    <= true
+DFCE .|    |    no need to authenticate [Client.php:1282]
+DFCE .|    <= true
+DFCE .<= ''
+A917 .START (2018-03-29 20:27:19) phpCAS-1.3.5 ****************** [CAS.php:468]
+A917 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+A917 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+A917 .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+A917 .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+A917 .|    <= ''
+A917 .<= ''
+A917 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+A917 .<= ''
+A917 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+A917 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+A917 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+A917 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+A917 .|    |    |    |    user = `kgy3763' [Client.php:1622]
+A917 .|    |    |    <= true
+A917 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+A917 .|    |    <= true
+A917 .|    |    no need to authenticate [Client.php:1282]
+A917 .|    <= true
+A917 .<= ''
+1197 .START (2018-03-29 20:27:33) phpCAS-1.3.5 ****************** [CAS.php:468]
+1197 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+1197 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+1197 .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+1197 .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+1197 .|    <= ''
+1197 .<= ''
+1197 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+1197 .<= ''
+1197 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+1197 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+1197 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+1197 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+1197 .|    |    |    |    user = `kgy3763' [Client.php:1622]
+1197 .|    |    |    <= true
+1197 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+1197 .|    |    <= true
+1197 .|    |    no need to authenticate [Client.php:1282]
+1197 .|    <= true
+1197 .<= ''
+2153 .START (2018-03-29 20:28:07) phpCAS-1.3.5 ****************** [CAS.php:468]
+2153 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+2153 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+2153 .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+2153 .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+2153 .|    <= ''
+2153 .<= ''
+2153 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+2153 .<= ''
+2153 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+2153 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+2153 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+2153 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+2153 .|    |    |    |    user = `kgy3763' [Client.php:1622]
+2153 .|    |    |    <= true
+2153 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+2153 .|    |    <= true
+2153 .|    |    no need to authenticate [Client.php:1282]
+2153 .|    <= true
+2153 .<= ''
+0088 .START (2018-03-29 20:28:08) phpCAS-1.3.5 ****************** [CAS.php:468]
+0088 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+0088 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+0088 .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+0088 .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+0088 .|    <= ''
+0088 .<= ''
+0088 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+0088 .<= ''
+0088 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+0088 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+0088 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+0088 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+0088 .|    |    |    |    user = `kgy3763' [Client.php:1622]
+0088 .|    |    |    <= true
+0088 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+0088 .|    |    <= true
+0088 .|    |    no need to authenticate [Client.php:1282]
+0088 .|    <= true
+0088 .<= ''
+00AE .START (2018-03-29 20:30:36) phpCAS-1.3.5 ****************** [CAS.php:468]
+00AE .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+00AE .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+00AE .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+00AE .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+00AE .|    <= ''
+00AE .<= ''
+00AE .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+00AE .<= ''
+00AE .=> phpCAS::forceAuthentication() [example_simple.php:40]
+00AE .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+00AE .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+00AE .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+00AE .|    |    |    |    user = `kgy3763' [Client.php:1622]
+00AE .|    |    |    <= true
+00AE .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+00AE .|    |    <= true
+00AE .|    |    no need to authenticate [Client.php:1282]
+00AE .|    <= true
+00AE .<= ''
+0DFD .START (2018-03-29 20:32:05) phpCAS-1.3.5 ****************** [CAS.php:468]
+0DFD .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+0DFD .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+0DFD .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+0DFD .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+0DFD .|    <= ''
+0DFD .<= ''
+0DFD .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+0DFD .<= ''
+0DFD .=> phpCAS::forceAuthentication() [example_simple.php:40]
+0DFD .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+0DFD .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+0DFD .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+0DFD .|    |    |    |    user = `kgy3763' [Client.php:1622]
+0DFD .|    |    |    <= true
+0DFD .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+0DFD .|    |    <= true
+0DFD .|    |    no need to authenticate [Client.php:1282]
+0DFD .|    <= true
+0DFD .<= ''
+D022 .START (2018-03-29 20:42:42) phpCAS-1.3.5 ****************** [CAS.php:468]
+D022 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+D022 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+D022 .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+D022 .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+D022 .|    <= ''
+D022 .<= ''
+D022 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+D022 .<= ''
+D022 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+D022 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+D022 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+D022 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+D022 .|    |    |    |    user = `kgy3763' [Client.php:1622]
+D022 .|    |    |    <= true
+D022 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+D022 .|    |    <= true
+D022 .|    |    no need to authenticate [Client.php:1282]
+D022 .|    <= true
+D022 .<= ''
+B0D8 .START (2018-03-29 21:11:29) phpCAS-1.3.5 ****************** [CAS.php:468]
+B0D8 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+B0D8 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+B0D8 .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+B0D8 .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+B0D8 .|    <= ''
+B0D8 .<= ''
+B0D8 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+B0D8 .<= ''
+B0D8 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+B0D8 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+B0D8 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+B0D8 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+B0D8 .|    |    |    |    user = `kgy3763' [Client.php:1622]
+B0D8 .|    |    |    <= true
+B0D8 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+B0D8 .|    |    <= true
+B0D8 .|    |    no need to authenticate [Client.php:1282]
+B0D8 .|    <= true
+B0D8 .<= ''
+8B28 .START (2018-03-29 21:11:31) phpCAS-1.3.5 ****************** [CAS.php:468]
+8B28 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+8B28 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+8B28 .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+8B28 .|    |    Session is authenticated as: kgy3763 [Client.php:936]
+8B28 .|    <= ''
+8B28 .<= ''
+8B28 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+8B28 .<= ''
+8B28 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+8B28 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+8B28 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+8B28 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+8B28 .|    |    |    |    user = `kgy3763' [Client.php:1622]
+8B28 .|    |    |    <= true
+8B28 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1417]
+8B28 .|    |    <= true
+8B28 .|    |    no need to authenticate [Client.php:1282]
+8B28 .|    <= true
+8B28 .<= ''
+8B28 .=> phpCAS::logout() [example_simple.php:47]
+8B28 .|    => CAS_Client::logout(array ()) [CAS.php:1450]
+8B28 .|    |    Prepare redirect to : https://webauth.test.wmich.edu/logout [Client.php:1696]
+8B28 .|    |    Destroying session : ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:1698]
+8B28 .|    |    Session terminated [Client.php:1702]
+8B28 .|    |    exit()
+8B28 .|    |    -
+8B28 .|    -
+2747 .START (2018-03-29 21:11:34) phpCAS-1.3.5 ****************** [CAS.php:468]
+2747 .=> phpCAS::client('S1', 'webauth.test.wmich.edu', 443, '') [example_simple.php:28]
+2747 .|    => CAS_Client::__construct('S1', false, 'webauth.test.wmich.edu', 443, '', true) [CAS.php:360]
+2747 .|    |    Starting a new session ST-26-1RpXaQowOa4rfAi4NjBa-cast1 [Client.php:932]
+2747 .|    |    Session is not authenticated [Client.php:938]
+2747 .|    <= ''
+2747 .<= ''
+2747 .=> phpCAS::setCasServerCACert('/wamp64/www/IEFDF/include/phpCAS/webauth.test.wmich.edu.pem') [example_simple.php:32]
+2747 .<= ''
+2747 .=> phpCAS::forceAuthentication() [example_simple.php:40]
+2747 .|    => CAS_Client::forceAuthentication() [CAS.php:1098]
+2747 .|    |    => CAS_Client::isAuthenticated() [Client.php:1280]
+2747 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1393]
+2747 .|    |    |    |    no user found [Client.php:1635]
+2747 .|    |    |    <= false
+2747 .|    |    |    no ticket found [Client.php:1494]
+2747 .|    |    <= false
+2747 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1289]
+2747 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1656]
+2747 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+2747 .|    |    |    |    |    Final URI: http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php [Client.php:3548]
+2747 .|    |    |    |    <= 'http://hige-iefdf-vm.wade.wmich.edu/include/phpCAS/docs/examples/example_simple.php'
+2747 .|    |    |    <= 'https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php'
+2747 .|    |    |    Redirect to : https://webauth.test.wmich.edu/login?service=http%3A%2F%2Fhige-iefdf-vm.wade.wmich.edu%2Finclude%2FphpCAS%2Fdocs%2Fexamples%2Fexample_simple.php [Client.php:1663]
+2747 .|    |    |    exit()
+2747 .|    |    |    -
+2747 .|    |    -
+2747 .|    -

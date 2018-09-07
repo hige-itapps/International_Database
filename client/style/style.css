@@ -1,0 +1,298 @@
+/*Fonts*/
+@font-face{
+	font-family: 'Source Sans Pro';
+	src: url('../include/SourceSansPro-Regular.otf');
+}
+
+@font-face{
+	font-family: 'Open Sans';
+	src: url('../include/OpenSans-Regular.ttf');
+}
+
+/*set all default font to open sans*/
+*{
+	font-family: "Open Sans";
+}
+
+/*WMU LOGO*/
+.logo {
+	width: 25%;
+	padding: 0;
+}
+/*Example Budget image*/
+.exampleBudget{
+	width: 100%;
+	min-width: 1000px;
+	border: 3px solid blue;
+}
+#exampleBudgetHolder{
+	text-align: center;
+}
+
+/*App list filters*/
+.listInput{
+	width: 100%;
+}
+
+/*give some extra margin to title areas*/
+.title{
+	margin-top: 50px;
+	text-align: center;
+}
+
+/*table captions*/
+caption{
+	text-align: center!important; /*center captions*/
+	color: #6f6f6f!important; /*dark grey color*/
+}
+
+/*Color text for approved, denied, and pending*/
+.Approved{	color: #178500; /*darkish green*/}
+.Pending{	color: #867000; /*darkish yellow*/}
+.Denied{	color: #e00404; /*darkish red*/}
+.Hold{	color: #c517bf; /*dark pink*/}
+.Approved-background{	color: white; background-color: #17890a; /*darkish green*/}
+.Pending-background{	color: white; background-color: #897600; /*darkish yellow*/}
+.Denied-background{	color: white; background-color: #ed0909; /*darkish red*/}
+.Hold-background{	color: white; background-color: #c517bf; /*dark pink*/}
+
+/*format status bar*/
+.status-bar{
+	text-align: center;
+	padding: 10px;
+}
+
+/*Color warning text*/
+.warning{ color: red; font-weight: bold; /*bold font*/}
+
+/*Format page header*/
+.page-header{
+	margin: 0px 0px 20px 0px!important; /*no extra margin on header, only a bit underneath!*/
+	border: none!important; /*no border*/
+	padding-top: 30px;/*Pad down a bit!*/
+	/*background-color: #c48b04;/*gold background color*/
+	background-color: #442416; /*brown background color*/
+	box-shadow: 0px 0px 5px rgba(0,0,0,0.8);/*slight shadow under header*/
+	text-align: center; /*all header text centered by default*/
+}
+
+/*headings*/
+.page-header .HomeText{
+	font-family: "Source Sans Pro", Arial, Helvetica, sans-serif; /*Source Sans Pro for title*/
+
+	color: #ffffff; /*plain white*/
+	font-weight: bold; /*bold font*/
+	display: block; /*show underneath image*/
+	transition: all 300ms ease-out; /*cool transition on hover*/
+}
+/*modify secondary hometext to be smaller*/
+h2.HomeText{
+	font-size: 1.5em;
+}
+
+/*home buttons*/
+#logoutSub, #HomeLink{
+	margin-top: 30px; /*pad it down a bit*/
+	font-size: 26px; /*larger text*/
+	font-weight: bold; /*bold font*/
+
+	color: #000000; /*black text*/
+	background-color: #fcc30f; /*yellow button color*/
+	background-image: none;
+}
+#logoutSub:hover, #HomeLink:hover{
+	background-color: #ffa600; /*yellow button color*/
+}
+
+/*link to main content -- hide it visually, but make it visible for screen readers*/
+#mainContentLink{
+	position:absolute;
+	left:-10000px;
+	top:auto;
+	width:1px;
+	height:1px;
+	overflow:hidden;
+}
+
+/*format button groups*/
+.buttons-group{
+	text-align: center;
+}
+.bottom-buttons{
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+/*Format admin page*/
+#adminCtrl h2{
+	margin-top: 100px;
+}
+#adminCtrl form{
+	text-align: center;
+}
+#adminCtrl table{
+	margin: auto;
+	width: auto;
+}
+#adminCtrl caption{
+	font-size: 2em;
+}
+
+#applicantTableButton, #applicationTableButton{	
+	margin-top: 60px;
+}
+#applicationSummaryDownload{
+	margin-top: 60px;
+	margin-bottom: 60px;
+}
+
+/*Format forms*/
+#applicationForm, #reportForm{
+	margin: 0 5%; /*5% margin on left and right side*/
+}
+
+/*bootstrap rows*/
+#applicationForm div.row, #reportForm div.row{
+	margin: 10px 0; /*10px gap above and below rows*/
+}
+
+/*headings*/
+h1, h2, h3, h4, h5{
+	font-weight: bold; /*make them bold*/
+	text-align: center;
+}
+
+/*input text boxes*/
+#applicationForm input[type="text"], #applicationForm input[type="email"], #reportForm input[type="text"], #reportForm input[type="email"]{
+	text-overflow: ellipsis; /*show '...' if text is too long for field*/
+}
+
+/*checkbox labels*/
+#applicationForm div.checkbox label, #reportForm div.checkbox label{
+	word-wrap: break-word; /*prevent them from overlapping other elements*/
+}
+
+#budgetButtons{
+	text-align: center;
+}
+
+/*Format budget list*/
+
+#budgetList .form-group{
+	margin-left: 0; /*remove negative margin*/
+	margin-right: 0;
+}
+#budgetList li div{
+	margin: 0;
+	padding: 0px 5px;
+}
+#budgetList .removeBudget{
+	display: block;
+	margin: auto;
+}
+
+/*format error help blocks*/
+.help-block{
+	color: red!important;
+}
+
+/*By default, have alerts be fixed at the bottom of the screen. Increase the z-index a bit to render in front of some other elements that might otherwise get in the way*/
+.alert{
+	position: fixed;
+	bottom: 0;
+	min-width: 80%;
+    left: 50%;
+    transform: translateX(-50%);
+	z-index: 2;
+	transition: visibility 0s linear 0s, opacity 150ms; /*turn visibility on immediately at first*/
+}
+.alert button{
+	opacity: 1;
+	font-size: 2em;
+}
+.hideAlert{
+	opacity: 0!important;
+	visibility: hidden;
+	transition: visibility 0s linear 150ms, opacity 150ms; /*turn visibility off slowly after fade-out*/
+}
+
+/*hide elements that have the hidden tag*/
+[hidden] {
+	display: none !important;
+}
+
+/*style remove-file links*/
+.remove-file{
+	color: red!important;
+}
+
+/*Style the divs that hold the upload buttons*/
+.upload-button-holder{
+	text-align: center;
+}
+
+/*Style the uploaded files lists*/
+.uploadedList{
+	text-align: center;
+}
+.uploadedList ul{
+	display: inline-block;
+	text-align: left;
+	padding: 0;
+}
+
+/*style horizontal rules*/
+hr{
+	border-color:#a0a0a0!important; /*darker grey than default*/
+}
+
+/*style the site-error div that appears when the browser it detected as outdated*/
+#site-error{
+    width: 100%;
+    background-color: #fc3737;
+    color: #ffffff;
+    text-align: center;
+	font-size: 20px;
+	padding: 15px 0px;
+}
+
+/*format the home page content*/
+#homeCtrl{
+	text-align: center;
+}
+
+/*format the page list on the home page*/
+#pageList{
+	margin: 25px 0px;
+}
+#pageList li{
+	text-align: left;
+	padding-top: 5px;
+}
+
+/*format the previously sent emails list*/
+#previousEmailsHolder{
+	text-align: center;
+}
+#previousEmails h5{
+	font-weight: bold;
+}
+#previousEmails p{
+	text-align: left;
+	white-space: pre-line; /*render newlines*/
+}
+#previousEmails li{
+	padding: 20px 15px;
+}
+#previousEmails li:not(:last-child){ /*exclude last li*/
+	border-bottom: 3px dotted;
+}
+
+/*format staff notes*/
+#staffNotesHolder button{
+	margin: auto;
+    display: block;
+}
+#staffNotes{
+	background-color: #f0f8ff;
+}

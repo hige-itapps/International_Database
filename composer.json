@@ -1,0 +1,9 @@
+{
+    "require-dev": {
+        "phpunit/phpunit": "7",
+        "phpunit/dbunit": "4"
+    },
+    "require": {
+        "phpab/phpab": "^0.1.0"
+    }
+}

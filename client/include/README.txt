@@ -1,0 +1,1 @@
+Files here are to be included in other pages. For example, header.php is used to keep the same header throughout every page on the site.

@@ -2,6 +2,13 @@
 	/*Get DB connection*/
 	//include_once(dirname(__FILE__) . "/../../functions/database.php");
 	//$conn = connection();
+
+	/*Get DB connection*/
+	include_once(dirname(__FILE__) . "/../../server/database.php");
+	$database = new DatabaseHelper();
+
+	$profiles = $database->getAllUsersSummaries();
+	$database->close();
 ?>
 
 
@@ -22,11 +29,9 @@
 		<?php include '../include/head_content.html'; ?>
 
 		<!-- Set values from PHP on startup, accessible by the AngularJS Script -->
-		<!-- <script type="text/javascript">
-			var scope_applications = <?php echo json_encode($apps); ?>;
-			var scope_appCycles = <?php echo json_encode($appCycles); ?>;
-			var scope_isAllowedToSeeApplications = <?php echo json_encode($isAllowedToSeeApplications); ?>;
-		</script> -->
+		<script type="text/javascript">
+			var scope_profiles = <?php echo json_encode($profiles); ?>;
+		</script>
 		<!-- AngularJS Script -->
 		<script type="module" src="profile_list.js"></script>
 	</head>
@@ -91,46 +96,21 @@
 						</div>
 					</div>
 					<div class="col-md-1"></div>
-				</div>
-				<div class="row">
-					<div class="col-md-1"></div>
-					<div class="col-md-10">
-						<table class="table table-striped" id="appTable">
-							<caption>Selected Applications:</caption>
-							<thead>
-								<tr>
-									<th>ID</th>
-									<th>Name</th>
-									<th>Title</th>
-									<th>Cycle</th>
-									<th>Date Submitted</th>
-									<th>Status</th>
-									<th>Approval</th>
-									<th>Application Link</th>
-									<th>Final Report Link</th>
-									<th>Final Report Status</th>
-								</tr>
-							</thead>
-							<tbody> -->
-								<!-- Apply all filters to the list based on: dates, cycles, name, and status -->
-								<!-- <tr ng-repeat="application in (filteredApplications = (applications | dateFilter:filterFrom:filterTo | filter: (!!filterCycle || undefined)&&{cycle: filterCycle} | filter: {name: filterName, status: filterStatus}))">
-									<td>{{ application.id }}</td>
-									<td>{{ application.name }}</td>
-									<td>{{ application.title }}</td>
-									<td>{{ application.cycle }}</td>
-									<td>{{ application.dateSubmitted | date: 'MM/dd/yyyy'}}</td>
-									<td class="{{application.status}}">{{ application.status }}</td>
-									<td>{{application.deptChairApproval}}</td>
-									<td><a href="../application/application.php?id={{application.id}}">Application</a></td>
-									<td ng-if="application.FinalReport"><a href="../final_report/final_report.php?id={{application.id}}">Final Report</a></td>					<td class="{{application.FinalReport.status}}" ng-if="application.FinalReport">{{application.FinalReport.status}}</td>
-										<td ng-if="application.FinalReportCreate"><a href="../final_report/final_report.php?id={{application.id}}">Create Final Report</a></td>	<td ng-if="application.FinalReportCreate">N/A</td>
-										<td ng-if="!application.FinalReport && !application.FinalReportCreate">N/A</td>										<td ng-if="!application.FinalReport && !application.FinalReportCreate">N/A</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<div class="col-md-1"></div>
 				</div> -->
+				<div class="row">
+					<div class="col-md-2">
+						<div class="row" ng-repeat="profile in profiles">
+						<h2>{{profile.firstname}} {{profile.lastname}}</h2>
+						<hr>
+						<h3>{{profile.affiliations}}</h3>
+						<h3>{{profile.email}}</h3>
+						<h3>{{profile.phone}}</h3>
+						<h3>{{profile.social_link}}</h3>
+						</div>
+					</div>
+					<div class="col-md-10">
+					</div>
+				</div>
 
 				<div class="alert alert-{{alertType}} alert-dismissible" ng-class="{hideAlert: !alertMessage}">
 					<button type="button" title="Close this alert." class="close" aria-label="Close" ng-click="removeAlert()"><span aria-hidden="true">&times;</span></button>{{alertMessage}}

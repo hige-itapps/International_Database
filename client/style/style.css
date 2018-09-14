@@ -25,14 +25,6 @@
 	min-width: 1000px;
 	border: 3px solid blue;
 }
-#exampleBudgetHolder{
-	text-align: center;
-}
-
-/*App list filters*/
-.listInput{
-	width: 100%;
-}
 
 /*give some extra margin to title areas*/
 .title{
@@ -44,22 +36,6 @@
 caption{
 	text-align: center!important; /*center captions*/
 	color: #6f6f6f!important; /*dark grey color*/
-}
-
-/*Color text for approved, denied, and pending*/
-.Approved{	color: #178500; /*darkish green*/}
-.Pending{	color: #867000; /*darkish yellow*/}
-.Denied{	color: #e00404; /*darkish red*/}
-.Hold{	color: #c517bf; /*dark pink*/}
-.Approved-background{	color: white; background-color: #17890a; /*darkish green*/}
-.Pending-background{	color: white; background-color: #897600; /*darkish yellow*/}
-.Denied-background{	color: white; background-color: #ed0909; /*darkish red*/}
-.Hold-background{	color: white; background-color: #c517bf; /*dark pink*/}
-
-/*format status bar*/
-.status-bar{
-	text-align: center;
-	padding: 10px;
 }
 
 /*Color warning text*/
@@ -138,57 +114,10 @@ h2.HomeText{
 	font-size: 2em;
 }
 
-#applicantTableButton, #applicationTableButton{	
-	margin-top: 60px;
-}
-#applicationSummaryDownload{
-	margin-top: 60px;
-	margin-bottom: 60px;
-}
-
-/*Format forms*/
-#applicationForm, #reportForm{
-	margin: 0 5%; /*5% margin on left and right side*/
-}
-
-/*bootstrap rows*/
-#applicationForm div.row, #reportForm div.row{
-	margin: 10px 0; /*10px gap above and below rows*/
-}
-
 /*headings*/
 h1, h2, h3, h4, h5{
 	font-weight: bold; /*make them bold*/
 	text-align: center;
-}
-
-/*input text boxes*/
-#applicationForm input[type="text"], #applicationForm input[type="email"], #reportForm input[type="text"], #reportForm input[type="email"]{
-	text-overflow: ellipsis; /*show '...' if text is too long for field*/
-}
-
-/*checkbox labels*/
-#applicationForm div.checkbox label, #reportForm div.checkbox label{
-	word-wrap: break-word; /*prevent them from overlapping other elements*/
-}
-
-#budgetButtons{
-	text-align: center;
-}
-
-/*Format budget list*/
-
-#budgetList .form-group{
-	margin-left: 0; /*remove negative margin*/
-	margin-right: 0;
-}
-#budgetList li div{
-	margin: 0;
-	padding: 0px 5px;
-}
-#budgetList .removeBudget{
-	display: block;
-	margin: auto;
 }
 
 /*format error help blocks*/
@@ -221,26 +150,6 @@ h1, h2, h3, h4, h5{
 	display: none !important;
 }
 
-/*style remove-file links*/
-.remove-file{
-	color: red!important;
-}
-
-/*Style the divs that hold the upload buttons*/
-.upload-button-holder{
-	text-align: center;
-}
-
-/*Style the uploaded files lists*/
-.uploadedList{
-	text-align: center;
-}
-.uploadedList ul{
-	display: inline-block;
-	text-align: left;
-	padding: 0;
-}
-
 /*style horizontal rules*/
 hr{
 	border-color:#a0a0a0!important; /*darker grey than default*/
@@ -270,29 +179,47 @@ hr{
 	padding-top: 5px;
 }
 
-/*format the previously sent emails list*/
-#previousEmailsHolder{
-	text-align: center;
-}
-#previousEmails h5{
-	font-weight: bold;
-}
-#previousEmails p{
-	text-align: left;
-	white-space: pre-line; /*render newlines*/
-}
-#previousEmails li{
-	padding: 20px 15px;
-}
-#previousEmails li:not(:last-child){ /*exclude last li*/
-	border-bottom: 3px dotted;
+
+/*Format user profiles*/
+.profile-summary{
+	border: solid 2px #a0a0a0;
+	word-wrap: break-word;
 }
 
-/*format staff notes*/
-#staffNotesHolder button{
-	margin: auto;
-    display: block;
+.profile-summary h2{
+	font-weight: bold;
 }
-#staffNotes{
-	background-color: #f0f8ff;
+
+.profile-summary h3{
+	font-size: 1.2em;
+}
+
+.profile h1, .profile h2, .profile h3, .profile h4, .profile h5{
+	text-align: left;
+}
+
+.profile-info h2{
+	font-size: 1.7em;
+}
+
+.profile-info h3{
+	font-size: 1.2em;
+	margin-bottom: 0;
+}
+
+.profile-info li{
+	font-size: 1.2em;
+	display: inline;
+}
+.profile-info li:after {
+	content: ", ";
+}
+.profile-info li:last-child:after {
+    content: "";
+}
+.profile-info li.languages, .profile li.country-experience{
+	display: list-item;
+}
+.profile-info li.languages:after, .profile li.country-experience:after{
+	content: "";
 }

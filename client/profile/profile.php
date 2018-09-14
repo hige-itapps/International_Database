@@ -1,85 +1,24 @@
 <?php
 	/*Get DB connection*/
-	// include_once(dirname(__FILE__) . "/../../functions/database.php");
-	// $conn = connection();
-	
-	// /*Cycle functions*/
-	// include_once(dirname(__FILE__) . "/../../functions/cycles.php");
-	
-	// /*Document functions*/
-	// include_once(dirname(__FILE__) . "/../../functions/documents.php");
-	
-	/*get initial character limits for text fields*/
-	// $maxName = $appCharMax[array_search('Name', array_column($appCharMax, 0))][1]; //name char limit
-	// $maxDepartment = $appCharMax[array_search('Department', array_column($appCharMax, 0))][1]; //department char limit
-	// $maxTitle = $appCharMax[array_search('Title', array_column($appCharMax, 0))][1]; //title char limit
-	// $maxDestination = $appCharMax[array_search('Destination', array_column($appCharMax, 0))][1]; //destination char limit
-	// $maxOtherEvent = $appCharMax[array_search('IsOtherEventText', array_column($appCharMax, 0))][1]; //other event text char limit
-	// $maxOtherFunding = $appCharMax[array_search('OtherFunding', array_column($appCharMax, 0))][1]; //other funding char limit
-	// $maxProposalSummary = $appCharMax[array_search('ProposalSummary', array_column($appCharMax, 0))][1]; //proposal summary char limit
-	// $maxDeptChairApproval = $appCharMax[array_search('DepartmentChairSignature', array_column($appCharMax, 0))][1];//signature char limit
-	
-	// $maxBudgetDetails = $appBudgetCharMax[array_search('Details', array_column($appBudgetCharMax, 0))][1]; //budget details char limit
-	
-	
-	/*Initialize all user permissions to false*/
-	// $isCreating = false; //user is an applicant initially creating application
-	// $isReviewing = false; //user is an applicant reviewing their already created application
-	// $isAdmin = false; //user is an administrator
-	// $isCommittee = false; //user is a committee member
-	// $isChair = false; //user is the associated department chair
-	// $isChairReviewing = false; //user is the associated department chair, but cannot do anything (just for reviewing purposes)
-	// $isApprover = false; //user is an application approver (director)
-	
-	// $permissionSet = false; //boolean set to true when a permission has been set- used to force only 1 permission at most
-	
-	/*Get all user permissions. THESE ARE TREATED AS IF THEY ARE MUTUALLY EXCLUSIVE; ONLY ONE CAN BE TRUE!
-	For everything besides application creation, the app ID MUST BE SET*/
-	// if(isset($_GET["id"]))
-	// {
-	// 	if($permissionSet = $isAdmin = isAdministrator($conn, $CASbroncoNetID)){} //admin check
-	// 	else if($permissionSet = $isApprover = isApplicationApprover($conn, $CASbroncoNetID)){} //application approver check
-	// 	else if($permissionSet = $isCommittee = isCommitteeMember($conn, $CASbroncoNetID)){} //committee member check
-	// 	else if($permissionSet = $isChair = isUserAllowedToSignApplication($conn, $CASemail, $_GET['id'], $CASbroncoNetID)){} //department chair check
-	// 	else if($permissionSet = $isChairReviewing = isUserDepartmentChair($conn, $CASemail, $_GET['id'], $CASbroncoNetID)){} //department chair reviewing check
-	// 	else if($permissionSet = $isReviewing = doesUserOwnApplication($conn, $CASbroncoNetID, $_GET['id'])){} //applicant reviewing check
-	// }
-	// if(!$permissionSet && !isset($_GET["id"])) //applicant creating check. Note- if the app id is set, then by default the application cannot be created
-	// {
-	// 	$permissionSet = $isCreating = isUserAllowedToCreateApplication($conn, $CASbroncoNetID, true); //applicant is creating an application (check latest date possible)
-	// }
+	include_once(dirname(__FILE__) . "/../../server/database.php");
 
-	// /*Verify that user is allowed to render application*/
-	// if($permissionSet)
-	// {	
-	// 	/*Initialize variables if application has already been created*/
-	// 	if(!$isCreating)
-	// 	{
-	// 		$appID = $_GET["id"];
-			
-	// 		$app = getApplication($conn, $appID); //get application Data
-	// 		$submitDate = DateTime::createFromFormat('Y-m-d', $app->dateSubmitted);
-	// 		$appFiles = getFileNames($appID);
-	// 		$appEmails = getEmails($conn, $appID);
+	$profile = null; //profile variable will be set if trying to load one
+	$isCreating = false; //variable set to true if creating a new profile
+	$loaded_profile = false; //check if profile was loaded correctly
 
-	// 		$thisCycle = getCycleName($submitDate, false, true);
-	// 		$nextCycle = getCycleName($submitDate, true, true);
+	if(isset($_GET["id"])) //if ID is set, get the full user profile
+	{
+		$database = new DatabaseHelper();
+		$profile = $database->getUserProfile($_GET["id"]);
+		$database->close();
 
-	// 		if($isAdmin || $isApprover || $isCommittee) //if hige staff, then retrieve staff notes
-	// 		{
-	// 			$staffNotes = getStaffNotes($conn, $appID);
-	// 		}
-	// 	}
-	// 	else
-	// 	{
-	// 		$thisCycle = getCycleName($currentDate, false, true);
-	// 		$nextCycle = getCycleName($currentDate, true, true); 
-	// 	}
+		if ($profile) {$loaded_profile = true;}
+	}
+	else if(isset($_GET["create"]))
+	{
+		$isCreating = true;
+	}
 ?>
-
-
-
-
 
 
 
@@ -95,11 +34,10 @@
 		<?php include '../include/head_content.html'; ?>
 
 		<!-- Set values from PHP on startup, accessible by the AngularJS Script -->
-		<!-- <script type="text/javascript">
-			var scope_currentDate = <?php echo json_encode($currentDate->format('Y-m-d')); ?>;
-			var scope_thisCycle = <?php echo json_encode($thisCycle); ?>;
-			var scope_nextCycle = <?php echo json_encode($nextCycle); ?>;
-		</script> -->
+		<script type="text/javascript">
+			var scope_profile = <?php echo json_encode($profile); ?>;
+			var scope_isCreating = <?php echo json_encode($isCreating); ?>;
+		</script>
 		<!-- AngularJS Script -->
 		<script type="module" src="profile.js"></script>
 	</head>
@@ -115,43 +53,106 @@
 		<?php include '../include/noscript.html'; ?> <!-- show site error if javascript is disabled -->
 
 			<!--AngularJS Controller-->
-			<div class="container-fluid" ng-controller="appCtrl" id="appCtrl">
+			<div class="container-fluid" ng-controller="profileCtrl" id="profileCtrl">
 
-				<h1 ng-cloak ng-show="!isCreating" class="{{appStatus}}-background status-bar">Application Status: {{appStatus}}</h1>
-
-				<div ng-cloak ng-show="isAdmin || isAdminUpdating" class="buttons-group"> 
+				<!-- <div ng-cloak ng-show="isAdmin || isAdminUpdating" class="buttons-group"> 
 					<button type="button" ng-click="toggleAdminUpdate()" class="btn btn-warning">TURN {{isAdminUpdating ? "OFF" : "ON"}} ADMIN UPDATE MODE</button>
 					<button type="button" ng-click="populateForm(null)" class="btn btn-warning">RELOAD SAVED DATA</button>
 					<button type="button" ng-click="insertApplication()" class="btn btn-warning">SUBMIT CHANGES</button>
-				</div>
+				</div> -->
 
 					<!-- application form -->
 				<form enctype="multipart/form-data" class="form-horizontal" id="applicationForm" name="applicationForm" ng-submit="submit()">
 
 					
-
 					<div class="row">
-						<h1 class="title">APPLICATION:</h1>
+						<h1 class="title">{{isCreating ? "Create " : ""}}Profile:</h1>
 					</div>
-					
-					
-					<div class="row">
-					<!--NAME-->
-						<!-- <div class="col-md-5">
+					<div class="row profile">
+						<div class="col-md-1"></div>
+						<div class="col-md-4 profile-summary" ng-if="!isCreating">
+							<h2>{{profile.firstname}} {{profile.lastname}}</h2>
+							<hr>
+							<h3>{{profile.affiliations}}</h3>
+							<h3>{{profile.email}}</h3>
+							<h3 ng-if="profile.phone">{{profile.phone}}</h3>
+							<h3 ng-if="profile.social_link">{{profile.social_link}}</h3>
+						</div>
+						<div class="col-md-4 profile-summary" ng-if="isCreating">
 							<div class="form-group">
-								<label for="name">Name{{isCreating || isAdminUpdating ? " (Required) ("+(maxName-formData.name.length)+" characters remaining)" : ""}}:</label>
-								<input type="text" class="form-control" maxlength="{{maxName}}" ng-model="formData.name" ng-disabled="appFieldsDisabled" id="name" name="name" placeholder="Enter Name" />
-								<span class="help-block" ng-show="errors.name" aria-live="polite">{{ errors.name }}</span> 
+								<label for="firstName">First Name (Required) ({{(maxFirstName-formData.firstName.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxFirstName}}" ng-model="formData.firstName" id="firstName" name="firstName" placeholder="Enter First Name" />
+								<span class="help-block" ng-show="errors.firstName" aria-live="polite">{{ errors.firstName }}</span> 
 							</div>
-						</div> -->
-					<!--EMAIL-->
-						<!-- <div class="col-md-7">
 							<div class="form-group">
-								<label for="email">Email Address{{isCreating || isAdminUpdating ? " (Required)" : ""}}:</label>
-								<input type="email" class="form-control" ng-model="formData.email" ng-disabled="appFieldsDisabled" id="email" name="email" placeholder="Enter Email Address" />
+								<label for="lastName">Last Name (Required) ({{(maxLastName-formData.lastName.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxLastName}}" ng-model="formData.lastName" id="lastName" name="lastName" placeholder="Enter Last Name" />
+								<span class="help-block" ng-show="errors.lastName" aria-live="polite">{{ errors.lastName }}</span> 
+							</div>
+							<hr>
+							<div class="form-group">
+								<label for="affiliations">Affiliations (Required) ({{(maxAffiliations-formData.affiliations.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxAffiliations}}" ng-model="formData.affiliations" id="affiliations" name="affiliations" placeholder="Enter Affiliations" />
+								<span class="help-block" ng-show="errors.affiliations" aria-live="polite">{{ errors.affiliations }}</span> 
+							</div>
+							<div class="form-group">
+								<label for="email">Email Address (Required) ({{(maxEmail-formData.email.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxEmail}}" ng-model="formData.email" id="email" name="email" placeholder="Enter Email Address" />
 								<span class="help-block" ng-show="errors.email" aria-live="polite">{{ errors.email }}</span> 
 							</div>
-						</div> -->
+							<div class="form-group">
+								<label for="phone">Phone Number ({{(maxPhone-formData.phone.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxPhone}}" ng-model="formData.phone" id="phone" name="phone" placeholder="Enter Phone Number" />
+								<span class="help-block" ng-show="errors.phone" aria-live="polite">{{ errors.phone }}</span> 
+							</div>
+							<div class="form-group">
+								<label for="socialLink">Social Link ({{(maxSocialLink-formData.socialLink.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxSocialLink}}" ng-model="formData.socialLink" id="socialLink" name="socialLink" placeholder="Enter Social Link" />
+								<span class="help-block" ng-show="errors.socialLink" aria-live="polite">{{ errors.socialLink }}</span> 
+							</div>
+						</div>
+						<div class="col-md-6 profile-info">
+							<div>
+							<h2>Issues of Expertise</h2>
+								<ul ng-if="!isCreating">
+									<li ng-repeat="issue in profile.issues_expertise">{{issue}}</li>
+									<li ng-if="profile.issues_expertise_other">{{profile.issues_expertise_other}}</li>
+								</ul>
+							</div>
+							<div>
+								<h2>Countries of Expertise</h2>
+								<ul ng-if="!isCreating">
+									<li ng-repeat="country in profile.countries_expertise">{{country}}</li>
+									<li ng-if="profile.countries_expertise_other">{{profile.countries_expertise_other}}</li>
+								</ul>
+							</div>
+							<div>
+								<h2>Regions of Expertise</h2>
+								<ul ng-if="!isCreating">
+									<li ng-repeat="region in profile.regions_expertise">{{region}}</li>
+									<li ng-if="profile.regions_expertise_other">{{profile.regions_expertise_other}}</li>
+								</ul>
+							</div>
+							<div>
+								<h2>Languages</h2>
+								<ul ng-if="!isCreating">
+									<li class="languages" ng-repeat="language in profile.languages">{{language.language}} -- {{language.proficiency}}</li>
+								</ul>
+							</div>
+							<div>
+								<h2>Country Experience</h2>
+								<ul ng-if="!isCreating">
+									<li class="country-experience" ng-repeat="(country, experiences) in profile.countries_experience">
+										<h3>{{country}}</h3>
+										<ul>
+											<li ng-repeat="experience in experiences.experience">{{experience}}</li>
+											<li ng-if="experiences.other_experience">{{experiences.other_experience}}</li>
+										</ul>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="col-md-1"></div>
 					</div>
 
 
@@ -172,9 +173,3 @@
 		</div>	
 	</body>
 </html>
-<?php
-	// }else{
-	// 	include '../include/permission_denied.html';
-	// }
-	// $conn = null; //close connection
-?>

@@ -2,22 +2,29 @@
 	/*Get DB connection*/
 	include_once(dirname(__FILE__) . "/../../server/database.php");
 
+	$database = new DatabaseHelper();
+
 	$profile = null; //profile variable will be set if trying to load one
 	$isCreating = false; //variable set to true if creating a new profile
 	$loaded_profile = false; //check if profile was loaded correctly
+	$issues = []; //fill with issues if creating profile
+	$countries = []; //fill with countries if creating profile
+	$regions = []; //fill with regions if creating profile
 
 	if(isset($_GET["id"])) //if ID is set, get the full user profile
 	{
-		$database = new DatabaseHelper();
 		$profile = $database->getUserProfile($_GET["id"]);
-		$database->close();
-
 		if ($profile) {$loaded_profile = true;}
 	}
 	else if(isset($_GET["create"]))
 	{
 		$isCreating = true;
+		$issues = $database->getIssues();
+		$countries = $database->getCountries();
+		$regions = $database->getRegions();
 	}
+
+	$database->close();
 ?>
 
 
@@ -37,6 +44,9 @@
 		<script type="text/javascript">
 			var scope_profile = <?php echo json_encode($profile); ?>;
 			var scope_isCreating = <?php echo json_encode($isCreating); ?>;
+			var scope_issues = <?php echo json_encode($issues); ?>;
+			var scope_countries = <?php echo json_encode($countries); ?>;
+			var scope_regions = <?php echo json_encode($regions); ?>;
 		</script>
 		<!-- AngularJS Script -->
 		<script type="module" src="profile.js"></script>
@@ -61,8 +71,8 @@
 					<button type="button" ng-click="insertApplication()" class="btn btn-warning">SUBMIT CHANGES</button>
 				</div> -->
 
-					<!-- application form -->
-				<form enctype="multipart/form-data" class="form-horizontal" id="applicationForm" name="applicationForm" ng-submit="submit()">
+					<!-- profile form -->
+				<form enctype="multipart/form-data" class="form-horizontal" id="profileForm" name="profileForm" ng-submit="submit()">
 
 					
 					<div class="row">
@@ -118,6 +128,12 @@
 									<li ng-repeat="issue in profile.issues_expertise">{{issue}}</li>
 									<li ng-if="profile.issues_expertise_other">{{profile.issues_expertise_other}}</li>
 								</ul>
+								<div ng-if="isCreating" class="form-group">
+									<label for="issues-expertise">Issues of Expertise (select one):</label>
+									<select class="form-control" id="issues-expertise" name="issues-expertise">
+										<option ng-repeat="issue in issues">{{issue}}</option>
+									</select>
+								</div>
 							</div>
 							<div>
 								<h2>Countries of Expertise</h2>
@@ -125,6 +141,12 @@
 									<li ng-repeat="country in profile.countries_expertise">{{country}}</li>
 									<li ng-if="profile.countries_expertise_other">{{profile.countries_expertise_other}}</li>
 								</ul>
+								<div ng-if="isCreating" class="form-group">
+									<label for="countries-expertise">Countries of Expertise (select one):</label>
+									<select class="form-control" id="countries-expertise" name="countries-expertise">
+										<option ng-repeat="country in countries">{{country}}</option>
+									</select>
+								</div>
 							</div>
 							<div>
 								<h2>Regions of Expertise</h2>
@@ -132,6 +154,12 @@
 									<li ng-repeat="region in profile.regions_expertise">{{region}}</li>
 									<li ng-if="profile.regions_expertise_other">{{profile.regions_expertise_other}}</li>
 								</ul>
+								<div ng-if="isCreating" class="form-group">
+									<label for="regions-expertise">Regions of Expertise (select one):</label>
+									<select class="form-control" id="regions-expertise" name="regions-expertise">
+										<option ng-repeat="region in regions">{{region}}</option>
+									</select>
+								</div>
 							</div>
 							<div>
 								<h2>Languages</h2>

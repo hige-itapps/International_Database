@@ -223,3 +223,8 @@ hr{
 .profile-info li.languages:after, .profile li.country-experience:after{
 	content: "";
 }
+
+.profile select{
+	width: auto;
+    display: inline;
+}

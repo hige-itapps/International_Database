@@ -40,13 +40,6 @@ if(!class_exists('DatabaseHelper')){
             return $this->sql->fetchAll(PDO::FETCH_ASSOC); //return names as keys
         }
 
-        /*public function getAllUsersProfiles()
-        {
-            $this->sql = $this->conn->prepare("Select * FROM users");
-            $this->sql->execute();
-            $res = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save basic user data
-        }*/
-
         public function getUserSummary($userID)
         {
             $this->sql = $this->conn->prepare("Select * FROM users WHERE id = :id LIMIT 1");
@@ -123,6 +116,29 @@ if(!class_exists('DatabaseHelper')){
             }
 
             return $user;
+        }
+
+        /* For Static Data */
+
+        public function getIssues()
+        {
+            $this->sql = $this->conn->prepare("Select issue FROM issues");
+			$this->sql->execute();
+            return $this->sql->fetchAll(PDO::FETCH_COLUMN); //return names only
+        }
+
+        public function getCountries()
+        {
+            $this->sql = $this->conn->prepare("Select country_name FROM countries");
+			$this->sql->execute();
+            return $this->sql->fetchAll(PDO::FETCH_COLUMN); //return names only
+        }
+
+        public function getRegions()
+        {
+            $this->sql = $this->conn->prepare("Select region FROM regions");
+			$this->sql->execute();
+            return $this->sql->fetchAll(PDO::FETCH_COLUMN); //return names only
         }
 
 

@@ -207,24 +207,24 @@ hr{
 	margin-bottom: 0;
 }
 
-.profile-info li{
+.profile-info ul.compactList li{
 	font-size: 1.2em;
 	display: inline;
 }
-.profile-info li:after {
+.profile-info ul.compactList li:after {
 	content: ", ";
 }
-.profile-info li:last-child:after {
-    content: "";
-}
-.profile-info li.languages, .profile li.country-experience{
-	display: list-item;
-}
-.profile-info li.languages:after, .profile li.country-experience:after{
+.profile-info ul.compactList li:last-child:after {
 	content: "";
 }
 
 .profile select{
 	width: auto;
     display: inline;
+}
+
+
+/*Delete button*/
+.delete-button{
+	color: #fc3737;
 }

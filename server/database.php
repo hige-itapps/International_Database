@@ -122,23 +122,66 @@ if(!class_exists('DatabaseHelper')){
 
         public function getIssues()
         {
-            $this->sql = $this->conn->prepare("Select issue FROM issues");
+            $this->sql = $this->conn->prepare("Select * FROM issues");
 			$this->sql->execute();
-            return $this->sql->fetchAll(PDO::FETCH_COLUMN); //return names only
+            return $this->sql->fetchAll(PDO::FETCH_ASSOC);
         }
 
         public function getCountries()
         {
-            $this->sql = $this->conn->prepare("Select country_name FROM countries");
+            $this->sql = $this->conn->prepare("Select * FROM countries");
 			$this->sql->execute();
-            return $this->sql->fetchAll(PDO::FETCH_COLUMN); //return names only
+            return $this->sql->fetchAll(PDO::FETCH_ASSOC);
         }
 
         public function getRegions()
         {
-            $this->sql = $this->conn->prepare("Select region FROM regions");
+            $this->sql = $this->conn->prepare("Select * FROM regions");
 			$this->sql->execute();
-            return $this->sql->fetchAll(PDO::FETCH_COLUMN); //return names only
+            return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public function getLanguages()
+        {
+            $this->sql = $this->conn->prepare("Select * FROM languages");
+			$this->sql->execute();
+            return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public function getLanguageProficiencies()
+        {
+            $this->sql = $this->conn->prepare("Select * FROM language_proficiencies");
+			$this->sql->execute();
+            return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public function getCountryExperiences()
+        {
+            $this->sql = $this->conn->prepare("Select * FROM country_experience");
+			$this->sql->execute();
+            return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+
+        /*return an array of the maximum lengths of every column in the users table*/
+		public function getUsersMaxLengths()
+		{
+			$this->sql = $this->conn->prepare("Select COLUMN_NAME, CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE table_schema = '" . $this->settings["database_name"] . "' AND table_name = 'users'");
+			$this->sql->execute();
+            $tempArray = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save to a temporary array.
+            $retVals = []; //init new array which will hold only column names as keys and their lengths as values
+            foreach($tempArray as $maxLength){
+                $retVals[$maxLength["COLUMN_NAME"]] = $maxLength["CHARACTER_MAXIMUM_LENGTH"];
+            }
+            return $retVals;
+        }
+        
+        /*Get the maximum length of other country experiences*/
+        public function getOtherCountryExperiencesMaxLength()
+        {
+            $this->sql = $this->conn->prepare("Select CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE table_schema = '" . $this->settings["database_name"] . "' AND table_name = 'other_country_experience' AND COLUMN_NAME = 'experience'");
+            $this->sql->execute();
+            return $this->sql->fetchAll(PDO::FETCH_COLUMN);
         }
 
 

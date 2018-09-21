@@ -16,13 +16,6 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     $scope.usersMaxLengths = scope_usersMaxLengths;
     $scope.maxOtherExperience = scope_maxOtherExperience;
 
-    if($scope.profile.alternate_email != null && $scope.profile.alternate_email !== ''){
-        $scope.profile.primaryEmail = $scope.profile.alternate_email;
-    }
-    else{
-        $scope.profile.primaryEmail = $scope.profile.login_email;
-    }
-
     //user variables
     $scope.userIssuesExpertise = [];
     $scope.userCountriesExpertise = [];
@@ -42,6 +35,14 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
         $scope.maxOtherIssues = $scope.usersMaxLengths["issues_expertise_other"];
         $scope.maxOtherCountriesExpertise = $scope.usersMaxLengths["countries_expertise_other"];
         $scope.maxOtherRegions = $scope.usersMaxLengths["regions_expertise_other"];
+    }
+    else{ //loading an existing one
+        if($scope.profile.alternate_email != null && $scope.profile.alternate_email !== ''){
+            $scope.profile.primaryEmail = $scope.profile.alternate_email;
+        }
+        else{
+            $scope.profile.primaryEmail = $scope.profile.login_email;
+        }
     }
     
 

@@ -184,6 +184,8 @@ hr{
 .profile-list{
 	text-align: center;
 	padding: 0;
+	max-width: 1400px; /*enough for 4 cards side by side*/
+	margin: auto; /*center when necessary*/
 }
 .profile-list .profile-summary{
 	width: 25%;
@@ -195,6 +197,36 @@ hr{
 	vertical-align: top;
 }
 
+.profile-button{
+	margin: -10px;
+	margin-top: 15px;
+	height: 48px;
+}
+.profile-button a{
+	width: 100%;
+	height: 100%;
+	display: block;
+	color: #FFFFFF;
+	font-weight: bold;
+	font-size: 20px;
+	border-radius: 0;
+}
+.profile-summary-name, .profile-summary-affiliations, .profile-summary-email{
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+.profile-summary-name{
+	height: 65.6px; /*height of 2 lines*/
+}
+.profile-summary-affiliations, .profile-summary-email{
+	height: 38.4px; /*height of 2 lines*/
+}
+.profile-summary-keyterm{
+	height: 60px; /*height of 3 lines*/
+}
+
 .search-subtext{
 	font-size: 18px;
 }
@@ -203,12 +235,15 @@ hr{
 	text-align: center;
 }
 #profileSearchForm input{
-	max-width: 400px;
 	margin: auto;
 	text-align: center;
 }
 #profileSearchForm .form-group{
 	margin: 10px 0px;
+}
+#profileSearchForm .input-group{
+	max-width: 400px;
+	margin: auto;
 }
 
 

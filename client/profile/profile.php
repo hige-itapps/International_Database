@@ -91,7 +91,7 @@
 
 					
 					<div class="row">
-						<h1 class="title">{{isCreating ? "Create " : ""}}Profile:</h1>
+						<h1 class="title">{{isCreating ? "Create " : "User "}}Profile</h1>
 					</div>
 					<div class="row profile">
 						<div class="col-md-1"></div>

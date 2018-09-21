@@ -9,13 +9,14 @@ higeApp.controller('listCtrl', function($scope) {
     for (var profile in tempProfiles){
         $scope.profiles.push( tempProfiles[profile] );
     }
+
     $scope.wildcard = scope_wildcard;
 
     $scope.filteredProfiles = [];
 
     $scope.pagination = {
         currentPage:  1,
-        numPerPage: 12
+        numPerPage: 8
     };
 
     $scope.profiles.forEach(function (profile) {

@@ -196,6 +196,12 @@ if(!class_exists('DatabaseHelper')){
             
             $wildcard = '%'.$wildcard.'%'; //add percent signs to search all strings
             //Combine results from all relevant tables
+
+            /*SELECT *,
+                CASE
+                    WHEN firstname LIKE '%a%' THEN 'yeah'
+                END as digits
+                FROM users*/
             $this->sql = $this->conn->prepare("SELECT *, 'profile' as foundIn FROM users 
                 WHERE users.login_email LIKE :wildcard
                 OR CONCAT(users.firstname,' ', users.lastname) LIKE :wildcard

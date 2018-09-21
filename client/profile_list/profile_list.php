@@ -55,37 +55,44 @@
 
 			<div class="container-fluid" ng-controller="listCtrl" id="listCtrl">
 				<div class="row">
-					<h1 class="title">Profile List:</h1>
+					<h1 class="title">Search The Database</h1>
 					<!-- search form -->
 					<form enctype="multipart/form-data" class="form-horizontal" id="profileSearchForm" name="profileSearchForm" ng-submit="submit()">
 						<div class="form-group">
 							<label for="keySearch">Search for any name, email address, affiliation, phone number, social link, country, region, issue, or language:</label>
-							<input type="text" class="form-control" ng-model="keyTerm" id="keySearch" name="keySearch" placeholder="Enter A Key Term To Search For" />
-							<button type="submit" ng-click="keySearch()" class="btn btn-primary">SEARCH</button>
+							<div class="input-group">
+								<input type="search" class="form-control" ng-model="keyTerm" id="keySearch" name="keySearch" placeholder="Enter A Key Term To Search For">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" ng-click="keySearch()" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true">
+								</span> Search</button>
+							</span>
+							</div>
 						</div>
 					</form>
 				</div>
 				<div class="row">
 					<h1 class="title" ng-if="wildcard">{{profiles.length}} Result{{profiles.length === 1 ? "" : "s"}} For "{{wildcard}}":</h2>
-					<nav class="col-12">
+					<nav class="col-md-12">
 						<ul ng-if="profiles.length" uib-pagination total-items="profiles.length" ng-model="pagination.currentPage" items-per-page="pagination.numPerPage"></ul>
 					</nav>
-					<div class="col-md-12 profile-list">
-						<div class="profile profile-summary" ng-repeat="profile in filteredProfiles">
-							<h2>{{profile.firstname}} {{profile.lastname}}</h2>
-							<hr>
-							<h3>{{profile.affiliations}}</h3>
-							<h3>{{profile.primaryEmail}}</h3>
-							<h3 ng-if="profile.phone">{{profile.phone}}</h3>
-							<h3 ng-if="profile.social_link">{{profile.social_link}}</h3>
-							<h2 ng-if="wildcard">Key Term Found In:</h2>
-							<ul ng-if="wildcard" class="compactList">
-								<li ng-repeat="category in profile.foundIn">{{category}}</li>
-							</ul>
-							<a class="btn btn-success" href="../profile/profile.php?id={{profile.id}}">View Profile</a>
+					<div class="col-md-12 profile-list-wrapper">
+						<div class="profile-list">
+							<div class="profile profile-summary" ng-repeat="profile in filteredProfiles">
+								<h2 class="profile-summary-name">{{profile.firstname}} {{profile.lastname}}</h2>
+								<hr>
+								<h3 class="profile-summary-affiliations" >{{profile.affiliations}}</h3>
+								<h3 class="profile-summary-email">{{profile.primaryEmail}}</h3>
+								<h2 ng-if="wildcard">Key Term Found In</h2>
+								<ul ng-if="wildcard" class="compactList profile-summary-keyterm">
+									<li ng-repeat="category in profile.foundIn">{{category}}</li>
+								</ul>
+								<div class="profile-button">
+									<a class="btn btn-success" href="../profile/profile.php?id={{profile.id}}">View Profile</a>
+								</div>
+							</div>
 						</div>
 					</div>
-					<nav class="col-12">
+					<nav class="col-md-12">
 						<ul ng-if="profiles.length" uib-pagination total-items="profiles.length" ng-model="pagination.currentPage" items-per-page="pagination.numPerPage"></ul>
 					</nav>
 				</div>

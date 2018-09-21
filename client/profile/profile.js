@@ -16,6 +16,13 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     $scope.usersMaxLengths = scope_usersMaxLengths;
     $scope.maxOtherExperience = scope_maxOtherExperience;
 
+    if($scope.profile.alternate_email != null && $scope.profile.alternate_email !== ''){
+        $scope.profile.primaryEmail = $scope.profile.alternate_email;
+    }
+    else{
+        $scope.profile.primaryEmail = $scope.profile.login_email;
+    }
+
     //user variables
     $scope.userIssuesExpertise = [];
     $scope.userCountriesExpertise = [];

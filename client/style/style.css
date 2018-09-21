@@ -180,18 +180,41 @@ hr{
 }
 
 
+/*Format profile list*/
+.search-subtext{
+	font-size: 18px;
+}
+
+#profileSearchForm{
+	text-align: center;
+}
+#profileSearchForm input{
+	max-width: 400px;
+	margin: auto;
+	text-align: center;
+}
+#profileSearchForm .form-group{
+	margin: 10px 0px;
+}
+
+.profile-list div.row{
+	margin: 5px 0px;
+}
+
 /*Format user profiles*/
 .profile-summary{
 	border: solid 2px #a0a0a0;
 	word-wrap: break-word;
+	text-align: center;
 }
-
 .profile-summary h2{
 	font-weight: bold;
 }
-
 .profile-summary h3{
 	font-size: 1.2em;
+}
+.profile-summary .btn{
+	margin-bottom: 8px;
 }
 
 .profile h1, .profile h2, .profile h3, .profile h4, .profile h5{
@@ -200,15 +223,22 @@ hr{
 
 .profile-info h2{
 	font-size: 1.7em;
+	font-weight: bold;
 }
 
 .profile-info h3{
-	font-size: 1.2em;
+	font-size: 17px;
 	margin-bottom: 0;
 }
 
+.profile-info li{
+	font-size: 17px;
+}
+.profile-info li li{
+	font-size: 15px;
+}
+
 .profile-info ul.compactList li{
-	font-size: 1.2em;
 	display: inline;
 }
 .profile-info ul.compactList li:after {
@@ -218,9 +248,24 @@ hr{
 	content: "";
 }
 
+.profile-info div{
+	padding: 10px;
+}
+.profile-info > :nth-child(odd){
+	background-color: #f4f4f4;
+}
+
 .profile select{
 	width: auto;
     display: inline;
+}
+
+.profile label{
+	margin: 5px;
+}
+.profile .form-group{
+	margin-left: 0!important;
+	margin-right: 0!important;
 }
 
 

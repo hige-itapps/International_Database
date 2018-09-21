@@ -41,9 +41,9 @@ DROP TABLE IF EXISTS `country_experience`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `country_experience` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `experience` varchar(40) NOT NULL,
+  `experience` varchar(40) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -55,9 +55,9 @@ DROP TABLE IF EXISTS `issues`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `issues` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `issue` varchar(50) NOT NULL,
+  `issue` varchar(50) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,9 +69,9 @@ DROP TABLE IF EXISTS `language_proficiencies`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `language_proficiencies` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `proficiency_level` varchar(25) NOT NULL,
+  `proficiency_level` varchar(25) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -83,10 +83,10 @@ DROP TABLE IF EXISTS `languages`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `languages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` char(49) CHARACTER SET utf8 DEFAULT NULL,
-  `iso_639-1` char(2) CHARACTER SET utf8 DEFAULT NULL,
+  `name` char(49) DEFAULT NULL,
+  `iso_639-1` char(2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=136 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=136 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,9 +98,9 @@ DROP TABLE IF EXISTS `other_country_experience`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `other_country_experience` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `experience` varchar(100) NOT NULL,
+  `experience` varchar(100) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -112,9 +112,9 @@ DROP TABLE IF EXISTS `regions`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `regions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `region` varchar(20) NOT NULL,
+  `region` varchar(20) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,17 +126,18 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `firstname` varchar(50) NOT NULL,
-  `lastname` varchar(50) NOT NULL,
-  `email` varchar(254) NOT NULL,
-  `affiliations` varchar(300) NOT NULL,
-  `phone` varchar(15) DEFAULT NULL,
-  `issues_expertise_other` varchar(300) DEFAULT NULL,
-  `regions_expertise_other` varchar(300) DEFAULT NULL,
-  `countries_expertise_other` varchar(300) DEFAULT NULL,
-  `social_link` varchar(70) DEFAULT NULL,
+  `login_email` varchar(254) CHARACTER SET latin1 NOT NULL,
+  `firstname` varchar(50) CHARACTER SET latin1 NOT NULL,
+  `lastname` varchar(50) CHARACTER SET latin1 NOT NULL,
+  `alternate_email` varchar(254) CHARACTER SET latin1 NOT NULL,
+  `affiliations` varchar(300) CHARACTER SET latin1 NOT NULL,
+  `phone` varchar(15) CHARACTER SET latin1 DEFAULT NULL,
+  `issues_expertise_other` varchar(300) CHARACTER SET latin1 DEFAULT NULL,
+  `regions_expertise_other` varchar(300) CHARACTER SET latin1 DEFAULT NULL,
+  `countries_expertise_other` varchar(300) CHARACTER SET latin1 DEFAULT NULL,
+  `social_link` varchar(70) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -161,7 +162,7 @@ CREATE TABLE `users_country_experience` (
   CONSTRAINT `fk_users_country_experience_experience_id` FOREIGN KEY (`experience_id`) REFERENCES `country_experience` (`id`),
   CONSTRAINT `fk_users_country_experience_other_experience_id` FOREIGN KEY (`other_experience_id`) REFERENCES `other_country_experience` (`id`),
   CONSTRAINT `fk_users_country_experience_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -178,7 +179,7 @@ CREATE TABLE `users_country_expertise` (
   KEY `fk_users_country_expertise_country_id` (`country_id`),
   CONSTRAINT `fk_users_country_expertise_country_id` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`),
   CONSTRAINT `fk_users_country_expertise_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -195,7 +196,7 @@ CREATE TABLE `users_issues` (
   KEY `fk_users_issues_issue_id` (`issue_id`),
   CONSTRAINT `fk_users_issues_issue_id` FOREIGN KEY (`issue_id`) REFERENCES `issues` (`id`),
   CONSTRAINT `fk_users_issues_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -215,7 +216,7 @@ CREATE TABLE `users_languages` (
   CONSTRAINT `fk_users_languages_language_id` FOREIGN KEY (`language_id`) REFERENCES `languages` (`id`),
   CONSTRAINT `fk_users_languages_proficiency_id` FOREIGN KEY (`proficiency_id`) REFERENCES `language_proficiencies` (`id`),
   CONSTRAINT `fk_users_languages_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -232,8 +233,12 @@ CREATE TABLE `users_regions` (
   KEY `fk_users_regions_region_id` (`region_id`),
   CONSTRAINT `fk_users_regions_region_id` FOREIGN KEY (`region_id`) REFERENCES `regions` (`id`),
   CONSTRAINT `fk_users_regions_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping events for database 'international'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -244,4 +249,4 @@ CREATE TABLE `users_regions` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-09-14  9:04:39
+-- Dump completed on 2018-09-20 14:33:02

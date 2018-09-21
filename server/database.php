@@ -185,6 +185,57 @@ if(!class_exists('DatabaseHelper')){
         }
 
 
+        /*Search the database using a wildcard term; returns all matching user summaries*/
+        public function searchByWildcard($wildcard)
+        {
+            //If no wildcard given, don't waste time doing complicated queries, just return all profiles
+            if($wildcard === ""){
+                return  $this->getAllUsersSummaries();
+            }
+            
+            $wildcard = '%'.$wildcard.'%'; //add percent signs to search all strings
+            //Combine results from all relevant tables
+            $this->sql = $this->conn->prepare("SELECT * FROM users 
+                WHERE users.login_email LIKE :wildcard
+                OR CONCAT(users.firstname,' ', users.lastname) LIKE :wildcard
+                OR users.alternate_email LIKE :wildcard
+                OR users.affiliations LIKE :wildcard
+                OR users.phone LIKE :wildcard
+                OR users.issues_expertise_other LIKE :wildcard
+                OR users.regions_expertise_other LIKE :wildcard
+                OR users.countries_expertise_other LIKE :wildcard
+                OR social_link LIKE :wildcard
+                UNION DISTINCT
+                SELECT DISTINCT u.* FROM users u
+                INNER JOIN users_country_experience uce ON u.id = uce.user_id
+                INNER JOIN countries c ON uce.country_id = c.id
+                WHERE c.country_name LIKE :wildcard
+                UNION DISTINCT
+                SELECT DISTINCT u.* FROM users u
+                INNER JOIN users_country_expertise uce ON u.id = uce.user_id
+                INNER JOIN countries c ON uce.country_id = c.id
+                WHERE c.country_name LIKE :wildcard
+                UNION DISTINCT
+                SELECT DISTINCT u.* FROM users u
+                INNER JOIN users_issues ui ON u.id = ui.user_id
+                INNER JOIN issues i ON ui.issue_id = i.id
+                WHERE i.issue LIKE :wildcard
+                UNION DISTINCT
+                SELECT DISTINCT u.* FROM users u
+                INNER JOIN users_regions ur ON u.id = ur.user_id
+                INNER JOIN regions r ON ur.region_id = r.id
+                WHERE r.region LIKE :wildcard
+                UNION DISTINCT
+                SELECT DISTINCT u.* FROM users u
+                INNER JOIN users_languages ul ON u.id = ul.user_id
+                INNER JOIN languages l ON ul.language_id = l.id
+                WHERE l.name LIKE :wildcard");
+            $this->sql->bindParam(':wildcard', $wildcard);
+            $this->sql->execute();
+            return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+
 
 
         /* Establishes an sql connection to the database, and returns the object; MAKE SURE TO SET OBJECT TO NULL WHEN FINISHED */
@@ -195,7 +246,7 @@ if(!class_exists('DatabaseHelper')){
                 $this->conn = new AtomicPDO("mysql:host=" . $this->settings["hostname"] . ";dbname=" . $this->settings["database_name"] . ";charset=utf8", $this->settings["database_username"], 
                     $this->settings["database_password"], array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"));
                 $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // set the PDO error mode to exception
-                $this->conn->setAttribute( PDO::ATTR_EMULATE_PREPARES, false );
+                $this->conn->setAttribute( PDO::ATTR_EMULATE_PREPARES, true ); //emulate prepared statements, allows for more flexibility
             }
             catch(PDOException $e)
             {

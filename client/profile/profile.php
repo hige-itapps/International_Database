@@ -95,15 +95,15 @@
 					</div>
 					<div class="row profile">
 						<div class="col-md-1"></div>
-						<div class="col-md-4 profile-summary" ng-if="!isCreating">
+						<div class="col-md-3 profile-summary" ng-if="!isCreating">
 							<h2>{{profile.firstname}} {{profile.lastname}}</h2>
 							<hr>
 							<h3>{{profile.affiliations}}</h3>
-							<h3>{{profile.email}}</h3>
+							<h3>{{profile.primaryEmail}}</h3>
 							<h3 ng-if="profile.phone">{{profile.phone}}</h3>
 							<h3 ng-if="profile.social_link">{{profile.social_link}}</h3>
 						</div>
-						<div class="col-md-4 profile-summary" ng-if="isCreating">
+						<div class="col-md-3 profile-summary" ng-if="isCreating">
 							<div class="form-group">
 								<label for="firstName">First Name (Required) ({{(maxFirstName-formData.firstName.length)}} characters remaining):</label>
 								<input type="text" class="form-control" maxlength="{{maxFirstName}}" ng-model="formData.firstName" id="firstName" name="firstName" placeholder="Enter First Name" />
@@ -121,7 +121,7 @@
 								<span class="help-block" ng-show="errors.affiliations" aria-live="polite">{{ errors.affiliations }}</span> 
 							</div>
 							<div class="form-group">
-								<label for="email">Email Address (Required) ({{(maxEmail-formData.email.length)}} characters remaining):</label>
+								<label for="email">Alternate Primary Email Address- if specified, this address will show up on your profile page instead of your WMICH address, and our emails will only be sent to this address. ({{(maxEmail-formData.email.length)}} characters remaining):</label>
 								<input type="text" class="form-control" maxlength="{{maxEmail}}" ng-model="formData.email" id="email" name="email" placeholder="Enter Email Address" />
 								<span class="help-block" ng-show="errors.email" aria-live="polite">{{ errors.email }}</span> 
 							</div>
@@ -136,7 +136,7 @@
 								<span class="help-block" ng-show="errors.socialLink" aria-live="polite">{{ errors.socialLink }}</span> 
 							</div>
 						</div>
-						<div class="col-md-6 profile-info">
+						<div class="col-md-7 profile-info">
 							<div>
 							<h2>Issues of Expertise{{isCreating ? " (Required)" : ""}}</h2>
 								<ul ng-if="!isCreating" class="compactList">

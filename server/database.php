@@ -32,7 +32,7 @@ if(!class_exists('DatabaseHelper')){
         /* Specific transactions */
 
         /* For Users */
-
+        /* Just quick summaries; only data from the users table */
         public function getAllUsersSummaries()
         {
 			$this->sql = $this->conn->prepare("Select * FROM users");
@@ -48,6 +48,7 @@ if(!class_exists('DatabaseHelper')){
             return $this->sql->fetch(PDO::FETCH_ASSOC); //return names as keys
         }
 
+        /* Full user profiles */
         public function getUserProfile($userID)
         {
             //initialize user object
@@ -195,7 +196,7 @@ if(!class_exists('DatabaseHelper')){
             
             $wildcard = '%'.$wildcard.'%'; //add percent signs to search all strings
             //Combine results from all relevant tables
-            $this->sql = $this->conn->prepare("SELECT * FROM users 
+            $this->sql = $this->conn->prepare("SELECT *, 'profile' as foundIn FROM users 
                 WHERE users.login_email LIKE :wildcard
                 OR CONCAT(users.firstname,' ', users.lastname) LIKE :wildcard
                 OR users.alternate_email LIKE :wildcard
@@ -206,33 +207,43 @@ if(!class_exists('DatabaseHelper')){
                 OR users.countries_expertise_other LIKE :wildcard
                 OR social_link LIKE :wildcard
                 UNION DISTINCT
-                SELECT DISTINCT u.* FROM users u
+                SELECT DISTINCT u.*, 'country experience' as foundIn FROM users u
                 INNER JOIN users_country_experience uce ON u.id = uce.user_id
                 INNER JOIN countries c ON uce.country_id = c.id
                 WHERE c.country_name LIKE :wildcard
                 UNION DISTINCT
-                SELECT DISTINCT u.* FROM users u
+                SELECT DISTINCT u.*, 'countries of expertise' as foundIn FROM users u
                 INNER JOIN users_country_expertise uce ON u.id = uce.user_id
                 INNER JOIN countries c ON uce.country_id = c.id
                 WHERE c.country_name LIKE :wildcard
                 UNION DISTINCT
-                SELECT DISTINCT u.* FROM users u
+                SELECT DISTINCT u.*, 'issues of expertise' as foundIn FROM users u
                 INNER JOIN users_issues ui ON u.id = ui.user_id
                 INNER JOIN issues i ON ui.issue_id = i.id
                 WHERE i.issue LIKE :wildcard
                 UNION DISTINCT
-                SELECT DISTINCT u.* FROM users u
+                SELECT DISTINCT u.*, 'regions of expertise' as foundIn FROM users u
                 INNER JOIN users_regions ur ON u.id = ur.user_id
                 INNER JOIN regions r ON ur.region_id = r.id
                 WHERE r.region LIKE :wildcard
                 UNION DISTINCT
-                SELECT DISTINCT u.* FROM users u
+                SELECT DISTINCT u.*, 'languages' as foundIn FROM users u
                 INNER JOIN users_languages ul ON u.id = ul.user_id
                 INNER JOIN languages l ON ul.language_id = l.id
                 WHERE l.name LIKE :wildcard");
             $this->sql->bindParam(':wildcard', $wildcard);
             $this->sql->execute();
-            return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+            $results = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save results
+            $editedResults = []; //sort by index to avoid search time
+            //remove duplicate ids while saving the foundIn categories, so we can remember which category the string was found in
+            foreach($results as $result) {
+                if (!array_key_exists($result["id"], $editedResults)) { //push profile summary if new
+                    $editedResults[$result["id"]] = $result;
+                    $editedResults[$result["id"]]["foundIn"] = [];
+                }
+                $editedResults[$result["id"]]["foundIn"][] = $result["foundIn"]; //push the foundIn category
+            }
+            return $editedResults;
         }
 
 

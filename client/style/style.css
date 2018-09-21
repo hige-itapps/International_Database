@@ -181,6 +181,20 @@ hr{
 
 
 /*Format profile list*/
+.profile-list{
+	text-align: center;
+	padding: 0;
+}
+.profile-list .profile-summary{
+	width: 25%;
+    display: inline-block;
+    min-width: 275px;
+    max-width: 300px;
+	padding: 10px;
+	margin: 3px;
+	vertical-align: top;
+}
+
 .search-subtext{
 	font-size: 18px;
 }
@@ -197,9 +211,6 @@ hr{
 	margin: 10px 0px;
 }
 
-.profile-list div.row{
-	margin: 5px 0px;
-}
 
 /*Format user profiles*/
 .profile-summary{
@@ -207,8 +218,15 @@ hr{
 	word-wrap: break-word;
 	text-align: center;
 }
+.profile-summary ul{
+	text-align: left;
+	padding: 0;
+}
 .profile-summary h2{
 	font-weight: bold;
+}
+.profile-summary h2:not(:first-child){ /*format h2s after first one*/
+	font-size: 18px;
 }
 .profile-summary h3{
 	font-size: 1.2em;
@@ -238,13 +256,13 @@ hr{
 	font-size: 15px;
 }
 
-.profile-info ul.compactList li{
+.profile ul.compactList li{
 	display: inline;
 }
-.profile-info ul.compactList li:after {
+.profile ul.compactList li:after {
 	content: ", ";
 }
-.profile-info ul.compactList li:last-child:after {
+.profile ul.compactList li:last-child:after {
 	content: "";
 }
 
@@ -272,4 +290,9 @@ hr{
 /*Delete button*/
 .delete-button{
 	color: #fc3737;
+}
+
+/*navigation menus (pagination)*/
+nav{
+	text-align: center;
 }

@@ -1,26 +1,40 @@
 //init app
-var higeApp = angular.module('HIGE-app', []);
+var higeApp = angular.module('HIGE-app', ['ui.bootstrap']);
 
 /*Controller to set date inputs and list*/
 higeApp.controller('listCtrl', function($scope) {
     //get PHP init variables
-    $scope.profiles = scope_profiles;
-    console.log($scope.profiles);
-    // $scope.applications = scope_applications;
-    // $scope.appCycles = scope_appCycles;
-    // $scope.isAllowedToSeeApplications = scope_isAllowedToSeeApplications;
+    var tempProfiles = scope_profiles;
+    $scope.profiles = new Array();
+    for (var profile in tempProfiles){
+        $scope.profiles.push( tempProfiles[profile] );
+    }
+    $scope.wildcard = scope_wildcard;
 
-    $scope.profiles.forEach(profile=> {
+    $scope.filteredProfiles = [];
+
+    $scope.pagination = {
+        currentPage:  1,
+        numPerPage: 12
+    };
+
+    $scope.profiles.forEach(function (profile) {
         if(profile.alternate_email != null && profile.alternate_email !== ''){
             profile.primaryEmail = profile.alternate_email;
         }
         else{
-            $profile.primaryEmail = profile.login_email;
+            profile.primaryEmail = profile.login_email;
         }
     });
    
     /*Functions*/
+    $scope.$watch('pagination.currentPage + pagination.numPerPage', function() {
+        var begin = (($scope.pagination.currentPage - 1) * $scope.pagination.numPerPage);
+        var end = begin + $scope.pagination.numPerPage;
 
+        $scope.filteredProfiles = $scope.profiles.slice(begin, end);
+    });
+    
     $scope.keySearch = function(){
         if ($scope.keyTerm == null) {$scope.keyTerm = "";}
         window.location.replace("?search&wildcard=" + $scope.keyTerm);

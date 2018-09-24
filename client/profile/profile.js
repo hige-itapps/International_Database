@@ -35,14 +35,8 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
         $scope.maxOtherIssues = $scope.usersMaxLengths["issues_expertise_other"];
         $scope.maxOtherCountriesExpertise = $scope.usersMaxLengths["countries_expertise_other"];
         $scope.maxOtherRegions = $scope.usersMaxLengths["regions_expertise_other"];
-    }
-    else{ //loading an existing one
-        if($scope.profile.alternate_email != null && $scope.profile.alternate_email !== ''){
-            $scope.profile.primaryEmail = $scope.profile.alternate_email;
-        }
-        else{
-            $scope.profile.primaryEmail = $scope.profile.login_email;
-        }
+
+        $scope.formData = []; //for form data
     }
     
 
@@ -119,6 +113,81 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
 
     $scope.removeCountryExperienceLevel = function(parentIndex, index){
         this.userCountriesExperience[parentIndex].experiences.splice(index, 1);
+    }
+
+
+    //display a generic loading alert to the page
+    $scope.loadingAlert = function(){
+        $scope.alertType = "info";
+        $scope.alertMessage = "Loading...";
+    }
+    //remove the alert from the page
+    $scope.removeAlert = function(){
+        $scope.alertMessage = null;
+    }
+
+
+    //submit the application - use a different function depending on the submitFunction variable
+    $scope.submit = function(){
+        if($scope.submitFunction === 'createProfile'){$scope.createProfile();}
+    }
+
+
+    //create a new profile; send data to the server for verification- if accepted, then redirect to homepage with message, otherwise display errors
+    $scope.createProfile = function() {
+        if(!confirm ('By submitting, your information will become publicly searchable once an admin has approved it. ')) {return;} //submission confirmation required
+        var fd = new FormData();
+        
+        $scope.loadingAlert(); //start a loading alert
+
+        //loop through form data, appending each field to the FormData object
+        for (var key in $scope.formData) {
+            if ($scope.formData.hasOwnProperty(key)) {
+                //console.log(key + " -> " + JSON.stringify($scope.formData[key]));
+                fd.append(key, JSON.stringify($scope.formData[key]));
+            }
+        }
+
+        $http({
+            method  : 'POST',
+            url     : '/../api.php?create_profile',
+            data    : fd,  // pass in the FormData object
+            transformRequest: angular.identity,
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' } //simple encoded format
+        })
+        .then(function (response) {
+            console.log(response, 'res');
+            //data = response.data;
+           
+        },function (error){
+            console.log(error, 'can not get data.');
+            $scope.alertType = "danger";
+            $scope.alertMessage = "There was an unexpected error when trying to create your profile: " + error.status + " " + error.statusText + ". Please contact an admin about this issue!";
+        });
+    }
+
+
+    //redirect the user to the homepage. Optionally, send an alert which will show up on the next page, consisting of a type(success, warning, danger, etc.) and message
+    $scope.redirectToHomepage = function(alert_type, alert_message){
+        var homeURL = '../home/home.php'; //url to homepage
+
+        if(alert_type == null) //if no alert message to send, simply redirect
+        {
+            if($scope.isCreating)
+            {
+                if(!confirm ('Are you sure you want to leave this page? Any unsaved data will be lost.')){return;} //don't leave page if user decides not to
+            }
+            window.location.replace(homeURL);
+        }
+        else //if there IS an alert message to send, fill out an invisible form & submit so the data can be sent as POST
+        {
+            var form = $('<form type="hidden" action="' + homeURL + '" method="post">' +
+                '<input type="text" name="alert_type" value="' + alert_type + '" />' +
+                '<input type="text" name="alert_message" value="' + alert_message + '" />' +
+            '</form>');
+            $('body').append(form);
+            form.submit();
+        }
     }
 
 }]);

@@ -32,30 +32,30 @@ if(!class_exists('DatabaseHelper')){
         /* Specific transactions */
 
         /* For Users */
-        /* Just quick summaries; only data from the users table */
+        /* Just quick summaries; only data from the users table- only return the primary email adresses */
         public function getAllUsersSummaries()
         {
-			$this->sql = $this->conn->prepare("Select * FROM users");
+			$this->sql = $this->conn->prepare("Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email FROM users u");
 			$this->sql->execute();
             return $this->sql->fetchAll(PDO::FETCH_ASSOC); //return names as keys
         }
 
         public function getUserSummary($userID)
         {
-            $this->sql = $this->conn->prepare("Select * FROM users WHERE id = :id LIMIT 1");
+            $this->sql = $this->conn->prepare("Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email FROM users u WHERE id = :id LIMIT 1");
             $this->sql->bindParam(':id', $userID);
 			$this->sql->execute();
             return $this->sql->fetch(PDO::FETCH_ASSOC); //return names as keys
         }
 
-        /* Full user profiles */
+        /* Full user profiles- still only return the primary email addresses */
         public function getUserProfile($userID)
         {
             //initialize user object
             $user = null;
 
             //start with summary
-            $this->sql = $this->conn->prepare("Select * FROM users WHERE id = :id LIMIT 1");
+            $this->sql = $this->conn->prepare("Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email FROM users u WHERE id = :id LIMIT 1");
             $this->sql->bindParam(':id', $userID);
 			$this->sql->execute();
             $user = $this->sql->fetch(PDO::FETCH_ASSOC); //set user to summary values to start with
@@ -196,22 +196,22 @@ if(!class_exists('DatabaseHelper')){
             
             $wildcard = '%'.$wildcard.'%'; //add percent signs to search all strings
             //Combine results from all relevant tables
-
-            /*SELECT *,
-                CASE
-                    WHEN firstname LIKE '%a%' THEN 'yeah'
-                END as digits
-                FROM users*/
-            $this->sql = $this->conn->prepare("SELECT *, 'profile' as foundIn FROM users 
-                WHERE users.login_email LIKE :wildcard
-                OR CONCAT(users.firstname,' ', users.lastname) LIKE :wildcard
-                OR users.alternate_email LIKE :wildcard
-                OR users.affiliations LIKE :wildcard
-                OR users.phone LIKE :wildcard
-                OR users.issues_expertise_other LIKE :wildcard
-                OR users.regions_expertise_other LIKE :wildcard
-                OR users.countries_expertise_other LIKE :wildcard
-                OR social_link LIKE :wildcard
+            /*
+            SELECT * FROM
+                (SELECT COALESCE(u.alternate_email, u.login_email) AS `email` FROM users u) as e
+            WHERE e.email LIKE '%sam%'
+            */
+            //This extra long query combines search results from all relevant tables; return only the primary email addresses
+            $this->sql = $this->conn->prepare("SELECT res.id, res.firstname, res.lastname, res.affiliations, res.foundIn, COALESCE(res.alternate_email, res.login_email) as email FROM 
+                (SELECT u.*, 'profile' as foundIn FROM users u
+                WHERE CONCAT(u.firstname,' ', u.lastname) LIKE :wildcard
+                OR COALESCE(u.alternate_email, u.login_email) LIKE :wildcard
+                OR u.affiliations LIKE :wildcard
+                OR u.phone LIKE :wildcard
+                OR u.issues_expertise_other LIKE :wildcard
+                OR u.regions_expertise_other LIKE :wildcard
+                OR u.countries_expertise_other LIKE :wildcard
+                OR u.social_link LIKE :wildcard
                 UNION DISTINCT
                 SELECT DISTINCT u.*, 'country experience' as foundIn FROM users u
                 INNER JOIN users_country_experience uce ON u.id = uce.user_id
@@ -236,7 +236,7 @@ if(!class_exists('DatabaseHelper')){
                 SELECT DISTINCT u.*, 'languages' as foundIn FROM users u
                 INNER JOIN users_languages ul ON u.id = ul.user_id
                 INNER JOIN languages l ON ul.language_id = l.id
-                WHERE l.name LIKE :wildcard");
+                WHERE l.name LIKE :wildcard) res");
             $this->sql->bindParam(':wildcard', $wildcard);
             $this->sql->execute();
             $results = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save results

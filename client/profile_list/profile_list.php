@@ -81,7 +81,7 @@
 								<h2 class="profile-summary-name">{{profile.firstname}} {{profile.lastname}}</h2>
 								<hr>
 								<h3 class="profile-summary-affiliations" >{{profile.affiliations}}</h3>
-								<h3 class="profile-summary-email">{{profile.primaryEmail}}</h3>
+								<h3 class="profile-summary-email">{{profile.email}}</h3>
 								<h2 ng-if="wildcard">Key Term Found In</h2>
 								<ul ng-if="wildcard" class="compactList profile-summary-keyterm">
 									<li ng-repeat="category in profile.foundIn">{{category}}</li>

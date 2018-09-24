@@ -18,15 +18,6 @@ higeApp.controller('listCtrl', function($scope) {
         currentPage:  1,
         numPerPage: 8
     };
-
-    $scope.profiles.forEach(function (profile) {
-        if(profile.alternate_email != null && profile.alternate_email !== ''){
-            profile.primaryEmail = profile.alternate_email;
-        }
-        else{
-            profile.primaryEmail = profile.login_email;
-        }
-    });
    
     /*Functions*/
     $scope.$watch('pagination.currentPage + pagination.numPerPage', function() {

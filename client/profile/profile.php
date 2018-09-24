@@ -99,7 +99,7 @@
 							<h2>{{profile.firstname}} {{profile.lastname}}</h2>
 							<hr>
 							<h3>{{profile.affiliations}}</h3>
-							<h3>{{profile.primaryEmail}}</h3>
+							<h3>{{profile.email}}</h3>
 							<h3 ng-if="profile.phone">{{profile.phone}}</h3>
 							<h3 ng-if="profile.social_link">{{profile.social_link}}</h3>
 						</div>
@@ -275,7 +275,7 @@
 
 
 					<div class="buttons-group bottom-buttons"> 
-						<button ng-show="false" type="submit" ng-click="submitFunction='insertApplication'" class="btn btn-success">SUBMIT APPLICATION</button> <!-- For applicant submitting for first time -->
+						<button ng-show="isCreating" type="submit" ng-click="submitFunction='createProfile'" class="btn btn-success">SUBMIT APPLICATION</button> <!-- For applicant submitting for first time -->
 						<a href="" class="btn btn-info" ng-click="redirectToHomepage(null, null)">LEAVE PAGE</a> <!-- For anyone to leave the page -->
 					</div>
 				</form>

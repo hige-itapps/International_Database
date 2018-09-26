@@ -80,12 +80,6 @@
 			<!--AngularJS Controller-->
 			<div class="container-fluid" ng-controller="profileCtrl" id="profileCtrl">
 
-				<!-- <div ng-cloak ng-show="isAdmin || isAdminUpdating" class="buttons-group"> 
-					<button type="button" ng-click="toggleAdminUpdate()" class="btn btn-warning">TURN {{isAdminUpdating ? "OFF" : "ON"}} ADMIN UPDATE MODE</button>
-					<button type="button" ng-click="populateForm(null)" class="btn btn-warning">RELOAD SAVED DATA</button>
-					<button type="button" ng-click="insertApplication()" class="btn btn-warning">SUBMIT CHANGES</button>
-				</div> -->
-
 					<!-- profile form -->
 				<form enctype="multipart/form-data" class="form-horizontal" id="profileForm" name="profileForm" ng-submit="submit()">
 
@@ -104,41 +98,41 @@
 							<h3 ng-if="profile.social_link">{{profile.social_link}}</h3>
 						</div>
 						<div class="col-md-3 profile-summary" ng-if="isCreating">
-							<div class="form-group">
+							<div class="form-group" ng-class="{errorHighlight: errors.firstName}">
 								<label for="firstName">First Name (Required) ({{(maxFirstName-formData.firstName.length)}} characters remaining):</label>
 								<input type="text" class="form-control" maxlength="{{maxFirstName}}" ng-model="formData.firstName" id="firstName" name="firstName" placeholder="Enter First Name" />
 								<span class="help-block" ng-show="errors.firstName" aria-live="polite">{{ errors.firstName }}</span> 
 							</div>
-							<div class="form-group">
+							<div class="form-group" ng-class="{errorHighlight: errors.lastName}">
 								<label for="lastName">Last Name (Required) ({{(maxLastName-formData.lastName.length)}} characters remaining):</label>
 								<input type="text" class="form-control" maxlength="{{maxLastName}}" ng-model="formData.lastName" id="lastName" name="lastName" placeholder="Enter Last Name" />
 								<span class="help-block" ng-show="errors.lastName" aria-live="polite">{{ errors.lastName }}</span> 
 							</div>
 							<hr>
-							<div class="form-group">
+							<div class="form-group" ng-class="{errorHighlight: errors.affiliations}">
 								<label for="affiliations">Affiliations (Required) ({{(maxAffiliations-formData.affiliations.length)}} characters remaining):</label>
 								<input type="text" class="form-control" maxlength="{{maxAffiliations}}" ng-model="formData.affiliations" id="affiliations" name="affiliations" placeholder="Enter Affiliations" />
 								<span class="help-block" ng-show="errors.affiliations" aria-live="polite">{{ errors.affiliations }}</span> 
 							</div>
-							<div class="form-group">
-								<label for="email">Alternate Primary Email Address- if specified, this address will show up on your profile page instead of your WMICH address, and our emails will only be sent to this address. ({{(maxEmail-formData.email.length)}} characters remaining):</label>
-								<input type="text" class="form-control" maxlength="{{maxEmail}}" ng-model="formData.email" id="email" name="email" placeholder="Enter Email Address" />
+							<div class="form-group" ng-class="{errorHighlight: errors.email}">
+								<label for="email">Alternate Primary Email Address- if specified, this address will show up on your profile page instead of your WMICH address, and our emails will only be sent to this address. ({{(maxAlternateEmail-formData.email.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxAlternateEmail}}" ng-model="formData.email" id="email" name="email" placeholder="Enter Email Address" />
 								<span class="help-block" ng-show="errors.email" aria-live="polite">{{ errors.email }}</span> 
 							</div>
-							<div class="form-group">
+							<div class="form-group" ng-class="{errorHighlight: errors.phone}">
 								<label for="phone">Phone Number ({{(maxPhone-formData.phone.length)}} digits remaining):</label>
-								<input type="text" class="form-control" maxlength="{{maxPhone}}" ng-model="formData.phone" id="phone" name="phone" placeholder="Enter Phone Number" />
+								<input type="text" class="form-control" maxlength="{{maxPhone}}" ng-model="formData.phone" id="phone" name="phone" placeholder="Enter Phone Number" onkeypress='return (event.which >= 48 && event.which <= 57)'/> <!-- restricted to digits only -->
 								<span class="help-block" ng-show="errors.phone" aria-live="polite">{{ errors.phone }}</span> 
 							</div>
-							<div class="form-group">
+							<div class="form-group" ng-class="{errorHighlight: errors.socialLink}">
 								<label for="socialLink">Social Link ({{(maxSocialLink-formData.socialLink.length)}} characters remaining):</label>
 								<input type="text" class="form-control" maxlength="{{maxSocialLink}}" ng-model="formData.socialLink" id="socialLink" name="socialLink" placeholder="Enter Social Link" />
 								<span class="help-block" ng-show="errors.socialLink" aria-live="polite">{{ errors.socialLink }}</span> 
 							</div>
 						</div>
 						<div class="col-md-7 profile-info">
-							<div>
-							<h2>Issues of Expertise{{isCreating ? " (Required)" : ""}}</h2>
+							<div ng-class="{errorHighlight: errors.issuesExpertise}">
+								<h2>Issues of Expertise{{isCreating ? " (Required)" : ""}}</h2>
 								<ul ng-if="!isCreating" class="compactList">
 									<li ng-repeat="issue in profile.issues_expertise">{{issue}}</li>
 									<li ng-if="profile.issues_expertise_other">{{profile.issues_expertise_other}}</li>
@@ -151,15 +145,15 @@
 								</div>
 								<h3 ng-if="isCreating">Selected Issues:</h3>
 								<ul ng-if="isCreating" class="user-list">
-									<li ng-repeat="issue in userIssuesExpertise">{{issue.issue}} <a href ng-click="removeIssueExpertise($index)" class="delete-button">delete</a></li>
+									<li ng-repeat="issue in formData.userIssuesExpertise">{{issue.issue}} <a href ng-click="removeIssueExpertise($index)" class="btn btn-danger">delete</a></li>
 								</ul>
 								<div ng-if="isCreating" class="form-group">
 									<label for="issuesExpertiseOther">Other Issues of Expertise ({{(maxOtherIssues-formData.issuesExpertiseOther.length)}} characters remaining):</label>
 									<input type="text" class="form-control" maxlength="{{maxOtherIssues}}" ng-model="formData.issuesExpertiseOther" id="issuesExpertiseOther" name="issuesExpertiseOther" placeholder="Enter Any Other Issues Of Expertise" />
-									<span class="help-block" ng-show="errors.issuesExpertiseOther" aria-live="polite">{{ errors.issuesExpertiseOther }}</span> 
 								</div>
+								<span class="help-block" ng-show="errors.issuesExpertise" aria-live="polite">{{ errors.issuesExpertise }}</span> 
 							</div>
-							<div>
+							<div ng-class="{errorHighlight: errors.countriesExpertise}">
 								<h2>Countries of Expertise{{isCreating ? " (Required)" : ""}}</h2>
 								<ul ng-if="!isCreating" class="compactList">
 									<li ng-repeat="country in profile.countries_expertise">{{country}}</li>
@@ -173,15 +167,15 @@
 								</div>
 								<h3 ng-if="isCreating">Selected Countries:</h3>
 								<ul ng-if="isCreating" class="user-list">
-									<li ng-repeat="country in userCountriesExpertise">{{country.country_name}} <a href ng-click="removeCountryExpertise($index)" class="delete-button">delete</a></li>
+									<li ng-repeat="country in formData.userCountriesExpertise">{{country.country_name}} <a href ng-click="removeCountryExpertise($index)" class="btn btn-danger">delete</a></li>
 								</ul>
 								<div ng-if="isCreating" class="form-group">
 									<label for="countriesExpertiseOther">Other Countries of Expertise ({{(maxOtherCountriesExpertise-formData.countriesExpertiseOther.length)}} characters remaining):</label>
 									<input type="text" class="form-control" maxlength="{{maxOtherCountriesExpertise}}" ng-model="formData.countriesExpertiseOther" id="countriesExpertiseOther" name="countriesExpertiseOther" placeholder="Enter Any Other Countries Of Expertise" />
-									<span class="help-block" ng-show="errors.countriesExpertiseOther" aria-live="polite">{{ errors.countriesExpertiseOther }}</span> 
 								</div>
+								<span class="help-block" ng-show="errors.countriesExpertise" aria-live="polite">{{ errors.countriesExpertise }}</span> 
 							</div>
-							<div>
+							<div ng-class="{errorHighlight: errors.regionsExpertise}">
 								<h2>Regions of Expertise{{isCreating ? " (Required)" : ""}}</h2>
 								<ul ng-if="!isCreating" class="compactList">
 									<li ng-repeat="region in profile.regions_expertise">{{region}}</li>
@@ -195,13 +189,13 @@
 								</div>
 								<h3 ng-if="isCreating">Selected Regions:</h3>
 								<ul ng-if="isCreating" class="user-list">
-									<li ng-repeat="region in userRegionsExpertise">{{region.region}} <a href ng-click="removeRegionExpertise($index)" class="delete-button">delete</a></li>
+									<li ng-repeat="region in formData.userRegionsExpertise">{{region.region}} <a href ng-click="removeRegionExpertise($index)" class="btn btn-danger">delete</a></li>
 								</ul>
 								<div ng-if="isCreating" class="form-group">
 									<label for="regionsExpertiseOther">Other Regions of Expertise ({{(maxOtherRegions-formData.regionsExpertiseOther.length)}} characters remaining):</label>
 									<input type="text" class="form-control" maxlength="{{maxOtherRegions}}" ng-model="formData.regionsExpertiseOther" id="regionsExpertiseOther" name="regionsExpertiseOther" placeholder="Enter Any Other Regions Of Expertise" />
-									<span class="help-block" ng-show="errors.regionsExpertiseOther" aria-live="polite">{{ errors.regionsExpertiseOther }}</span> 
 								</div>
+								<span class="help-block" ng-show="errors.regionsExpertise" aria-live="polite">{{ errors.regionsExpertise }}</span> 
 							</div>
 							<div>
 								<h2>Languages</h2>
@@ -216,12 +210,13 @@
 								</div>
 								<h3 ng-if="isCreating">Selected Languages:</h3>
 								<ul ng-if="isCreating" class="user-list">
-									<li ng-repeat="language in userLanguages">{{language.name}} 
+									<li ng-class="{errorHighlight: errors['language '+language.id]}" ng-repeat="language in formData.userLanguages">{{language.name}} 
 										<label for="proficiency{{$index}}">Proficiency Level (Required):</label>
-										<select class="form-control" ng-model="userLanguages[($index)].proficiency_level" id="proficiency{{$index}}" name="proficiency{{$index}}"
+										<select class="form-control" ng-model="formData.userLanguages[($index)].proficiency_level" id="proficiency{{$index}}" name="proficiency{{$index}}"
 											ng-options="proficiency as proficiency.proficiency_level for proficiency in languageProficiencies">
 										</select>
-										<a href ng-click="removeLanguage($index)" class="delete-button">delete</a>
+										<a href ng-click="removeLanguage($index)" class="btn btn-danger">delete</a>
+										<span class="help-block" ng-show="errors['language '+language.id]" aria-live="polite">{{ errors['language '+language.id] }}</span> 
 									</li>
 								</ul>
 							</div>
@@ -244,22 +239,23 @@
 								</div>
 								<h3 ng-if="isCreating">Selected Countries:</h3>
 								<ul ng-if="isCreating" class="user-list">
-									<li ng-repeat="country in userCountriesExperience">{{country.country_name}} 
+									<li ng-repeat="country in formData.userCountriesExperience">{{country.country_name}} 
 										<label for="countryExperience{{$index}}">Experiences:</label>
-										<select class="form-control"  ng-change="addCountryExperienceLevel($index)" ng-model="userCountriesExperience[$index].selectedExperience" id="countryExperience{{$index}}" name="countryExperience{{$index}}"
+										<select class="form-control"  ng-change="addCountryExperienceLevel($index)" ng-model="formData.userCountriesExperience[$index].selectedExperience" id="countryExperience{{$index}}" name="countryExperience{{$index}}"
 											ng-options="countryExperience as countryExperience.experience for countryExperience in countryExperiences">
 										</select>
-										<a href ng-click="removeCountryExperience($index)" class="delete-button">delete</a>
+										<a href ng-click="removeCountryExperience($index)" class="btn btn-danger">delete</a>
 										<h4>Selected Experiences (Required):</h4>
 										<ul>
-											<li ng-repeat="experience in userCountriesExperience[$index].experiences">{{experience.experience}} 
-												<a href ng-click="removeCountryExperienceLevel($parent.$index, $index)" class="delete-button">delete</a>
+											<li ng-repeat="experience in formData.userCountriesExperience[$index].experiences">{{experience.experience}} 
+												<a href ng-click="removeCountryExperienceLevel($parent.$index, $index)" class="btn btn-danger">delete</a>
 											</li>
 										</ul>
 										<div class="form-group">
-											<label for="countryExperienceOther{{$index}}">Other Experience ({{(maxOtherExperience-userCountriesExperience[$index].otherExperience.length)}} characters remaining):</label>
-											<input type="text" class="form-control" maxlength="{{maxOtherExperience}}" ng-model="userCountriesExperience[$index].otherExperience" id="countryExperienceOther{{$index}}" name="countryExperienceOther{{$index}}" placeholder="Enter Other Experiences You've Had While In This Country" />
+											<label for="countryExperienceOther{{$index}}">Other Experience ({{(maxOtherExperience-formData.userCountriesExperience[$index].otherExperience.length)}} characters remaining):</label>
+											<input type="text" class="form-control" maxlength="{{maxOtherExperience}}" ng-model="formData.userCountriesExperience[$index].otherExperience" id="countryExperienceOther{{$index}}" name="countryExperienceOther{{$index}}" placeholder="Enter Other Experiences You've Had While In This Country" />
 										</div>
+										<span class="help-block" ng-show="errors.countryExperience[$index]" aria-live="polite">{{ errors.countryExperience[$index] }}</span> 
 									</li>
 								</ul>
 							</div>
@@ -275,7 +271,7 @@
 
 
 					<div class="buttons-group bottom-buttons"> 
-						<button ng-show="isCreating" type="submit" ng-click="submitFunction='createProfile'" class="btn btn-success">SUBMIT APPLICATION</button> <!-- For applicant submitting for first time -->
+						<button ng-show="isCreating" type="submit" ng-click="submitFunction='createProfile'" class="btn btn-success">SUBMIT</button> <!-- For user submitting for first time -->
 						<a href="" class="btn btn-info" ng-click="redirectToHomepage(null, null)">LEAVE PAGE</a> <!-- For anyone to leave the page -->
 					</div>
 				</form>

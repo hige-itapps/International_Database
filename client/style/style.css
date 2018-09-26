@@ -120,9 +120,13 @@ h1, h2, h3, h4, h5{
 	text-align: center;
 }
 
-/*format error help blocks*/
+/*format error help blocks, and highlight relevant fields*/
 .help-block{
 	color: red!important;
+}
+.errorHighlight{
+	border: 3px solid red;
+	margin-bottom: -3px; /*To merge consecutive borders together*/
 }
 
 /*By default, have alerts be fixed at the bottom of the screen. Increase the z-index a bit to render in front of some other elements that might otherwise get in the way*/
@@ -321,11 +325,6 @@ hr{
 	margin-right: 0!important;
 }
 
-
-/*Delete button*/
-.delete-button{
-	color: #fc3737;
-}
 
 /*navigation menus (pagination)*/
 nav{

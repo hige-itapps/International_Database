@@ -1,6 +1,9 @@
 <?php
+/*
+    Database helper object for transactions
+    This class is built to support all necessary queries to the database. It is not built to verify that incoming data is valid however, so this should be done elsewhere.
+*/
 
-/*Database helper object for transactions*/
 if(!class_exists('DatabaseHelper')){
     class DatabaseHelper
     {
@@ -177,12 +180,12 @@ if(!class_exists('DatabaseHelper')){
             return $retVals;
         }
         
-        /*Get the maximum length of other country experiences*/
+        /*Get the maximum length of other country experiences (just an integer, not an array)*/
         public function getOtherCountryExperiencesMaxLength()
         {
             $this->sql = $this->conn->prepare("Select CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE table_schema = '" . $this->settings["database_name"] . "' AND table_name = 'other_country_experience' AND COLUMN_NAME = 'experience'");
             $this->sql->execute();
-            return $this->sql->fetchAll(PDO::FETCH_COLUMN);
+            return $this->sql->fetch(PDO::FETCH_COLUMN);
         }
 
 

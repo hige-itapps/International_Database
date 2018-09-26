@@ -17,11 +17,13 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     $scope.maxOtherExperience = scope_maxOtherExperience;
 
     //user variables
-    $scope.userIssuesExpertise = [];
-    $scope.userCountriesExpertise = [];
-    $scope.userRegionsExpertise = [];
-    $scope.userLanguages = [];
-    $scope.userCountriesExperience = [];
+    $scope.formData = []; //for form data
+    $scope.formData.userIssuesExpertise = [];
+    $scope.formData.userCountriesExpertise = [];
+    $scope.formData.userRegionsExpertise = [];
+    $scope.formData.userLanguages = [];
+    $scope.formData.userCountriesExperience = [];
+    $scope.errors = []; //list of form errors
 
 
     //setup if user is creating a new application
@@ -29,14 +31,12 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
         $scope.maxFirstName = $scope.usersMaxLengths["firstname"];
         $scope.maxLastName = $scope.usersMaxLengths["lastname"];
         $scope.maxAffiliations = $scope.usersMaxLengths["affiliations"];
-        $scope.maxEmail = $scope.usersMaxLengths["email"];
+        $scope.maxAlternateEmail = $scope.usersMaxLengths["alternate_email"];
         $scope.maxPhone = $scope.usersMaxLengths["phone"];
         $scope.maxSocialLink = $scope.usersMaxLengths["social_link"];
         $scope.maxOtherIssues = $scope.usersMaxLengths["issues_expertise_other"];
         $scope.maxOtherCountriesExpertise = $scope.usersMaxLengths["countries_expertise_other"];
         $scope.maxOtherRegions = $scope.usersMaxLengths["regions_expertise_other"];
-
-        $scope.formData = []; //for form data
     }
     
 
@@ -44,75 +44,81 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     /*Functions*/
 
     $scope.addIssueExpertise = function(){
-        var issue = this.selectIssuesExpertise;
+        var issue = JSON.parse(JSON.stringify(this.selectIssuesExpertise)); //deep copy object
 
-        if(this.userIssuesExpertise.indexOf(issue) === -1){this.userIssuesExpertise.push(issue);} //push if new
+        if(indexOfID(this.formData.userIssuesExpertise, issue) < 0){this.formData.userIssuesExpertise.push(issue);} //push if new
         this.selectIssuesExpertise = ""; //clear selection
     }
 
     $scope.addCountryExpertise = function(){
-        var country = this.selectCountriesExpertise;
+        var country = JSON.parse(JSON.stringify(this.selectCountriesExpertise)); //deep copy object
 
-        if(this.userCountriesExpertise.indexOf(country) === -1){this.userCountriesExpertise.push(country);} //push if new
+        if(indexOfID(this.formData.userCountriesExpertise, country) < 0){this.formData.userCountriesExpertise.push(country);} //push if new
         this.selectCountriesExpertise = ""; //clear selection
     }
 
     $scope.addRegionExpertise = function(){
-        var region = this.selectRegionsExpertise;
+        var region = JSON.parse(JSON.stringify(this.selectRegionsExpertise)); //deep copy object
 
-        if(this.userRegionsExpertise.indexOf(region) === -1){this.userRegionsExpertise.push(region);} //push if new
+        if(indexOfID(this.formData.userRegionsExpertise, region) < 0){this.formData.userRegionsExpertise.push(region);} //push if new
         this.selectRegionsExpertise = ""; //clear selection
     }
 
     $scope.addLanguage = function(){
-        var language = this.selectLanguages;
+        var language = JSON.parse(JSON.stringify(this.selectLanguages)); //deep copy object
 
-        if(this.userLanguages.indexOf(language) === -1){this.userLanguages.push(language);} //push if new
+        if(indexOfID(this.formData.userLanguages, language) < 0){this.formData.userLanguages.push(language);} //push if new
         this.selectLanguages = ""; //clear selection
     }
 
     $scope.addCountryExperience = function(){
-        var country = this.selectCountriesExperience;
+        var country = JSON.parse(JSON.stringify(this.selectCountriesExperience)); //deep copy object
 
-        var isDuplicate = false;
-        for (var i = 0; i < this.userCountriesExperience.length; i++) { //check for duplicate country IDs
-            if(this.userCountriesExperience[i].id === country.id) {isDuplicate = true;}
-        }
-
-        if(!isDuplicate){country.experiences = []; country.otherExperience = ""; this.userCountriesExperience.push(country);} //push if new
+        if(indexOfID(this.formData.userCountriesExperience, country) < 0){country.experiences = []; country.otherExperience = ""; this.formData.userCountriesExperience.push(country);} //push if new
         this.selectCountriesExperience = ""; //clear selection
     }
 
     $scope.addCountryExperienceLevel = function(index){
-        var experience = this.userCountriesExperience[index].selectedExperience;
+        var experience = JSON.parse(JSON.stringify(this.formData.userCountriesExperience[index].selectedExperience)); //deep copy object
 
-        if(this.userCountriesExperience[index].experiences.indexOf(experience) === -1){this.userCountriesExperience[index].experiences.push(experience);} //push if new
-        this.userCountriesExperience[index].selectedExperience = ""; //clear selection
+        if(indexOfID(this.formData.userCountriesExperience[index].experiences, experience) < 0){this.formData.userCountriesExperience[index].experiences.push(experience);} //push if new
+        this.formData.userCountriesExperience[index].selectedExperience = ""; //clear selection
     }
 
 
     $scope.removeIssueExpertise = function(index){
-        this.userIssuesExpertise.splice(index, 1)
+        this.formData.userIssuesExpertise.splice(index, 1)
     }
 
     $scope.removeCountryExpertise = function(index){
-        this.userCountriesExpertise.splice(index, 1)
+        this.formData.userCountriesExpertise.splice(index, 1)
     }
 
     $scope.removeRegionExpertise = function(index){
-        this.userRegionsExpertise.splice(index, 1)
+        this.formData.userRegionsExpertise.splice(index, 1)
     }
 
     $scope.removeLanguage = function(index){
-        this.userLanguages.splice(index, 1)
+        this.formData.userLanguages.splice(index, 1)
     }
 
     $scope.removeCountryExperience = function(index){
-        this.userCountriesExperience.splice(index, 1)
+        this.formData.userCountriesExperience.splice(index, 1)
     }
 
     $scope.removeCountryExperienceLevel = function(parentIndex, index){
-        this.userCountriesExperience[parentIndex].experiences.splice(index, 1);
+        this.formData.userCountriesExperience[parentIndex].experiences.splice(index, 1);
+    }
+
+
+    /*Custom function that compares a given object's 'id' value to the given array's objects' 'id's to see if there is a match. Returns the index if it exists, or -1 otherwise.
+    NOTE- it is assumed that both the specified object and objects in the specified array have the 'id' property!*/
+    function indexOfID(testArray, testObject){
+        for (var i = 0; i < testArray.length; i++) {
+            if(testArray[i].id === testObject.id){return testObject.id;}
+        }
+        
+        return -1;
     }
 
 
@@ -135,7 +141,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
 
     //create a new profile; send data to the server for verification- if accepted, then redirect to homepage with message, otherwise display errors
     $scope.createProfile = function() {
-        if(!confirm ('By submitting, your information will become publicly searchable once an admin has approved it. ')) {return;} //submission confirmation required
+        if(!confirm ('By submitting, your profile will become publicly searchable once an admin has approved it. ')) {return;} //submission confirmation required
         var fd = new FormData();
         
         $scope.loadingAlert(); //start a loading alert
@@ -153,11 +159,31 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
             url     : '/../api.php?create_profile',
             data    : fd,  // pass in the FormData object
             transformRequest: angular.identity,
-            headers : { 'Content-Type': 'application/x-www-form-urlencoded' } //simple encoded format
+            headers : { 'Content-Type': undefined } //don't encode the formData array
         })
         .then(function (response) {
             console.log(response, 'res');
             //data = response.data;
+            if(typeof response.data.success === 'undefined'){ //unexpected result!
+                console.log(JSON.stringify(response, null, 4));
+                $scope.alertType = "danger";
+                $scope.alertMessage = "There was an unexpected error with your submission! Server response: " + JSON.stringify(response, null, 4);
+            }
+            else if(!response.data.success){ //there was at least 1 error
+                $scope.errors = response.data.errors;
+                $scope.alertType = "danger";
+                if(typeof $scope.errors["other"] !== 'undefined') //there was an 'other' (non-normal) error
+                {
+                    if(Object.keys($scope.errors).length === 1){$scope.alertMessage = "There was a generic error with your submission: " + $scope.errors["other"];}//just the other error
+                    else{$scope.alertMessage = "There was an error with your submission, please double check your form for errors, then try resubmitting. In addition, there was a generic error with your submission: " + $scope.errors["other"];}//the other error + normal errors
+                }
+                else {$scope.alertMessage = "There was an error with your submission, please double check your form for errors, then try resubmitting.";}//just normal errors
+            }
+            else{ //no errors
+                $scope.errors = []; //clear any old errors
+                var newAlertType = null;
+                var newAlertMessage = null;
+            }
            
         },function (error){
             console.log(error, 'can not get data.');

@@ -2,6 +2,16 @@
 	/*Get DB connection*/
 	include_once(dirname(__FILE__) . "/../../server/database.php");
 
+
+	$totalBytes = 16;
+	$bytes = openssl_random_pseudo_bytes($totalBytes, $cstrong);
+	$hex   = bin2hex($bytes);
+
+	echo "Lengths: Bytes: $totalBytes and Hex: " . strlen($hex) . PHP_EOL;
+	var_dump($hex);
+	var_dump($cstrong);
+	echo PHP_EOL;
+
 	$database = new DatabaseHelper();
 
 	$profile = null; //profile variable will be set if trying to load one
@@ -98,6 +108,11 @@
 							<h3 ng-if="profile.social_link">{{profile.social_link}}</h3>
 						</div>
 						<div class="col-md-3 profile-summary" ng-if="isCreating">
+							<div class="form-group" ng-class="{errorHighlight: errors.loginEmail}">
+								<label for="login_email">Login Email Address- this is your WMICH address (Required) ({{(maxLoginEmail-formData.login_email.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxLoginEmail}}" ng-model="formData.login_email" id="login_email" name="login_email" placeholder="Enter WMICH Email Address" />
+								<span class="help-block" ng-show="errors.loginEmail" aria-live="polite">{{ errors.loginEmail }}</span> 
+							</div>
 							<div class="form-group" ng-class="{errorHighlight: errors.firstName}">
 								<label for="firstName">First Name (Required) ({{(maxFirstName-formData.firstName.length)}} characters remaining):</label>
 								<input type="text" class="form-control" maxlength="{{maxFirstName}}" ng-model="formData.firstName" id="firstName" name="firstName" placeholder="Enter First Name" />
@@ -114,10 +129,10 @@
 								<input type="text" class="form-control" maxlength="{{maxAffiliations}}" ng-model="formData.affiliations" id="affiliations" name="affiliations" placeholder="Enter Affiliations" />
 								<span class="help-block" ng-show="errors.affiliations" aria-live="polite">{{ errors.affiliations }}</span> 
 							</div>
-							<div class="form-group" ng-class="{errorHighlight: errors.email}">
-								<label for="email">Alternate Primary Email Address- if specified, this address will show up on your profile page instead of your WMICH address, and our emails will only be sent to this address. ({{(maxAlternateEmail-formData.email.length)}} characters remaining):</label>
-								<input type="text" class="form-control" maxlength="{{maxAlternateEmail}}" ng-model="formData.email" id="email" name="email" placeholder="Enter Email Address" />
-								<span class="help-block" ng-show="errors.email" aria-live="polite">{{ errors.email }}</span> 
+							<div class="form-group" ng-class="{errorHighlight: errors.alternateEmail}">
+								<label for="alternate_email">Alternate Primary Email Address- if specified, this address will show up on your profile page instead of your WMICH address, and our emails will only be sent to this address. This cannot be a WMICH address. ({{(maxAlternateEmail-formData.alternate_email.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxAlternateEmail}}" ng-model="formData.alternate_email" id="alternate_email" name="alternate_email" placeholder="Enter Alternate Email Address" />
+								<span class="help-block" ng-show="errors.alternateEmail" aria-live="polite">{{ errors.alternateEmail }}</span> 
 							</div>
 							<div class="form-group" ng-class="{errorHighlight: errors.phone}">
 								<label for="phone">Phone Number ({{(maxPhone-formData.phone.length)}} digits remaining):</label>
@@ -125,7 +140,7 @@
 								<span class="help-block" ng-show="errors.phone" aria-live="polite">{{ errors.phone }}</span> 
 							</div>
 							<div class="form-group" ng-class="{errorHighlight: errors.socialLink}">
-								<label for="socialLink">Social Link ({{(maxSocialLink-formData.socialLink.length)}} characters remaining):</label>
+								<label for="socialLink">Social Link (LinkedIn, Facebook, etc...) ({{(maxSocialLink-formData.socialLink.length)}} characters remaining):</label>
 								<input type="text" class="form-control" maxlength="{{maxSocialLink}}" ng-model="formData.socialLink" id="socialLink" name="socialLink" placeholder="Enter Social Link" />
 								<span class="help-block" ng-show="errors.socialLink" aria-live="polite">{{ errors.socialLink }}</span> 
 							</div>
@@ -239,7 +254,7 @@
 								</div>
 								<h3 ng-if="isCreating">Selected Countries:</h3>
 								<ul ng-if="isCreating" class="user-list">
-									<li ng-repeat="country in formData.userCountriesExperience">{{country.country_name}} 
+									<li ng-class="{errorHighlight: errors['country '+country.id]}" ng-repeat="country in formData.userCountriesExperience">{{country.country_name}} 
 										<label for="countryExperience{{$index}}">Experiences:</label>
 										<select class="form-control"  ng-change="addCountryExperienceLevel($index)" ng-model="formData.userCountriesExperience[$index].selectedExperience" id="countryExperience{{$index}}" name="countryExperience{{$index}}"
 											ng-options="countryExperience as countryExperience.experience for countryExperience in countryExperiences">
@@ -255,7 +270,7 @@
 											<label for="countryExperienceOther{{$index}}">Other Experience ({{(maxOtherExperience-formData.userCountriesExperience[$index].otherExperience.length)}} characters remaining):</label>
 											<input type="text" class="form-control" maxlength="{{maxOtherExperience}}" ng-model="formData.userCountriesExperience[$index].otherExperience" id="countryExperienceOther{{$index}}" name="countryExperienceOther{{$index}}" placeholder="Enter Other Experiences You've Had While In This Country" />
 										</div>
-										<span class="help-block" ng-show="errors.countryExperience[$index]" aria-live="polite">{{ errors.countryExperience[$index] }}</span> 
+										<span class="help-block" ng-show="errors['country '+country.id]" aria-live="polite">{{ errors['country '+country.id] }}</span> 
 									</li>
 								</ul>
 							</div>

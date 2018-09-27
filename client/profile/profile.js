@@ -24,6 +24,8 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     $scope.formData.userLanguages = [];
     $scope.formData.userCountriesExperience = [];
     $scope.errors = []; //list of form errors
+    $scope.guid = ''; //the user's specified GUID
+    $scope.guidVerified = false; //set to true if the GUID & login_email 
 
 
     //setup if user is creating a new application
@@ -31,6 +33,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
         $scope.maxFirstName = $scope.usersMaxLengths["firstname"];
         $scope.maxLastName = $scope.usersMaxLengths["lastname"];
         $scope.maxAffiliations = $scope.usersMaxLengths["affiliations"];
+        $scope.maxLoginEmail = $scope.usersMaxLengths["login_email"];
         $scope.maxAlternateEmail = $scope.usersMaxLengths["alternate_email"];
         $scope.maxPhone = $scope.usersMaxLengths["phone"];
         $scope.maxSocialLink = $scope.usersMaxLengths["social_link"];
@@ -141,7 +144,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
 
     //create a new profile; send data to the server for verification- if accepted, then redirect to homepage with message, otherwise display errors
     $scope.createProfile = function() {
-        if(!confirm ('By submitting, your profile will become publicly searchable once an admin has approved it. ')) {return;} //submission confirmation required
+        if(!confirm ('By submitting, your profile will be added to the database, and will become publicly searchable once an admin has approved it. ')) {return;} //submission confirmation required
         var fd = new FormData();
         
         $scope.loadingAlert(); //start a loading alert
@@ -174,8 +177,8 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
                 $scope.alertType = "danger";
                 if(typeof $scope.errors["other"] !== 'undefined') //there was an 'other' (non-normal) error
                 {
-                    if(Object.keys($scope.errors).length === 1){$scope.alertMessage = "There was a generic error with your submission: " + $scope.errors["other"];}//just the other error
-                    else{$scope.alertMessage = "There was an error with your submission, please double check your form for errors, then try resubmitting. In addition, there was a generic error with your submission: " + $scope.errors["other"];}//the other error + normal errors
+                    if(Object.keys($scope.errors).length === 1){$scope.alertMessage = "There was an error with your submission: " + $scope.errors["other"];}//just the other error
+                    else{$scope.alertMessage = "There was an error with your submission, please double check your form for errors, then try resubmitting. In addition, there was another error with your submission: " + $scope.errors["other"];}//the other error + normal errors
                 }
                 else {$scope.alertMessage = "There was an error with your submission, please double check your form for errors, then try resubmitting.";}//just normal errors
             }

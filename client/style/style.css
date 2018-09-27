@@ -67,17 +67,20 @@ h2.HomeText{
 }
 
 /*home buttons*/
-#logoutSub, #HomeLink{
-	margin-top: 30px; /*pad it down a bit*/
-	font-size: 26px; /*larger text*/
-	font-weight: bold; /*bold font*/
+.btn-home{
+	margin-top: 30px!important; /*pad it down a bit*/
+	font-size: 26px!important; /*larger text*/
+	font-weight: bold!important; /*bold font*/
 
-	color: #000000; /*black text*/
-	background-color: #fcc30f; /*yellow button color*/
-	background-image: none;
+	color: #000000!important; /*black text*/
+	background-color: #fcc30f!important; /*yellow button color*/
+	background-image: none!important;
 }
-#logoutSub:hover, #HomeLink:hover{
-	background-color: #ffa600; /*yellow button color*/
+.btn-home:hover{
+	background-color: #ffa600!important; /*yellow button color*/
+}
+.btn-home:focus{
+	background-color: #eb9901!important;
 }
 
 /*link to main content -- hide it visually, but make it visible for screen readers*/
@@ -215,6 +218,10 @@ hr{
 	font-size: 20px;
 	border-radius: 0;
 }
+.profile-button a:focus{
+	background-color: #274e28!important;
+    border-color: #193019!important;
+}
 .profile-summary-name, .profile-summary-affiliations, .profile-summary-email{
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
@@ -325,8 +332,60 @@ hr{
 	margin-right: 0!important;
 }
 
-
 /*navigation menus (pagination)*/
 nav{
 	text-align: center;
+}
+
+/*Change default bootstrap button colors to make them WCAG 2.0 AA compliant
+Source: https://codepen.io/scottloway/pen/Xjazjw*/
+.btn-danger{
+	background-color: #c92a2a!important;
+    border-color: #b42626!important;
+}
+.btn-danger:hover{
+	background-color: #a72323!important;
+    border-color: #811b1b!important;
+}
+
+.btn-info{
+	background-color: #0b7285!important;
+    border-color: #095e6d!important;
+}
+.btn-info:hover{
+	background-color: #08525f!important;
+    border-color: #042d35!important;
+}
+
+.btn-success{
+	background-color: #396f3a!important;
+    border-color: #305e31!important;
+}
+.btn-success:hover{
+	background-color: #2b542c!important;
+    border-color: #1c361c!important;
+}
+
+.btn-warning{
+	background-color: #8a3c03!important;
+    border-color: #5d2802!important;
+}
+.btn-warning:hover{
+	background-color: #8a3c03!important;
+    border-color: #5d2802!important;
+}
+
+.btn-primary{
+	background-color: #1b6ec2!important;
+	border-color: #1861ac!important;
+}
+.btn-primary:hover{
+	background-color: #165a9e!important;
+    border-color: #104376!important;
+}
+
+/*Change pagination to be WCAG 2.0 AA compliant*/
+.pagination>.disabled>a{
+	color: black!important;
+	background-color: #f6f6f6!important;
 }

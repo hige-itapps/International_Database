@@ -72,7 +72,7 @@
 				</div>
 				<div class="row">
 					<h1 class="title" ng-if="wildcard">{{profiles.length}} Result{{profiles.length === 1 ? "" : "s"}} For "{{wildcard}}":</h2>
-					<nav class="col-md-12">
+					<nav class="col-md-12" aria-label="Top Page List">
 						<ul ng-if="profiles.length" uib-pagination total-items="profiles.length" ng-model="pagination.currentPage" items-per-page="pagination.numPerPage"></ul>
 					</nav>
 					<div class="col-md-12 profile-list-wrapper">
@@ -92,7 +92,7 @@
 							</div>
 						</div>
 					</div>
-					<nav class="col-md-12">
+					<nav class="col-md-12" aria-label="Bottom Page List">
 						<ul ng-if="profiles.length" uib-pagination total-items="profiles.length" ng-model="pagination.currentPage" items-per-page="pagination.numPerPage"></ul>
 					</nav>
 				</div>

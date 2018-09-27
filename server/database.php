@@ -13,20 +13,17 @@ if(!class_exists('DatabaseHelper')){
         private $settings; //configuration settings
 
         /* Constructior retrieves configurations and sets up a connection */
-        public function __construct()
-        {
+        public function __construct(){
             $this->config_url = dirname(__FILE__).'/../config.ini'; //set config file url
             $this->settings = parse_ini_file($this->config_url); //get all settings
             $this->connect();
         }
 
-        public function getConnection()
-        {
+        public function getConnection(){
             return $this->conn;
         }
 
-        public function close()
-        {
+        public function close(){
             $this->sql = null;
             $this->conn = null;
         }
@@ -36,15 +33,13 @@ if(!class_exists('DatabaseHelper')){
 
         /* For Users */
         /* Just quick summaries; only data from the users table- only return the primary email adresses */
-        public function getAllUsersSummaries()
-        {
+        public function getAllUsersSummaries(){
 			$this->sql = $this->conn->prepare("Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email FROM users u");
 			$this->sql->execute();
             return $this->sql->fetchAll(PDO::FETCH_ASSOC); //return names as keys
         }
 
-        public function getUserSummary($userID)
-        {
+        public function getUserSummary($userID){
             $this->sql = $this->conn->prepare("Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email FROM users u WHERE id = :id LIMIT 1");
             $this->sql->bindParam(':id', $userID);
 			$this->sql->execute();
@@ -52,8 +47,7 @@ if(!class_exists('DatabaseHelper')){
         }
 
         /* Full user profiles- still only return the primary email addresses */
-        public function getUserProfile($userID)
-        {
+        public function getUserProfile($userID){
             //initialize user object
             $user = null;
 
@@ -122,54 +116,47 @@ if(!class_exists('DatabaseHelper')){
             return $user;
         }
 
+
         /* For Static Data */
 
-        public function getIssues()
-        {
+        public function getIssues(){
             $this->sql = $this->conn->prepare("Select * FROM issues");
 			$this->sql->execute();
             return $this->sql->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        public function getCountries()
-        {
+        public function getCountries(){
             $this->sql = $this->conn->prepare("Select * FROM countries");
 			$this->sql->execute();
             return $this->sql->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        public function getRegions()
-        {
+        public function getRegions(){
             $this->sql = $this->conn->prepare("Select * FROM regions");
 			$this->sql->execute();
             return $this->sql->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        public function getLanguages()
-        {
+        public function getLanguages(){
             $this->sql = $this->conn->prepare("Select * FROM languages");
 			$this->sql->execute();
             return $this->sql->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        public function getLanguageProficiencies()
-        {
+        public function getLanguageProficiencies(){
             $this->sql = $this->conn->prepare("Select * FROM language_proficiencies");
 			$this->sql->execute();
             return $this->sql->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        public function getCountryExperiences()
-        {
+        public function getCountryExperiences(){
             $this->sql = $this->conn->prepare("Select * FROM country_experience");
 			$this->sql->execute();
             return $this->sql->fetchAll(PDO::FETCH_ASSOC);
         }
 
-
         /*return an array of the maximum lengths of every column in the users table*/
-		public function getUsersMaxLengths()
-		{
+		public function getUsersMaxLengths(){
 			$this->sql = $this->conn->prepare("Select COLUMN_NAME, CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE table_schema = '" . $this->settings["database_name"] . "' AND table_name = 'users'");
 			$this->sql->execute();
             $tempArray = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save to a temporary array.
@@ -181,17 +168,32 @@ if(!class_exists('DatabaseHelper')){
         }
         
         /*Get the maximum length of other country experiences (just an integer, not an array)*/
-        public function getOtherCountryExperiencesMaxLength()
-        {
+        public function getOtherCountryExperiencesMaxLength(){
             $this->sql = $this->conn->prepare("Select CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE table_schema = '" . $this->settings["database_name"] . "' AND table_name = 'other_country_experience' AND COLUMN_NAME = 'experience'");
             $this->sql->execute();
             return $this->sql->fetch(PDO::FETCH_COLUMN);
         }
 
 
+        /*Search functions*/
+
+        /*Return number of users using this login email (should be 0 or 1)*/
+        public function doesLoginEmailExist($testEmail){
+            $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM users u WHERE u.login_email = :email");
+            $this->sql->bindParam(':email', $testEmail);
+            $this->sql->execute();
+            return $this->sql->fetch(PDO::FETCH_COLUMN);
+        }
+        /*Return number of users using this alternate email (should be 0 or 1)*/
+        public function doesAlternateEmailExist($testEmail){
+            $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM users u WHERE u.alternate_email = :email");
+            $this->sql->bindParam(':email', $testEmail);
+            $this->sql->execute();
+            return $this->sql->fetch(PDO::FETCH_COLUMN);
+        }
+
         /*Search the database using a wildcard term; returns all matching user summaries*/
-        public function searchByWildcard($wildcard)
-        {
+        public function searchByWildcard($wildcard){
             //If no wildcard given, don't waste time doing complicated queries, just return all profiles
             if($wildcard === ""){
                 return  $this->getAllUsersSummaries();
@@ -259,17 +261,14 @@ if(!class_exists('DatabaseHelper')){
 
 
         /* Establishes an sql connection to the database, and returns the object; MAKE SURE TO SET OBJECT TO NULL WHEN FINISHED */
-        private function connect()
-        {
-            try 
-            {
+        private function connect(){
+            try{
                 $this->conn = new AtomicPDO("mysql:host=" . $this->settings["hostname"] . ";dbname=" . $this->settings["database_name"] . ";charset=utf8", $this->settings["database_username"], 
                     $this->settings["database_password"], array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"));
                 $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // set the PDO error mode to exception
                 $this->conn->setAttribute( PDO::ATTR_EMULATE_PREPARES, true ); //emulate prepared statements, allows for more flexibility
             }
-            catch(PDOException $e)
-            {
+            catch(PDOException $e){
                 echo "Connection failed: " . $e->getMessage();
             }
         }

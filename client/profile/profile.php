@@ -3,45 +3,37 @@
 	include_once(dirname(__FILE__) . "/../../server/database.php");
 
 
-	$totalBytes = 16;
+	/*$totalBytes = 16;
 	$bytes = openssl_random_pseudo_bytes($totalBytes, $cstrong);
 	$hex   = bin2hex($bytes);
 
 	echo "Lengths: Bytes: $totalBytes and Hex: " . strlen($hex) . PHP_EOL;
 	var_dump($hex);
 	var_dump($cstrong);
-	echo PHP_EOL;
+	echo PHP_EOL;*/
 
 	$database = new DatabaseHelper();
 
 	$profile = null; //profile variable will be set if trying to load one
-	$isCreating = false; //variable set to true if creating a new profile
+	$isEditing = false; //variable set to true if creating a new profile
 	$loaded_profile = false; //check if profile was loaded correctly
-	$issues = []; //fill with issues if creating profile
-	$countries = []; //fill with countries if creating profile
-	$regions = []; //fill with regions if creating profile
-	$languages = []; //fill with languages if creating profile
-	$languageProficiencies = [];
-	$countryExperiences = [];
-	$usersMaxLengths = null;
-	$otherCountryExperiencesMaxLength = null;
+	$codePending = true; //set if loading a users profile; used to check if a pending confirmation code exists
+	$issues = $database->getIssues();
+	$countries = $database->getCountries();
+	$regions = $database->getRegions();
+	$languages = $database->getLanguages();
+	$languageProficiencies = $database->getLanguageProficiencies();
+	$countryExperiences = $database->getCountryExperiences();
+	$usersMaxLengths = $database->getUsersMaxLengths();
+	$otherCountryExperiencesMaxLength = $database->getOtherCountryExperiencesMaxLength();
 
-	if(isset($_GET["id"])) //if ID is set, get the full user profile
-	{
+	if(isset($_GET["id"])){ //if ID is set, get the full user profile
 		$profile = $database->getUserProfile($_GET["id"]);
 		if ($profile) {$loaded_profile = true;}
+		$codePending = $database->isCodePending($_GET["id"]);
 	}
-	else if(isset($_GET["create"]))
-	{
-		$isCreating = true;
-		$issues = $database->getIssues();
-		$countries = $database->getCountries();
-		$regions = $database->getRegions();
-		$languages = $database->getLanguages();
-		$languageProficiencies = $database->getLanguageProficiencies();
-		$countryExperiences = $database->getCountryExperiences();
-		$usersMaxLengths = $database->getUsersMaxLengths();
-		$otherCountryExperiencesMaxLength = $database->getOtherCountryExperiencesMaxLength();
+	else if(isset($_GET["create"])){
+		$isEditing = true;	
 	}
 
 	$database->close();
@@ -63,7 +55,8 @@
 		<!-- Set values from PHP on startup, accessible by the AngularJS Script -->
 		<script type="text/javascript">
 			var scope_profile = <?php echo json_encode($profile); ?>;
-			var scope_isCreating = <?php echo json_encode($isCreating); ?>;
+			var scope_codePending = <?php echo json_encode($codePending); ?>;
+			var scope_isEditing = <?php echo json_encode($isEditing); ?>;
 			var scope_issues = <?php echo json_encode($issues); ?>;
 			var scope_countries = <?php echo json_encode($countries); ?>;
 			var scope_regions = <?php echo json_encode($regions); ?>;
@@ -90,16 +83,19 @@
 			<!--AngularJS Controller-->
 			<div class="container-fluid" ng-controller="profileCtrl" id="profileCtrl">
 
-					<!-- profile form -->
+				<!-- Form base used for different profile purposes -->
 				<form enctype="multipart/form-data" class="form-horizontal" id="profileForm" name="profileForm" ng-submit="submit()">
 
 					
 					<div class="row">
-						<h1 class="title">{{isCreating ? "Create " : "User "}}Profile</h1>
+						<h1 class="title" ng-if="!isEditing && !wantsToEdit">User Profile</h1>
+						<h1 class="title" ng-if="wantsToEdit && !isEditing">Profile Confirmation</h1>
+						<h1 class="title" ng-if="isEditing">Edit Profile</h1>
 					</div>
-					<div class="row profile">
+					<!-- Form for viewing or editing profile information -->
+					<div class="row profile" ng-if="(profile || isEditing) && !wantsToEdit">
 						<div class="col-md-1"></div>
-						<div class="col-md-3 profile-summary" ng-if="!isCreating">
+						<div class="col-md-3 profile-summary" ng-if="!isEditing">
 							<h2>{{profile.firstname}} {{profile.lastname}}</h2>
 							<hr>
 							<h3>{{profile.affiliations}}</h3>
@@ -107,128 +103,128 @@
 							<h3 ng-if="profile.phone">{{profile.phone}}</h3>
 							<h3 ng-if="profile.social_link">{{profile.social_link}}</h3>
 						</div>
-						<div class="col-md-3 profile-summary" ng-if="isCreating">
+						<div class="col-md-3 profile-summary" ng-if="isEditing">
 							<div class="form-group" ng-class="{errorHighlight: errors.loginEmail}">
-								<label for="login_email">Login Email Address- this is your WMICH address (Required) ({{(maxLoginEmail-formData.login_email.length)}} characters remaining):</label>
-								<input type="text" class="form-control" maxlength="{{maxLoginEmail}}" ng-model="formData.login_email" id="login_email" name="login_email" placeholder="Enter WMICH Email Address" />
+								<label for="login_email">Login Email Address- this is your WMICH address (Required) ({{(maxLoginEmail-profile.login_email.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxLoginEmail}}" ng-model="profile.login_email" id="login_email" name="login_email" placeholder="Enter WMICH Email Address" />
 								<span class="help-block" ng-show="errors.loginEmail" aria-live="polite">{{ errors.loginEmail }}</span> 
 							</div>
-							<div class="form-group" ng-class="{errorHighlight: errors.firstName}">
-								<label for="firstName">First Name (Required) ({{(maxFirstName-formData.firstName.length)}} characters remaining):</label>
-								<input type="text" class="form-control" maxlength="{{maxFirstName}}" ng-model="formData.firstName" id="firstName" name="firstName" placeholder="Enter First Name" />
-								<span class="help-block" ng-show="errors.firstName" aria-live="polite">{{ errors.firstName }}</span> 
+							<div class="form-group" ng-class="{errorHighlight: errors.firstname}">
+								<label for="firstname">First Name (Required) ({{(maxFirstName-profile.firstname.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxFirstName}}" ng-model="profile.firstname" id="firstname" name="firstname" placeholder="Enter First Name" />
+								<span class="help-block" ng-show="errors.firstname" aria-live="polite">{{ errors.firstname }}</span> 
 							</div>
-							<div class="form-group" ng-class="{errorHighlight: errors.lastName}">
-								<label for="lastName">Last Name (Required) ({{(maxLastName-formData.lastName.length)}} characters remaining):</label>
-								<input type="text" class="form-control" maxlength="{{maxLastName}}" ng-model="formData.lastName" id="lastName" name="lastName" placeholder="Enter Last Name" />
-								<span class="help-block" ng-show="errors.lastName" aria-live="polite">{{ errors.lastName }}</span> 
+							<div class="form-group" ng-class="{errorHighlight: errors.lastname}">
+								<label for="lastname">Last Name (Required) ({{(maxLastName-profile.lastname.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxLastName}}" ng-model="profile.lastname" id="lastname" name="lastname" placeholder="Enter Last Name" />
+								<span class="help-block" ng-show="errors.lastname" aria-live="polite">{{ errors.lastname }}</span> 
 							</div>
 							<hr>
 							<div class="form-group" ng-class="{errorHighlight: errors.affiliations}">
-								<label for="affiliations">Affiliations (Required) ({{(maxAffiliations-formData.affiliations.length)}} characters remaining):</label>
-								<input type="text" class="form-control" maxlength="{{maxAffiliations}}" ng-model="formData.affiliations" id="affiliations" name="affiliations" placeholder="Enter Affiliations" />
+								<label for="affiliations">Affiliations (Required) ({{(maxAffiliations-profile.affiliations.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxAffiliations}}" ng-model="profile.affiliations" id="affiliations" name="affiliations" placeholder="Enter Affiliations" />
 								<span class="help-block" ng-show="errors.affiliations" aria-live="polite">{{ errors.affiliations }}</span> 
 							</div>
 							<div class="form-group" ng-class="{errorHighlight: errors.alternateEmail}">
-								<label for="alternate_email">Alternate Primary Email Address- if specified, this address will show up on your profile page instead of your WMICH address, and our emails will only be sent to this address. This cannot be a WMICH address. ({{(maxAlternateEmail-formData.alternate_email.length)}} characters remaining):</label>
-								<input type="text" class="form-control" maxlength="{{maxAlternateEmail}}" ng-model="formData.alternate_email" id="alternate_email" name="alternate_email" placeholder="Enter Alternate Email Address" />
+								<label for="alternate_email">Alternate Primary Email Address- if specified, this address will show up on your profile page instead of your WMICH address, and our emails will only be sent to this address. This cannot be a WMICH address. ({{(maxAlternateEmail-profile.alternate_email.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxAlternateEmail}}" ng-model="profile.alternate_email" id="alternate_email" name="alternate_email" placeholder="Enter Alternate Email Address" />
 								<span class="help-block" ng-show="errors.alternateEmail" aria-live="polite">{{ errors.alternateEmail }}</span> 
 							</div>
 							<div class="form-group" ng-class="{errorHighlight: errors.phone}">
-								<label for="phone">Phone Number ({{(maxPhone-formData.phone.length)}} digits remaining):</label>
-								<input type="text" class="form-control" maxlength="{{maxPhone}}" ng-model="formData.phone" id="phone" name="phone" placeholder="Enter Phone Number" onkeypress='return (event.which >= 48 && event.which <= 57)'/> <!-- restricted to digits only -->
+								<label for="phone">Phone Number ({{(maxPhone-profile.phone.length)}} digits remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxPhone}}" ng-model="profile.phone" id="phone" name="phone" placeholder="Enter Phone Number" onkeypress='return (event.which >= 48 && event.which <= 57)'/> <!-- restricted to digits only -->
 								<span class="help-block" ng-show="errors.phone" aria-live="polite">{{ errors.phone }}</span> 
 							</div>
-							<div class="form-group" ng-class="{errorHighlight: errors.socialLink}">
-								<label for="socialLink">Social Link (LinkedIn, Facebook, etc...) ({{(maxSocialLink-formData.socialLink.length)}} characters remaining):</label>
-								<input type="text" class="form-control" maxlength="{{maxSocialLink}}" ng-model="formData.socialLink" id="socialLink" name="socialLink" placeholder="Enter Social Link" />
-								<span class="help-block" ng-show="errors.socialLink" aria-live="polite">{{ errors.socialLink }}</span> 
+							<div class="form-group" ng-class="{errorHighlight: errors.social_link}">
+								<label for="social_link">Social Link (LinkedIn, Facebook, etc...) ({{(maxSocialLink-profile.social_link.length)}} characters remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxSocialLink}}" ng-model="profile.social_link" id="social_link" name="social_link" placeholder="Enter Social Link" />
+								<span class="help-block" ng-show="errors.social_link" aria-live="polite">{{ errors.social_link }}</span> 
 							</div>
 						</div>
 						<div class="col-md-7 profile-info">
 							<div ng-class="{errorHighlight: errors.issuesExpertise}">
-								<h2>Issues of Expertise{{isCreating ? " (Required)" : ""}}</h2>
-								<ul ng-if="!isCreating" class="compactList">
-									<li ng-repeat="issue in profile.issues_expertise">{{issue}}</li>
+								<h2>Issues of Expertise{{isEditing ? " (Required)" : ""}}</h2>
+								<ul ng-if="!isEditing" class="compactList">
+									<li ng-repeat="issue in profile.issues_expertise">{{issue.issue}}</li>
 									<li ng-if="profile.issues_expertise_other">{{profile.issues_expertise_other}}</li>
 								</ul>
-								<div ng-if="isCreating" class="form-group">
+								<div ng-if="isEditing" class="form-group">
 									<label for="issuesExpertise">Issues of Expertise:</label>
 									<select class="form-control" ng-change="addIssueExpertise()" ng-model="selectIssuesExpertise" id="issuesExpertise" name="issuesExpertise"
 										ng-options="issue as issue.issue for issue in issues">
 									</select>
 								</div>
-								<h3 ng-if="isCreating">Selected Issues:</h3>
-								<ul ng-if="isCreating" class="user-list">
-									<li ng-repeat="issue in formData.userIssuesExpertise">{{issue.issue}} <a href ng-click="removeIssueExpertise($index)" class="btn btn-danger">delete</a></li>
+								<h3 ng-if="isEditing">Selected Issues:</h3>
+								<ul ng-if="isEditing" class="user-list">
+									<li ng-repeat="issue in profile.issues_expertise">{{issue.issue}} <a href ng-click="removeIssueExpertise($index)" class="btn btn-danger">delete</a></li>
 								</ul>
-								<div ng-if="isCreating" class="form-group">
-									<label for="issuesExpertiseOther">Other Issues of Expertise ({{(maxOtherIssues-formData.issuesExpertiseOther.length)}} characters remaining):</label>
-									<input type="text" class="form-control" maxlength="{{maxOtherIssues}}" ng-model="formData.issuesExpertiseOther" id="issuesExpertiseOther" name="issuesExpertiseOther" placeholder="Enter Any Other Issues Of Expertise" />
+								<div ng-if="isEditing" class="form-group">
+									<label for="issuesExpertiseOther">Other Issues of Expertise ({{(maxOtherIssues-profile.issues_expertise_other.length)}} characters remaining):</label>
+									<input type="text" class="form-control" maxlength="{{maxOtherIssues}}" ng-model="profile.issues_expertise_other" id="issuesExpertiseOther" name="issuesExpertiseOther" placeholder="Enter Any Other Issues Of Expertise" />
 								</div>
 								<span class="help-block" ng-show="errors.issuesExpertise" aria-live="polite">{{ errors.issuesExpertise }}</span> 
 							</div>
 							<div ng-class="{errorHighlight: errors.countriesExpertise}">
-								<h2>Countries of Expertise{{isCreating ? " (Required)" : ""}}</h2>
-								<ul ng-if="!isCreating" class="compactList">
-									<li ng-repeat="country in profile.countries_expertise">{{country}}</li>
+								<h2>Countries of Expertise{{isEditing ? " (Required)" : ""}}</h2>
+								<ul ng-if="!isEditing" class="compactList">
+									<li ng-repeat="country in profile.countries_expertise">{{country.country_name}}</li>
 									<li ng-if="profile.countries_expertise_other">{{profile.countries_expertise_other}}</li>
 								</ul>
-								<div ng-if="isCreating" class="form-group">
+								<div ng-if="isEditing" class="form-group">
 									<label for="countriesExpertise">Countries of Expertise:</label>
 									<select class="form-control" ng-change="addCountryExpertise()" ng-model="selectCountriesExpertise" id="countriesExpertise" name="countriesExpertise"
 										ng-options="country as country.country_name for country in countries">
 									</select>
 								</div>
-								<h3 ng-if="isCreating">Selected Countries:</h3>
-								<ul ng-if="isCreating" class="user-list">
-									<li ng-repeat="country in formData.userCountriesExpertise">{{country.country_name}} <a href ng-click="removeCountryExpertise($index)" class="btn btn-danger">delete</a></li>
+								<h3 ng-if="isEditing">Selected Countries:</h3>
+								<ul ng-if="isEditing" class="user-list">
+									<li ng-repeat="country in profile.countries_expertise">{{country.country_name}} <a href ng-click="removeCountryExpertise($index)" class="btn btn-danger">delete</a></li>
 								</ul>
-								<div ng-if="isCreating" class="form-group">
-									<label for="countriesExpertiseOther">Other Countries of Expertise ({{(maxOtherCountriesExpertise-formData.countriesExpertiseOther.length)}} characters remaining):</label>
-									<input type="text" class="form-control" maxlength="{{maxOtherCountriesExpertise}}" ng-model="formData.countriesExpertiseOther" id="countriesExpertiseOther" name="countriesExpertiseOther" placeholder="Enter Any Other Countries Of Expertise" />
+								<div ng-if="isEditing" class="form-group">
+									<label for="countriesExpertiseOther">Other Countries of Expertise ({{(maxOtherCountriesExpertise-profile.countries_expertise_other.length)}} characters remaining):</label>
+									<input type="text" class="form-control" maxlength="{{maxOtherCountriesExpertise}}" ng-model="profile.countries_expertise_other" id="countriesExpertiseOther" name="countriesExpertiseOther" placeholder="Enter Any Other Countries Of Expertise" />
 								</div>
 								<span class="help-block" ng-show="errors.countriesExpertise" aria-live="polite">{{ errors.countriesExpertise }}</span> 
 							</div>
 							<div ng-class="{errorHighlight: errors.regionsExpertise}">
-								<h2>Regions of Expertise{{isCreating ? " (Required)" : ""}}</h2>
-								<ul ng-if="!isCreating" class="compactList">
-									<li ng-repeat="region in profile.regions_expertise">{{region}}</li>
+								<h2>Regions of Expertise{{isEditing ? " (Required)" : ""}}</h2>
+								<ul ng-if="!isEditing" class="compactList">
+									<li ng-repeat="region in profile.regions_expertise">{{region.region}}</li>
 									<li ng-if="profile.regions_expertise_other">{{profile.regions_expertise_other}}</li>
 								</ul>
-								<div ng-if="isCreating" class="form-group">
+								<div ng-if="isEditing" class="form-group">
 									<label for="regionsExpertise">Regions of Expertise:</label>
 									<select class="form-control" ng-change="addRegionExpertise()" ng-model="selectRegionsExpertise" id="regionsExpertise" name="regionsExpertise"
 										ng-options="region as region.region for region in regions">
 									</select>
 								</div>
-								<h3 ng-if="isCreating">Selected Regions:</h3>
-								<ul ng-if="isCreating" class="user-list">
-									<li ng-repeat="region in formData.userRegionsExpertise">{{region.region}} <a href ng-click="removeRegionExpertise($index)" class="btn btn-danger">delete</a></li>
+								<h3 ng-if="isEditing">Selected Regions:</h3>
+								<ul ng-if="isEditing" class="user-list">
+									<li ng-repeat="region in profile.regions_expertise">{{region.region}} <a href ng-click="removeRegionExpertise($index)" class="btn btn-danger">delete</a></li>
 								</ul>
-								<div ng-if="isCreating" class="form-group">
-									<label for="regionsExpertiseOther">Other Regions of Expertise ({{(maxOtherRegions-formData.regionsExpertiseOther.length)}} characters remaining):</label>
-									<input type="text" class="form-control" maxlength="{{maxOtherRegions}}" ng-model="formData.regionsExpertiseOther" id="regionsExpertiseOther" name="regionsExpertiseOther" placeholder="Enter Any Other Regions Of Expertise" />
+								<div ng-if="isEditing" class="form-group">
+									<label for="regionsExpertiseOther">Other Regions of Expertise ({{(maxOtherRegions-profile.regions_expertise_other.length)}} characters remaining):</label>
+									<input type="text" class="form-control" maxlength="{{maxOtherRegions}}" ng-model="profile.regions_expertise_other" id="regionsExpertiseOther" name="regionsExpertiseOther" placeholder="Enter Any Other Regions Of Expertise" />
 								</div>
 								<span class="help-block" ng-show="errors.regionsExpertise" aria-live="polite">{{ errors.regionsExpertise }}</span> 
 							</div>
 							<div>
 								<h2>Languages</h2>
-								<ul ng-if="!isCreating">
-									<li class="languages" ng-repeat="language in profile.languages">{{language.language}} -- {{language.proficiency}}</li>
+								<ul ng-if="!isEditing">
+									<li class="languages" ng-repeat="language in profile.languages">{{language.name}} -- {{language.proficiency_level.proficiency_level}}</li>
 								</ul>
-								<div ng-if="isCreating" class="form-group">
+								<div ng-if="isEditing" class="form-group">
 									<label for="languages">Languages:</label>
 									<select class="form-control" ng-change="addLanguage()" ng-model="selectLanguages" id="languages" name="languages"
 										ng-options="language as language.name for language in languages">
 									</select>
 								</div>
-								<h3 ng-if="isCreating">Selected Languages:</h3>
-								<ul ng-if="isCreating" class="user-list">
-									<li ng-class="{errorHighlight: errors['language '+language.id]}" ng-repeat="language in formData.userLanguages">{{language.name}} 
+								<h3 ng-if="isEditing">Selected Languages:</h3>
+								<ul ng-if="isEditing" class="user-list">
+									<li ng-class="{errorHighlight: errors['language '+language.id]}" ng-repeat="language in profile.languages">{{language.name}} 
 										<label for="proficiency{{$index}}">Proficiency Level (Required):</label>
-										<select class="form-control" ng-model="formData.userLanguages[($index)].proficiency_level" id="proficiency{{$index}}" name="proficiency{{$index}}"
-											ng-options="proficiency as proficiency.proficiency_level for proficiency in languageProficiencies">
+										<select class="form-control" ng-model="profile.languages[($index)].proficiency_level" id="proficiency{{$index}}" name="proficiency{{$index}}"
+											ng-options="proficiency as proficiency.proficiency_level for proficiency in languageProficiencies track by proficiency.id">
 										</select>
 										<a href ng-click="removeLanguage($index)" class="btn btn-danger">delete</a>
 										<span class="help-block" ng-show="errors['language '+language.id]" aria-live="polite">{{ errors['language '+language.id] }}</span> 
@@ -237,38 +233,38 @@
 							</div>
 							<div>
 								<h2>Country Experience</h2>
-								<ul ng-if="!isCreating">
-									<li class="country-experience" ng-repeat="(country, experiences) in profile.countries_experience">
-										<h3>{{country}}</h3>
+								<ul ng-if="!isEditing">
+									<li class="country-experience" ng-repeat="country in profile.countries_experience">
+										<h3>{{country.country_name}}</h3>
 										<ul>
-											<li ng-repeat="experience in experiences.experience">{{experience}}</li>
-											<li ng-if="experiences.other_experience">{{experiences.other_experience}}</li>
+											<li ng-repeat="experience in country.experiences">{{experience.experience}}</li>
+											<li ng-if="country.other_experience">{{country.other_experience}}</li>
 										</ul>
 									</li>
 								</ul>
-								<div ng-if="isCreating" class="form-group">
+								<div ng-if="isEditing" class="form-group">
 									<label for="countriesExperience">Countries you've lived in:</label>
 									<select class="form-control" ng-change="addCountryExperience()" ng-model="selectCountriesExperience" id="countriesExperience" name="countriesExperience"
 										ng-options="country as country.country_name for country in countries">
 									</select>
 								</div>
-								<h3 ng-if="isCreating">Selected Countries:</h3>
-								<ul ng-if="isCreating" class="user-list">
-									<li ng-class="{errorHighlight: errors['country '+country.id]}" ng-repeat="country in formData.userCountriesExperience">{{country.country_name}} 
-										<label for="countryExperience{{$index}}">Experiences:</label>
-										<select class="form-control"  ng-change="addCountryExperienceLevel($index)" ng-model="formData.userCountriesExperience[$index].selectedExperience" id="countryExperience{{$index}}" name="countryExperience{{$index}}"
+								<h3 ng-if="isEditing">Selected Countries:</h3>
+								<ul ng-if="isEditing" class="user-list">
+									<li ng-class="{errorHighlight: errors['country '+country.id]}" ng-repeat="(index, country) in profile.countries_experience">{{country.country_name}} 
+										<label for="countryExperience{{index}}">Experiences:</label>
+										<select class="form-control"  ng-change="addCountryExperienceLevel(index)" ng-model="profile.countries_experience[index].selectedExperience" id="countryExperience{{index}}" name="countryExperience{{index}}"
 											ng-options="countryExperience as countryExperience.experience for countryExperience in countryExperiences">
 										</select>
-										<a href ng-click="removeCountryExperience($index)" class="btn btn-danger">delete</a>
+										<a href ng-click="removeCountryExperience(index)" class="btn btn-danger">delete</a>
 										<h4>Selected Experiences (Required):</h4>
 										<ul>
-											<li ng-repeat="experience in formData.userCountriesExperience[$index].experiences">{{experience.experience}} 
-												<a href ng-click="removeCountryExperienceLevel($parent.$index, $index)" class="btn btn-danger">delete</a>
+											<li ng-repeat="experience in profile.countries_experience[index].experiences">{{experience.experience}} 
+												<a href ng-click="removeCountryExperienceLevel($parent.index, $index)" class="btn btn-danger">delete</a>
 											</li>
 										</ul>
 										<div class="form-group">
-											<label for="countryExperienceOther{{$index}}">Other Experience ({{(maxOtherExperience-formData.userCountriesExperience[$index].otherExperience.length)}} characters remaining):</label>
-											<input type="text" class="form-control" maxlength="{{maxOtherExperience}}" ng-model="formData.userCountriesExperience[$index].otherExperience" id="countryExperienceOther{{$index}}" name="countryExperienceOther{{$index}}" placeholder="Enter Other Experiences You've Had While In This Country" />
+											<label for="countryExperienceOther{{index}}">Other Experience ({{(maxOtherExperience-profile.countries_experience[index].other_experience.length)}} characters remaining):</label>
+											<input type="text" class="form-control" maxlength="{{maxOtherExperience}}" ng-model="profile.countries_experience[index].other_experience" id="countryExperienceOther{{index}}" name="countryExperienceOther{{index}}" placeholder="Enter Other Experiences You've Had While In This Country" />
 										</div>
 										<span class="help-block" ng-show="errors['country '+country.id]" aria-live="polite">{{ errors['country '+country.id] }}</span> 
 									</li>
@@ -276,6 +272,27 @@
 							</div>
 						</div>
 						<div class="col-md-1"></div>
+					</div>
+					<!-- Code (guid) confirmation form for when user wants to edit their profile -->
+					<div class="row profile-code" ng-if="wantsToEdit && !isEditing">
+						<div class="col-md-4"></div>
+						<div class="col-md-4">
+							<label for="guid">To edit your profile, you must enter your confirmation code:</label>
+							<div class="input-group">
+								<input type="text" class="form-control" ng-model="guid" id="guid" name="guid" placeholder="Enter your confirmation code">
+								<span class="input-group-btn">
+									<button class="btn btn-success" ng-click="submitFunction='confirmCode'" type="submit"><span class="glyphicon glyphicon-ok" aria-hidden="true">
+								</span> CONFIRM CODE</button>
+							</span>
+							</div>
+							<h2 ng-if="!codePending">Click 'SEND CODE' to send a confirmation code to this profile's email address.</h2>
+							<h2 ng-if="codePending">A confirmation code for this profile is still pending; another cannot be sent at this time.</h2>
+						</div>
+						<div class="col-md-4"></div>
+					</div>
+					<!-- Message for when no profile is loaded -->
+					<div class="row" ng-if="!profile && !isEditing">
+						<h2>No valid profile selected!</h2>
 					</div>
 
 
@@ -286,7 +303,9 @@
 
 
 					<div class="buttons-group bottom-buttons"> 
-						<button ng-show="isCreating" type="submit" ng-click="submitFunction='createProfile'" class="btn btn-success">SUBMIT</button> <!-- For user submitting for first time -->
+						<button ng-show="profile && !isEditing && !wantsToEdit" type="submit" ng-click="submitFunction='editProfile'" class="btn btn-warning">EDIT PROFILE</button> <!-- To initiate the editing process -->
+						<button ng-show="profile && !isEditing && wantsToEdit" ng-disabled="codePending" type="submit" ng-click="submitFunction='sendCode'" class="btn btn-warning">SEND CODE</button> <!-- To initiate the editing process -->
+						<button ng-show="isEditing" type="submit" ng-click="submitFunction='createProfile'" class="btn btn-success">SUBMIT</button> <!-- For user submitting for first time -->
 						<a href="" class="btn btn-info" ng-click="redirectToHomepage(null, null)">LEAVE PAGE</a> <!-- For anyone to leave the page -->
 					</div>
 				</form>

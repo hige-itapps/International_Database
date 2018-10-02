@@ -38,9 +38,9 @@
 					<div class="col-md-4"></div>
 					<div class="col-md-4">
 						<ul id="pageList">
-							<li><a href="../profile_list/profile_list.php">Database Search</a></li>
-							<li><a href="../profile/profile.php?create">Create A Profile</a></li>
-							<li ng-if="isAdmin"><a href="../administrator/administrator.php">Administrator Page</a></li>
+							<li><a href="../profile_list/profile_list.php" class="btn btn-primary">Database Search</a></li>
+							<li><a href="../profile/profile.php?create" class="btn btn-primary">Create A Profile</a></li>
+							<li ng-if="isAdmin"><a href="../administrator/administrator.php" class="btn btn-primary">Administrator Page</a></li>
 						</ul>	
 					</div>
 					<div class="col-md-4"></div>

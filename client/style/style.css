@@ -129,7 +129,6 @@ h1, h2, h3, h4, h5{
 }
 .errorHighlight{
 	border: 3px solid red;
-	margin-bottom: -3px; /*To merge consecutive borders together*/
 }
 
 /*By default, have alerts be fixed at the bottom of the screen. Increase the z-index a bit to render in front of some other elements that might otherwise get in the way*/
@@ -180,10 +179,22 @@ hr{
 /*format the page list on the home page*/
 #pageList{
 	margin: 25px 0px;
+	padding: 0;
+	list-style: none;
 }
 #pageList li{
-	text-align: left;
 	padding-top: 5px;
+	min-width: 275px;
+	max-width: 300px;
+	height: 48px;
+	margin: auto;
+}
+#pageList li a{
+	width: 100%;
+    height: 100%;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 0;
 }
 
 
@@ -217,10 +228,6 @@ hr{
 	font-weight: bold;
 	font-size: 20px;
 	border-radius: 0;
-}
-.profile-button a:focus{
-	background-color: #274e28!important;
-    border-color: #193019!important;
 }
 .profile-summary-name, .profile-summary-affiliations, .profile-summary-email{
 	display: -webkit-box;
@@ -332,6 +339,12 @@ hr{
 	margin-right: 0!important;
 }
 
+/*Format code confirmation page*/
+.profile-code h2{
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
 /*navigation menus (pagination)*/
 nav{
 	text-align: center;
@@ -343,7 +356,7 @@ Source: https://codepen.io/scottloway/pen/Xjazjw*/
 	background-color: #c92a2a!important;
     border-color: #b42626!important;
 }
-.btn-danger:hover{
+.btn-danger:hover, .btn-danger:focus{
 	background-color: #a72323!important;
     border-color: #811b1b!important;
 }
@@ -352,7 +365,7 @@ Source: https://codepen.io/scottloway/pen/Xjazjw*/
 	background-color: #0b7285!important;
     border-color: #095e6d!important;
 }
-.btn-info:hover{
+.btn-info:hover, .btn-info:focus{
 	background-color: #08525f!important;
     border-color: #042d35!important;
 }
@@ -361,16 +374,16 @@ Source: https://codepen.io/scottloway/pen/Xjazjw*/
 	background-color: #396f3a!important;
     border-color: #305e31!important;
 }
-.btn-success:hover{
+.btn-success:hover, .btn-success:focus{
 	background-color: #2b542c!important;
     border-color: #1c361c!important;
 }
 
 .btn-warning{
-	background-color: #8a3c03!important;
-    border-color: #5d2802!important;
+	background-color: #b24d04!important;
+    border-color: #994203!important;
 }
-.btn-warning:hover{
+.btn-warning:hover, .btn-warning:focus{
 	background-color: #8a3c03!important;
     border-color: #5d2802!important;
 }
@@ -379,9 +392,13 @@ Source: https://codepen.io/scottloway/pen/Xjazjw*/
 	background-color: #1b6ec2!important;
 	border-color: #1861ac!important;
 }
-.btn-primary:hover{
+.btn-primary:hover, .btn-primary:focus{
 	background-color: #165a9e!important;
     border-color: #104376!important;
+}
+
+.btn:focus{
+	outline: #ff8703 3px solid!important;
 }
 
 /*Change pagination to be WCAG 2.0 AA compliant*/

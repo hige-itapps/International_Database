@@ -20,41 +20,41 @@ if (array_key_exists('create_profile', $_GET)) {
     $nonUniqueEmailError = "This address is already in use";
 
     //set vars if possible (also trim excess whitespace off strings where possible)
-    if(isset($_POST["userIssuesExpertise"])){$userIssuesExpertise = json_decode($_POST["userIssuesExpertise"], true);} //issues
-    if(isset($_POST["issuesExpertiseOther"])){$issuesExpertiseOther = trim(json_decode($_POST["issuesExpertiseOther"], true));} //other issues
-    if(isset($_POST["userCountriesExpertise"])){$userCountriesExpertise = json_decode($_POST["userCountriesExpertise"], true);} //countries of expertise
-    if(isset($_POST["countriesExpertiseOther"])){$countriesExpertiseOther = trim(json_decode($_POST["countriesExpertiseOther"], true));} //other countries of expertise
-    if(isset($_POST["userRegionsExpertise"])){$userRegionsExpertise = json_decode($_POST["userRegionsExpertise"], true);} //regions
-    if(isset($_POST["regionsExpertiseOther"])){$regionsExpertiseOther = trim(json_decode($_POST["regionsExpertiseOther"], true));} //other regions
-    if(isset($_POST["userLanguages"])){$userLanguages = json_decode($_POST["userLanguages"]);} //languages
-    if(isset($_POST["userCountriesExperience"])){$userCountriesExperience = json_decode($_POST["userCountriesExperience"]);} //country experiences
-    if(isset($_POST["firstName"])){$firstName = trim(json_decode($_POST["firstName"], true));} //first name
-    if(isset($_POST["lastName"])){$lastName = trim(json_decode($_POST["lastName"], true));} //last name
+    if(isset($_POST["issues_expertise"])){$issues_expertise = json_decode($_POST["issues_expertise"], true);} //issues
+    if(isset($_POST["issues_expertise_other"])){$issues_expertise_other = trim(json_decode($_POST["issues_expertise_other"], true));} //other issues
+    if(isset($_POST["countries_expertise"])){$countries_expertise = json_decode($_POST["countries_expertise"], true);} //countries of expertise
+    if(isset($_POST["countries_expertise_other"])){$countries_expertise_other = trim(json_decode($_POST["countries_expertise_other"], true));} //other countries of expertise
+    if(isset($_POST["regions_expertise"])){$regions_expertise = json_decode($_POST["regions_expertise"], true);} //regions
+    if(isset($_POST["regions_expertise_other"])){$regions_expertise_other = trim(json_decode($_POST["regions_expertise_other"], true));} //other regions
+    if(isset($_POST["languages"])){$languages = json_decode($_POST["languages"]);} //languages
+    if(isset($_POST["countries_experience"])){$countries_experience = json_decode($_POST["countries_experience"]);} //country experiences
+    if(isset($_POST["firstname"])){$firstname = trim(json_decode($_POST["firstname"], true));} //first name
+    if(isset($_POST["lastname"])){$lastname = trim(json_decode($_POST["lastname"], true));} //last name
     if(isset($_POST["login_email"])){$login_email = trim(json_decode($_POST["login_email"], true));} //login email
     if(isset($_POST["alternate_email"])){$alternate_email = trim(json_decode($_POST["alternate_email"], true));} //alternate email
     if(isset($_POST["phone"])){$phone = trim(json_decode($_POST["phone"], true));} //phone number
     if(isset($_POST["affiliations"])){$affiliations = trim(json_decode($_POST["affiliations"], true));} //affiliations
-    if(isset($_POST["socialLink"])){$socialLink = trim(json_decode($_POST["socialLink"], true));} //social link
+    if(isset($_POST["social_link"])){$social_link = trim(json_decode($_POST["social_link"], true));} //social link
 
     //make sure required fields are present 
-    if((!isset($userIssuesExpertise) || empty($userIssuesExpertise)) && (!isset($issuesExpertiseOther) || empty($issuesExpertiseOther))) {$returnVal["errors"]["issuesExpertise"] = $requiredError;} //require >= 1 issue of expertise
-    if((!isset($userCountriesExpertise) || empty($userCountriesExpertise)) && (!isset($countriesExpertiseOther) || empty($countriesExpertiseOther))) {$returnVal["errors"]["countriesExpertise"] = $requiredError;} //require >= 1 country of expertise
-    if((!isset($userRegionsExpertise) || empty($userRegionsExpertise)) && (!isset($regionsExpertiseOther) || empty($regionsExpertiseOther))) {$returnVal["errors"]["regionsExpertise"] = $requiredError;} //require >= 1 region of expertise
-    if(!isset($firstName) || empty($firstName)) {$returnVal["errors"]["firstName"] = $requiredError;} //require first name
-    if(!isset($lastName) || empty($lastName)) {$returnVal["errors"]["lastName"] = $requiredError;} //require last name
+    if((!isset($issues_expertise) || empty($issues_expertise)) && (!isset($issues_expertise_other) || empty($issues_expertise_other))) {$returnVal["errors"]["issuesExpertise"] = $requiredError;} //require >= 1 issue of expertise
+    if((!isset($countries_expertise) || empty($countries_expertise)) && (!isset($countries_expertise_other) || empty($countries_expertise_other))) {$returnVal["errors"]["countriesExpertise"] = $requiredError;} //require >= 1 country of expertise
+    if((!isset($regions_expertise) || empty($regions_expertise)) && (!isset($regions_expertise_other) || empty($regions_expertise_other))) {$returnVal["errors"]["regionsExpertise"] = $requiredError;} //require >= 1 region of expertise
+    if(!isset($firstname) || empty($firstname)) {$returnVal["errors"]["firstname"] = $requiredError;} //require first name
+    if(!isset($lastname) || empty($lastname)) {$returnVal["errors"]["lastname"] = $requiredError;} //require last name
     if(!isset($affiliations) || empty($affiliations)) {$returnVal["errors"]["affiliations"] = $requiredError;} //require affiliations
     //require language proficiency level
-    for ($i = 0; $i < count($userLanguages); $i++) {
-        if(!property_exists($userLanguages[$i], 'proficiency_level')){
-            $returnVal["errors"]["language ".$userLanguages[$i]->id] = $requiredError;
+    for ($i = 0; $i < count($languages); $i++) {
+        if(!property_exists($languages[$i], 'proficiency_level')){
+            $returnVal["errors"]["language ".$languages[$i]->id] = $requiredError;
         }
     }
     //require country experiences
-    for ($i = 0; $i < count($userCountriesExperience); $i++) {
+    foreach($countries_experience as $experience) {
         $tempOtherExperience = '';
-        if(property_exists($userCountriesExperience[$i], 'otherExperience')){$tempOtherExperience = trim($userCountriesExperience[$i]->otherExperience);}
-        if((!property_exists($userCountriesExperience[$i], 'experiences') || empty($userCountriesExperience[$i]->experiences)) && empty($tempOtherExperience)){
-            $returnVal["errors"]["country ".$userCountriesExperience[$i]->id] = $requiredError;
+        if(property_exists($experience, 'other_experience')){$tempOtherExperience = trim($experience->other_experience);}
+        if((!property_exists($experience, 'experiences') || empty($experience->experiences)) && empty($tempOtherExperience)){
+            $returnVal["errors"]["country ".$experience->id] = $requiredError;
         }
     }
 

@@ -34,13 +34,13 @@ if(!class_exists('DatabaseHelper')){
         /* For Users */
         /* Just quick summaries; only data from the users table- only return the primary email adresses */
         public function getAllUsersSummaries(){
-			$this->sql = $this->conn->prepare("Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email FROM users u");
+			$this->sql = $this->conn->prepare("Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email, u.phone, u.social_link, u.issues_expertise_other, u.regions_expertise_other, u.countries_expertise_other FROM users u");
 			$this->sql->execute();
             return $this->sql->fetchAll(PDO::FETCH_ASSOC); //return names as keys
         }
 
         public function getUserSummary($userID){
-            $this->sql = $this->conn->prepare("Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email FROM users u WHERE id = :id LIMIT 1");
+            $this->sql = $this->conn->prepare("Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email, u.phone, u.social_link, u.issues_expertise_other, u.regions_expertise_other, u.countries_expertise_other FROM users u WHERE id = :id LIMIT 1");
             $this->sql->bindParam(':id', $userID);
 			$this->sql->execute();
             return $this->sql->fetch(PDO::FETCH_ASSOC); //return names as keys
@@ -52,65 +52,71 @@ if(!class_exists('DatabaseHelper')){
             $user = null;
 
             //start with summary
-            $this->sql = $this->conn->prepare("Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email FROM users u WHERE id = :id LIMIT 1");
+            $this->sql = $this->conn->prepare("Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email, u.phone, u.social_link, u.issues_expertise_other, u.regions_expertise_other, u.countries_expertise_other FROM users u WHERE id = :id LIMIT 1");
             $this->sql->bindParam(':id', $userID);
 			$this->sql->execute();
             $user = $this->sql->fetch(PDO::FETCH_ASSOC); //set user to summary values to start with
 
             //get user's issues of expertise
-            $this->sql = $this->conn->prepare("SELECT i.issue FROM users u
+            $this->sql = $this->conn->prepare("SELECT i.id, i.issue FROM users u
                 INNER JOIN users_issues ui ON u.id = ui.user_id
                 INNER JOIN issues i ON ui.issue_id = i.id
             WHERE u.id = :id");
             $this->sql->bindParam(':id', $userID);
             $this->sql->execute();
-            $user["issues_expertise"] = $this->sql->fetchAll(PDO::FETCH_COLUMN); //append issues as an array
+            $user["issues_expertise"] = $this->sql->fetchAll(PDO::FETCH_ASSOC); //append issues as an array
 
             //get user's regions of expertise
-            $this->sql = $this->conn->prepare("SELECT r.region FROM users u
+            $this->sql = $this->conn->prepare("SELECT r.id, r.region FROM users u
                 INNER JOIN users_regions ur ON u.id = ur.user_id
                 INNER JOIN regions r ON ur.region_id = r.id
             WHERE u.id = :id");
             $this->sql->bindParam(':id', $userID);
             $this->sql->execute();
-            $user["regions_expertise"] = $this->sql->fetchAll(PDO::FETCH_COLUMN);
+            $user["regions_expertise"] = $this->sql->fetchAll(PDO::FETCH_ASSOC);
 
             //get user's countries of expertise
-            $this->sql = $this->conn->prepare("SELECT c.country_name FROM users u
+            $this->sql = $this->conn->prepare("SELECT c.id, c.country_name FROM users u
                 INNER JOIN users_country_expertise uce ON u.id = uce.user_id
                 INNER JOIN countries c ON uce.country_id = c.id
             WHERE u.id = :id");
             $this->sql->bindParam(':id', $userID);
             $this->sql->execute();
-            $user["countries_expertise"] = $this->sql->fetchAll(PDO::FETCH_COLUMN);
+            $user["countries_expertise"] = $this->sql->fetchAll(PDO::FETCH_ASSOC);
 
             //get user's language proficiencies
-            $this->sql = $this->conn->prepare("SELECT l.name AS language, lp.proficiency_level AS proficiency FROM users u
+            $this->sql = $this->conn->prepare("SELECT l.id, l.name, lp.id AS proficiency_id, lp.proficiency_level FROM users u
                 INNER JOIN users_languages ul ON u.id = ul.user_id
                 INNER JOIN languages l ON ul.language_id = l.id
                 INNER JOIN language_proficiencies lp ON ul.proficiency_id = lp.id
             WHERE u.id = :id");
             $this->sql->bindParam(':id', $userID);
             $this->sql->execute();
-            $user["languages"] = $this->sql->fetchAll(PDO::FETCH_ASSOC);
+            $user_languages = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save as a temporary array
+            $user["languages"] = []; //initialize languages array
+            foreach($user_languages as $language) {
+                $user["languages"][] = ["id"=>$language["id"], "name"=>$language["name"], "proficiency_level"=>["id"=>$language["proficiency_id"], "proficiency_level"=>$language["proficiency_level"]]]; //format object as needed
+            }
 
             //get user's country experience
-            $this->sql = $this->conn->prepare("SELECT c.country_name AS country, ce.experience AS experience, oce.experience AS other_experience FROM users_country_experience uce 
+            $this->sql = $this->conn->prepare("SELECT c.id AS country_id, c.country_name AS country_name, ce.id AS experience_id, ce.experience AS experience, oce.experience AS other_experience FROM users_country_experience uce 
                 INNER JOIN countries c ON uce.country_id = c.id 
                 LEFT JOIN country_experience ce ON uce.experience_id = ce.id
                 LEFT JOIN other_country_experience oce ON uce.other_experience_id = oce.id
             WHERE uce.user_id = :id");
             $this->sql->bindParam(':id', $userID);
             $this->sql->execute();
-            $user_country_experience /*$user["country_experience"]*/ = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save as a temporary array
+            $user_country_experience = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save as a temporary array
             $user["countries_experience"] = []; //initialize country experience array
             foreach($user_country_experience as $experience) {
-                if (!array_key_exists($experience["country"], $user["countries_experience"])) { //initialize country experience array for a specific country if not yet made
-                    $user["countries_experience"][$experience["country"]]["experience"] = []; //create sub array for experiences
-                    $user["countries_experience"][$experience["country"]]["other_experience"] = ""; //create empty string for possible other experience
+                if (!array_key_exists($experience["country_id"], $user["countries_experience"])) { //initialize country experience array for a specific country if not yet made
+                    $user["countries_experience"][$experience["country_id"]]["id"] = $experience["country_id"]; //save the country's id
+                    $user["countries_experience"][$experience["country_id"]]["country_name"] = $experience["country_name"]; //save the country's name
+                    $user["countries_experience"][$experience["country_id"]]["experiences"] = []; //create sub array for experiences
+                    $user["countries_experience"][$experience["country_id"]]["other_experience"] = ""; //create empty string for possible other experience
                 }
-                if (!empty($experience["experience"])) {$user["countries_experience"][$experience["country"]]["experience"][] = $experience["experience"];} //add experience to country's array
-                if (!empty($experience["other_experience"])) {$user["countries_experience"][$experience["country"]]["other_experience"] = $experience["other_experience"];} //add other experience to country's array
+                if (!empty($experience["experience"])) {$user["countries_experience"][$experience["country_id"]]["experiences"][] = ["id"=>$experience["experience_id"], "experience"=>$experience["experience"]];} //add experience to country's array
+                if (!empty($experience["other_experience"])) {$user["countries_experience"][$experience["country_id"]]["other_experience"] = $experience["other_experience"];} //add other experience to country's array
             }
 
             return $user;
@@ -174,6 +180,14 @@ if(!class_exists('DatabaseHelper')){
             return $this->sql->fetch(PDO::FETCH_COLUMN);
         }
 
+        /*Check if a confirmation code was already sent for a user (returns 1 for true or 0 for false)*/
+        public function isCodePending($userID){
+            $this->sql = $this->conn->prepare("SELECT EXISTS(SELECT 1 FROM users_codes WHERE user_id = :id)");
+            $this->sql->bindParam(':id', $userID);
+            $this->sql->execute();
+            return $this->sql->fetch(PDO::FETCH_COLUMN);
+        }
+
 
         /*Search functions*/
 
@@ -207,7 +221,7 @@ if(!class_exists('DatabaseHelper')){
             WHERE e.email LIKE '%sam%'
             */
             //This extra long query combines search results from all relevant tables; return only the primary email addresses
-            $this->sql = $this->conn->prepare("SELECT res.id, res.firstname, res.lastname, res.affiliations, res.foundIn, COALESCE(res.alternate_email, res.login_email) as email FROM 
+            $this->sql = $this->conn->prepare("SELECT res.id, res.firstname, res.lastname, res.affiliations, res.foundIn, COALESCE(res.alternate_email, res.login_email) as email, res.phone, res.social_link, res.issues_expertise_other, res.regions_expertise_other, res.countries_expertise_other FROM 
                 (SELECT u.*, 'profile' as foundIn FROM users u
                 WHERE CONCAT(u.firstname,' ', u.lastname) LIKE :wildcard
                 OR COALESCE(u.alternate_email, u.login_email) LIKE :wildcard

@@ -1,7 +1,4 @@
 <?php
-	/*Get DB connection*/
-	// include_once(dirname(__FILE__) . "/../../functions/database.php");
-	// $conn = connection();
 	$alertType = isset($_POST["alert_type"]) ? $_POST["alert_type"] : null; //set the alert type if it exists, otherwise set to null
 	$alertMessage = isset($_POST["alert_message"]) ? $_POST["alert_message"] : null; //set the alert type if it exists, otherwise set to null
 ?>

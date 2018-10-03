@@ -5,7 +5,8 @@ var higeApp = angular.module('HIGE-app', []);
 higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     //get PHP init variables
     $scope.profile = scope_profile;
-    $scope.isEditing = scope_isEditing;
+    $scope.isCreating = scope_isCreating;
+    $scope.isEditing = $scope.isCreating; //copy the 'isCreating' value to 'isEditing'
     $scope.issues = scope_issues;
     $scope.countries = scope_countries;
     $scope.regions = scope_regions;
@@ -134,15 +135,6 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     }
 
 
-    //submit the application - use a different function depending on the submitFunction variable
-    /*$scope.submit = function(){
-        console.log("submitFunction: " + $scope.submitFunction);
-        if($scope.submitFunction === 'createProfile'){$scope.createProfile();}
-        else if($scope.submitFunction === 'editProfile'){$scope.editProfile();}
-        else if($scope.submitFunction === 'confirmCode'){$scope.confirmCode();}
-    }*/
-
-
     //create a new profile; send data to the server for verification- if accepted, then redirect to homepage with message, otherwise display errors
     $scope.createProfile = function() {
         console.log($scope.profile);
@@ -155,7 +147,6 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
         //loop through form data, appending each field to the profile object
         for (var key in $scope.profile) {
             if ($scope.profile.hasOwnProperty(key)) {
-                //console.log(key + " -> " + JSON.stringify($scope.profile[key]));
                 fd.append(key, JSON.stringify($scope.profile[key]));
             }
         }
@@ -187,6 +178,9 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
             }
             else{ //no errors
                 $scope.errors = []; //clear any old errors
+                var newAlertType = "success";
+                var newAlertMessage = "Success! Your profile has been submitted and is awaiting administrator approval. Once approved, it will be publicly searchable.";
+                $scope.redirectToHomepage(newAlertType, newAlertMessage); //redirect to the homepage with the message
             }
            
         },function (error){
@@ -205,7 +199,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
 
     //try to send a confirmation code
     $scope.sendCode = function(){
-        console.log("sending code!");
+        $scope.loadingAlert(); //start a loading alert
         $http({
             method  : 'POST',
             url     : '/../api.php?send_code',
@@ -240,7 +234,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
 
     //try to confirm a confirmation code
     $scope.confirmCode = function(){
-        console.log("confirming code!");
+        $scope.loadingAlert(); //start a loading alert
         $http({
             method  : 'POST',
             url     : '/../api.php?confirm_code',
@@ -279,7 +273,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
 
     //redirect the user to the homepage. Optionally, send an alert which will show up on the next page, consisting of a type(success, warning, danger, etc.) and message
     $scope.redirectToHomepage = function(alert_type, alert_message){
-        var homeURL = '/'; //url to homepage
+        var homeURL = '../home/home.php'; //url to homepage, required in order to correctly pass POST data
 
         if(alert_type == null) //if no alert message to send, simply redirect
         {
@@ -291,6 +285,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
         }
         else //if there IS an alert message to send, fill out an invisible form & submit so the data can be sent as POST
         {
+            alert("redirecting with " + alert_type + "; " + alert_message);
             var form = $('<form type="hidden" action="' + homeURL + '" method="post">' +
                 '<input type="text" name="alert_type" value="' + alert_type + '" />' +
                 '<input type="text" name="alert_message" value="' + alert_message + '" />' +

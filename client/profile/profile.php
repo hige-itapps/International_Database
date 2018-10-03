@@ -4,7 +4,7 @@
 	$database = new DatabaseHelper();
 
 	$profile = null; //profile variable will be set if trying to load one
-	$isEditing = false; //variable set to true if creating a new profile
+	$isCreating = false; //variable set to true if creating a new profile
 	$loaded_profile = false; //check if profile was loaded correctly
 	$codePending = true; //set if loading a users profile; used to check if a pending confirmation code exists
 	$issues = $database->getIssues();
@@ -25,7 +25,7 @@
 		
 	}
 	else if(isset($_GET["create"])){
-		$isEditing = true;	
+		$isCreating = true;	
 	}
 
 	$database->close();
@@ -48,7 +48,7 @@
 		<script type="text/javascript">
 			var scope_profile = <?php echo json_encode($profile); ?>;
 			var scope_codePending = <?php echo json_encode(boolval($codePending)); ?>;
-			var scope_isEditing = <?php echo json_encode($isEditing); ?>;
+			var scope_isCreating = <?php echo json_encode($isCreating); ?>;
 			var scope_issues = <?php echo json_encode($issues); ?>;
 			var scope_countries = <?php echo json_encode($countries); ?>;
 			var scope_regions = <?php echo json_encode($regions); ?>;
@@ -82,7 +82,7 @@
 					<div class="row">
 						<h1 class="title" ng-if="!isEditing && !wantsToEdit">User Profile</h1>
 						<h1 class="title" ng-if="wantsToEdit && !isEditing">Profile Confirmation</h1>
-						<h1 class="title" ng-if="isEditing">Edit Profile</h1>
+						<h1 class="title" ng-if="isEditing">{{isCreating ? "Create" : "Edit"}} Profile</h1>
 						<h2 class="title expiration" ng-if="expiration_timestamp > 0">Code Expires: {{expiration_timestamp  * 1000 | date:'yyyy-MM-dd HH:mm:ss'}}</h2>
 					</div>
 					<!-- Form for viewing or editing profile information -->

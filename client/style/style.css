@@ -125,7 +125,7 @@ h1, h2, h3, h4, h5{
 
 /*format error help blocks, and highlight relevant fields*/
 .help-block{
-	color: red!important;
+	color: #e00303!important;
 }
 .errorHighlight{
 	border: 3px solid red;

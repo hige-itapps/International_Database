@@ -344,6 +344,10 @@ hr{
 	font-size: 1.2em;
 	font-weight: bold;
 }
+/*Format expiration time*/
+.expiration{
+	color: #c92a2a;
+}
 
 /*navigation menus (pagination)*/
 nav{

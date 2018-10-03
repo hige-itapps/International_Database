@@ -180,12 +180,38 @@ if(!class_exists('DatabaseHelper')){
             return $this->sql->fetch(PDO::FETCH_COLUMN);
         }
 
-        /*Check if a confirmation code was already sent for a user (returns 1 for true or 0 for false)*/
-        public function isCodePending($userID){
-            $this->sql = $this->conn->prepare("SELECT EXISTS(SELECT 1 FROM users_codes WHERE user_id = :id)");
-            $this->sql->bindParam(':id', $userID);
+        /*Check if a confirmation code was already sent for a user (returns 1 or 0)*/
+        public function isCodePending($email){
+            $this->sql = $this->conn->prepare("SELECT EXISTS(SELECT 1 FROM users_codes WHERE email = :email)");
+            $this->sql->bindParam(':email', $email);
             $this->sql->execute();
             return $this->sql->fetch(PDO::FETCH_COLUMN);
+        }
+
+        /*Check if a confirmation code is correct for a given email (returns an expiration timestamp if so, or nothing otherwise)*/
+        public function confirmCode($email, $code){
+            $this->sql = $this->conn->prepare("SELECT expiration_timestamp FROM users_codes WHERE email = :email AND code = :code LIMIT 1");
+            $this->sql->bindParam(':email', $email);
+            $this->sql->bindParam(':code', $code);
+            $this->sql->execute();
+            return $this->sql->fetch(PDO::FETCH_COLUMN);
+        }
+
+        /* Save a profile's code to the database -- need to specify an expiration date */
+        public function saveCode($email, $code, $expiration_timestamp){
+            $this->sql = $this->conn->prepare("INSERT INTO users_codes(email, code, expiration_timestamp) VALUES(:email, :code, :expiration_timestamp)");
+            $this->sql->bindParam(':email', $email);
+            $this->sql->bindParam(':code', $code);
+            $this->sql->bindParam(':expiration_timestamp', $expiration_timestamp);
+            return $this->sql->execute();
+        }
+
+        /*Get both possible emails from a user*/
+        public function getBothEmails($userID){
+            $this->sql = $this->conn->prepare("SELECT login_email, alternate_email FROM users WHERE id = :id");
+            $this->sql->bindParam(':id', $userID);
+            $this->sql->execute();
+            return $this->sql->fetch(PDO::FETCH_ASSOC);
         }
 
 

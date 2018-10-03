@@ -25,9 +25,10 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     if(!$scope.profile.languages){$scope.profile.languages = [];}
     if(!$scope.profile.countries_experience){$scope.profile.countries_experience = {};}
     $scope.errors = []; //list of form errors
-    $scope.guid = ''; //the user's specified GUID
+    $scope.code = ''; //the user's specified code
+    $scope.expiration_timestamp = null; //set to the code's expiration timestamp if there is one
     $scope.wantsToEdit = false; //set to true if user wishes to edit their profile
-    $scope.guidVerified = false; //set to true if the GUID & login_email combination is verified as correct
+    $scope.codeVerified = false; //set to true if the code & login_email combination is verified as correct
 
     $scope.maxFirstName = $scope.usersMaxLengths["firstname"];
     $scope.maxLastName = $scope.usersMaxLengths["lastname"];
@@ -134,10 +135,12 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
 
 
     //submit the application - use a different function depending on the submitFunction variable
-    $scope.submit = function(){
+    /*$scope.submit = function(){
+        console.log("submitFunction: " + $scope.submitFunction);
         if($scope.submitFunction === 'createProfile'){$scope.createProfile();}
         else if($scope.submitFunction === 'editProfile'){$scope.editProfile();}
-    }
+        else if($scope.submitFunction === 'confirmCode'){$scope.confirmCode();}
+    }*/
 
 
     //create a new profile; send data to the server for verification- if accepted, then redirect to homepage with message, otherwise display errors
@@ -184,8 +187,6 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
             }
             else{ //no errors
                 $scope.errors = []; //clear any old errors
-                var newAlertType = null;
-                var newAlertMessage = null;
             }
            
         },function (error){
@@ -199,6 +200,80 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     //initiate the editing process
     $scope.editProfile = function(){
         $scope.wantsToEdit = true;
+    }
+
+
+    //try to send a confirmation code
+    $scope.sendCode = function(){
+        console.log("sending code!");
+        $http({
+            method  : 'POST',
+            url     : '/../api.php?send_code',
+            data    : $.param({email: $scope.profile.email}),  // pass in the profile object
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  //standard paramater encoding
+        })
+        .then(function (response) {
+            console.log(response, 'res');
+            //data = response.data;
+            if(typeof response.data.success === 'undefined'){ //unexpected result!
+                console.log(JSON.stringify(response, null, 4));
+                $scope.alertType = "danger";
+                $scope.alertMessage = "There was an unexpected error with your submission! Server response: " + JSON.stringify(response, null, 4);
+            }
+            else if(!response.data.success){ //there was at least 1 error
+                $scope.alertType = "danger";
+                $scope.alertMessage = "Error sending code: " + JSON.stringify(response.data.error);
+            }
+            else{ //no errors
+                $scope.alertType = "success";
+                $scope.alertMessage = "A confirmation code was successfully sent out to this profile's email address.";
+                $scope.codePending = true;
+            }
+           
+        },function (error){
+            console.log(error, 'can not get data.');
+            $scope.alertType = "danger";
+            $scope.alertMessage = "There was an unexpected error when trying to send your code: " + error.status + " " + error.statusText + ". Please contact an admin about this issue!";
+        });
+    }
+
+
+    //try to confirm a confirmation code
+    $scope.confirmCode = function(){
+        console.log("confirming code!");
+        $http({
+            method  : 'POST',
+            url     : '/../api.php?confirm_code',
+            data    : $.param({userID: $scope.profile.id, email: $scope.profile.email, code: $scope.code}),  // pass in the profile object
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  //standard paramater encoding
+        })
+        .then(function (response) {
+            console.log(response, 'res');
+            //data = response.data;
+            if(typeof response.data.success === 'undefined'){ //unexpected result!
+                console.log(JSON.stringify(response, null, 4));
+                $scope.alertType = "danger";
+                $scope.alertMessage = "There was an unexpected error with your submission! Server response: " + JSON.stringify(response, null, 4);
+            }
+            else if(!response.data.success){ //there was at least 1 error
+                $scope.alertType = "danger";
+                $scope.alertMessage = "Error confirming code: " + JSON.stringify(response.data.error);
+            }
+            else{ //no errors
+                $scope.alertType = "success";
+                $scope.alertMessage = "Confirmation Code Verified! Please submit your edits before the specified expiration time.";
+                $scope.wantsToEdit = false;
+                $scope.isEditing = true;
+                $scope.profile.login_email = response.data.login_email; //set the wmu address
+                $scope.profile.alternate_email = response.data.alternate_email; //set the optional non-wmu address
+                $scope.expiration_timestamp = response.data.expiration_time; //set the expiration time
+            }
+           
+        },function (error){
+            console.log(error, 'can not get data.');
+            $scope.alertType = "danger";
+            $scope.alertMessage = "There was an unexpected error when trying to confirm your code: " + error.status + " " + error.statusText + ". Please contact an admin about this issue!";
+        });
     }
 
 

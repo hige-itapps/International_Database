@@ -91,11 +91,78 @@ if (array_key_exists('create_profile', $_GET)) {
         }
     }
 
-    $returnVal["errors"]["other"] = "Other Error";
-
-
     $database->close();
     if(empty($returnVal["errors"])){$returnVal["success"] = true;} //if no errors, define success as true
+    echo json_encode($returnVal); //return results
+}
+
+
+
+//For sending a confirmation code
+else if (array_key_exists('send_code', $_GET)) {
+    $returnVal = []; //associative array to return afterwards
+    $returnVal["success"] = false; //set to true if there are no errors after validation & running
+    $returnVal["error"] = []; //push errors to this array if any arise
+    $database = new DatabaseHelper(); //database helper object
+
+    if(isset($_POST["email"])){ //if email was sent
+        $email = trim($_POST["email"]);
+
+        if($database->isCodePending($email)){ //code already pending
+            $returnVal["error"] = "Code already pending!";
+        }else{ //generate a new code, save it to the database, and send it in an email.
+            $totalBytes = 16; //byte length of the string
+            $bytes = openssl_random_pseudo_bytes($totalBytes, $cstrong);
+            $hex   = bin2hex($bytes); //final code in hex
+            $current_timestamp = time(); //current datetime
+            $expiration_timestamp = strtotime('+1 day', $current_timestamp); //add 1 day to the deadline
+            $result = $database->saveCode($email, $hex, $expiration_timestamp); //save to database
+            if(!$result){ //database error
+                $returnVal["error"] = "Error inserting new code into database.";
+            }
+        }
+    }else{ //email not sent
+        $returnVal["error"] = "No valid email specified!";
+    }
+
+    $database->close();
+    if(empty($returnVal["error"])){$returnVal["success"] = true;} //if no errors, define success as true
+    echo json_encode($returnVal); //return results
+}
+
+
+
+//For verifying a confirmation code
+else if (array_key_exists('confirm_code', $_GET)) {
+    $returnVal = []; //associative array to return afterwards
+    $returnVal["success"] = false; //set to true if there are no errors after validation & running
+    $returnVal["error"] = []; //push errors to this array if any arise
+    $database = new DatabaseHelper(); //database helper object
+
+    if(isset($_POST["userID"]) && isset($_POST["email"]) && isset($_POST["code"])){ //if userID, email, and code were sent
+        $userID = $_POST["userID"];
+        $email = trim($_POST["email"]);
+        $code = trim($_POST["code"]);
+
+        if(!boolval($database->isCodePending($email))){ //code isn't pending
+            $returnVal["error"] = "There is currently no pending code for this profile.";
+        }else{
+            $res = $database->confirmCode($email, $code); //confirm the code, ge the timestamp if it exists
+            if(!$res){ //code/email combo is incorrect
+                $returnVal["error"] = "Incorrect code for this profile!";
+            }else{ //everything is correct, append additional data for use on the edit profile page
+                $bothEmails = $database->getBothEmails($userID);
+                $returnVal["login_email"] = $bothEmails["login_email"]; //user's wmu email
+                $returnVal["alternate_email"] = $bothEmails["alternate_email"]; //user's optional non-wmu email
+                $returnVal["expiration_time"] = $res; //the expiration timestamp of the given code
+            }
+        } 
+    }else{ //email or code not sent
+        $returnVal["error"] = "Code, email address, or user ID was not given.";
+    }
+
+    $database->close();
+    if(empty($returnVal["error"])){$returnVal["success"] = true;} //if no errors, define success as true
     echo json_encode($returnVal); //return results
 }
 

@@ -1,17 +1,6 @@
 <?php
 	/*Get DB connection*/
 	include_once(dirname(__FILE__) . "/../../server/database.php");
-
-
-	/*$totalBytes = 16;
-	$bytes = openssl_random_pseudo_bytes($totalBytes, $cstrong);
-	$hex   = bin2hex($bytes);
-
-	echo "Lengths: Bytes: $totalBytes and Hex: " . strlen($hex) . PHP_EOL;
-	var_dump($hex);
-	var_dump($cstrong);
-	echo PHP_EOL;*/
-
 	$database = new DatabaseHelper();
 
 	$profile = null; //profile variable will be set if trying to load one
@@ -29,8 +18,11 @@
 
 	if(isset($_GET["id"])){ //if ID is set, get the full user profile
 		$profile = $database->getUserProfile($_GET["id"]);
-		if ($profile) {$loaded_profile = true;}
-		$codePending = $database->isCodePending($_GET["id"]);
+		if ($profile) {
+			$loaded_profile = true;
+			$codePending = $database->isCodePending($profile["email"]);
+		}
+		
 	}
 	else if(isset($_GET["create"])){
 		$isEditing = true;	
@@ -55,7 +47,7 @@
 		<!-- Set values from PHP on startup, accessible by the AngularJS Script -->
 		<script type="text/javascript">
 			var scope_profile = <?php echo json_encode($profile); ?>;
-			var scope_codePending = <?php echo json_encode($codePending); ?>;
+			var scope_codePending = <?php echo json_encode(boolval($codePending)); ?>;
 			var scope_isEditing = <?php echo json_encode($isEditing); ?>;
 			var scope_issues = <?php echo json_encode($issues); ?>;
 			var scope_countries = <?php echo json_encode($countries); ?>;
@@ -91,9 +83,10 @@
 						<h1 class="title" ng-if="!isEditing && !wantsToEdit">User Profile</h1>
 						<h1 class="title" ng-if="wantsToEdit && !isEditing">Profile Confirmation</h1>
 						<h1 class="title" ng-if="isEditing">Edit Profile</h1>
+						<h2 class="title expiration" ng-if="expiration_timestamp > 0">Code Expires: {{expiration_timestamp  * 1000 | date:'yyyy-MM-dd HH:mm:ss'}}</h2>
 					</div>
 					<!-- Form for viewing or editing profile information -->
-					<div class="row profile" ng-if="(profile || isEditing) && !wantsToEdit">
+					<div class="row profile" ng-show="(profile || isEditing) && !wantsToEdit">
 						<div class="col-md-1"></div>
 						<div class="col-md-3 profile-summary" ng-if="!isEditing">
 							<h2>{{profile.firstname}} {{profile.lastname}}</h2>
@@ -273,15 +266,15 @@
 						</div>
 						<div class="col-md-1"></div>
 					</div>
-					<!-- Code (guid) confirmation form for when user wants to edit their profile -->
-					<div class="row profile-code" ng-if="wantsToEdit && !isEditing">
+					<!-- Code confirmation form for when user wants to edit their profile -->
+					<div class="row profile-code" ng-show="wantsToEdit && !isEditing">
 						<div class="col-md-4"></div>
 						<div class="col-md-4">
-							<label for="guid">To edit your profile, you must enter your confirmation code:</label>
+							<label for="code">To edit your profile, you must enter your confirmation code:</label>
 							<div class="input-group">
-								<input type="text" class="form-control" ng-model="guid" id="guid" name="guid" placeholder="Enter your confirmation code">
+								<input type="text" class="form-control" ng-model="code" id="code" name="code" placeholder="Enter your confirmation code">
 								<span class="input-group-btn">
-									<button class="btn btn-success" ng-click="submitFunction='confirmCode'" type="submit"><span class="glyphicon glyphicon-ok" aria-hidden="true">
+									<button class="btn btn-success" ng-click="confirmCode()" type="button"><span class="glyphicon glyphicon-ok" aria-hidden="true">
 								</span> CONFIRM CODE</button>
 							</span>
 							</div>
@@ -291,7 +284,7 @@
 						<div class="col-md-4"></div>
 					</div>
 					<!-- Message for when no profile is loaded -->
-					<div class="row" ng-if="!profile && !isEditing">
+					<div class="row" ng-show="!profile && !isEditing">
 						<h2>No valid profile selected!</h2>
 					</div>
 
@@ -303,9 +296,9 @@
 
 
 					<div class="buttons-group bottom-buttons"> 
-						<button ng-show="profile && !isEditing && !wantsToEdit" type="submit" ng-click="submitFunction='editProfile'" class="btn btn-warning">EDIT PROFILE</button> <!-- To initiate the editing process -->
-						<button ng-show="profile && !isEditing && wantsToEdit" ng-disabled="codePending" type="submit" ng-click="submitFunction='sendCode'" class="btn btn-warning">SEND CODE</button> <!-- To initiate the editing process -->
-						<button ng-show="isEditing" type="submit" ng-click="submitFunction='createProfile'" class="btn btn-success">SUBMIT</button> <!-- For user submitting for first time -->
+						<button ng-show="profile && !isEditing && !wantsToEdit" type="button" ng-click="editProfile()" class="btn btn-warning">EDIT PROFILE</button> <!-- To initiate the editing process -->
+						<button ng-show="profile && !isEditing && wantsToEdit" ng-disabled="codePending" type="button" ng-click="sendCode()" class="btn btn-warning">SEND CODE</button> <!-- To initiate the editing process -->
+						<button ng-show="isEditing" type="button" ng-click="createProfile()" class="btn btn-success">SUBMIT</button> <!-- For user submitting for first time -->
 						<a href="" class="btn btn-info" ng-click="redirectToHomepage(null, null)">LEAVE PAGE</a> <!-- For anyone to leave the page -->
 					</div>
 				</form>

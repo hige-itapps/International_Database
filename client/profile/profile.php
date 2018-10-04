@@ -69,7 +69,7 @@
 		<?php include '../include/site_banner.html'; ?>
 
 	<div id="MainContent" role="main">
-		<script src="../include/outdatedbrowser.js"></script> <!-- show site error if outdated -->
+		<script src="../include/outdatedbrowser.js" nomodule></script> <!-- show site error if outdated -->
 		<?php include '../include/noscript.html'; ?> <!-- show site error if javascript is disabled -->
 
 			<!--AngularJS Controller-->

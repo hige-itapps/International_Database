@@ -91,6 +91,14 @@ if (array_key_exists('create_profile', $_GET)) {
         }
     }
 
+    //If there are no errors after all validation, then attempt to insert the data
+    if(empty($returnVal["errors"])){
+        $insertRes = $database->insertProfile();
+        if(isset($insertRes["error"])){ //if there was an error inserting
+            $returnVal["errors"]["other"] = "There was an error inserting your profile into the database: ".$insertRes["error"];
+        }
+    }
+
     $database->close();
     if(empty($returnVal["errors"])){$returnVal["success"] = true;} //if no errors, define success as true
     echo json_encode($returnVal); //return results

@@ -153,7 +153,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
 
         $http({
             method  : 'POST',
-            url     : '/../api.php?create_profile',
+            url     : '../api.php?create_profile',
             data    : fd,  // pass in the profile object
             transformRequest: angular.identity,
             headers : { 'Content-Type': undefined } //don't encode the profile array
@@ -202,7 +202,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
         $scope.loadingAlert(); //start a loading alert
         $http({
             method  : 'POST',
-            url     : '/../api.php?send_code',
+            url     : '../api.php?send_code',
             data    : $.param({email: $scope.profile.email}),  // pass in the profile object
             headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  //standard paramater encoding
         })
@@ -237,7 +237,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
         $scope.loadingAlert(); //start a loading alert
         $http({
             method  : 'POST',
-            url     : '/../api.php?confirm_code',
+            url     : '../api.php?confirm_code',
             data    : $.param({userID: $scope.profile.id, email: $scope.profile.email, code: $scope.code}),  // pass in the profile object
             headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  //standard paramater encoding
         })

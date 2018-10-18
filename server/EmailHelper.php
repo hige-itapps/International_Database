@@ -1,0 +1,133 @@
+<?php
+/*This class is used to save and send emails.*/
+
+/*Get DB connection*/
+include_once(dirname(__FILE__) . "/DatabaseHelper.php");
+
+/*Use PHP mailer functions*/
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require dirname(__FILE__) . '/../PHPMAILER/src/PHPMailer.php';
+require dirname(__FILE__) . '/../PHPMAILER/src/SMTP.php';
+
+if (!class_exists('PHPMailer'))
+	require_once dirname(__FILE__) . '/../PHPMAILER/src/Exception.php';
+if (!class_exists('PHPMailer'))
+	require_once dirname(__FILE__) . '/../PHPMAILER/src/PHPMailer.php';
+if (!class_exists('PHPMailer'))
+	require_once dirname(__FILE__) . '/../PHPMAILER/src/SMTP.php';
+
+/*Logger*/
+//include_once(dirname(__FILE__) . "/Logger.php");
+
+class EmailHelper
+{
+	//private $logger; //for logging to files
+	private $mailHost; //mail server information from config.ini
+	private $mailUsername;
+	private $mailNoReply;
+	private $mailPassword;
+	private $mailPort;
+	private $defaultSubject; //the default subject line for when it isn't specified
+	private $customFooter; //custom email footer to be attached to the bottom of every sent message
+
+	/* Constructior retrieves configurations and initializes private vars */
+	public function __construct(){
+		//$this->logger = new Logger(); //initialize the logger
+		$config_url = dirname(__FILE__).'/../config.ini'; //set config file url
+		$settings = parse_ini_file($config_url); //get all settings		
+		$this->mailHost = $settings["mail_host"]; //load mail host
+		$this->mailUsername = $settings["mail_username"]; //load mail username
+		$this->mailNoReply = $settings["mail_noreply"]; //load mail no-reply address
+		$this->mailPassword = $settings["mail_password"]; //load mail password
+		$this->mailPort = $settings["mail_port"]; //load mail port number
+
+		$this->defaultSubject = "International Scholars Database Update";
+		$this->customFooter = "
+		
+		<strong>Please do not reply to this email, this account is not being monitored.
+		If you need more information, please contact the International Scholars Database administrator.</strong>";
+	}
+
+	//Send an email to a specific address, with a custom message and subject. If the subject is left blank, a default one is prepared instead.
+	//NOTE- must save to the database first! Use the appID to save it correctly.
+	public function customEmail($toAddress, $customMessage, $customSubject) {
+		$data = array(); // array to pass back data
+
+		$customSubject = trim($customSubject); //remove surrounding spaces
+		if($customSubject == null || $customSubject === ''){//it's blank, so just use the default subject
+			$customSubject = $this->defaultSubject;
+		}
+
+		$fullMessage = $customMessage . $this->customFooter; //combine everything
+
+		$database = new DatabaseHelper(); //database helper object used for some verification and insertion
+
+		$saveResult = $database->saveEmail($toAddress, $customSubject, $fullMessage); //try to save the email message
+		$data["saveSuccess"] = $saveResult; //save it to return it later
+
+		if($saveResult === true){//if it saved, then try to send it
+			//insert <br>s where newlines are so the message renders correctly in email clients
+			$fullMessage = nl2br($fullMessage);
+
+			$mail = new PHPMailer(true); //set exceptions to true
+			try{
+				//Server settings
+				//$mail->SMTPDebug = 2;                                 // Enable verbose debug output
+				$mail->isSMTP();                                      // Set mailer to use SMTP
+				$mail->Host = $this->mailHost;							  // Specify main and backup SMTP servers
+				$mail->SMTPAuth = true;                               // Enable SMTP authentication
+				$mail->Username = $this->mailUsername;				      // SMTP username
+				$mail->Password = $this->mailPassword;	                  // SMTP password
+				$mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+				$mail->Port = $this->mailPort;                              // TCP port to connect to
+
+				//Recipients
+				$mail->setFrom($this->mailUsername, 'Mailer');
+				$mail->addReplyTo($this->mailNoReply, 'No-Reply');
+					
+				//Content
+				$mail->isHTML(true);                                  // Set email format to HTML
+				$mail->addAddress($toAddress);
+				$mail->Subject = $customSubject;
+				$mail->Body    = $fullMessage;
+
+				$data["sendSuccess"] = $mail->send(); //notify of successful sending of message (or unsuccessful if it fails)
+				if(!$data["sendSuccess"]){ //error
+					$data["sendError"] = 'Message could not be sent. Mailer Error: '.$mail->ErrorInfo;
+				}
+			}
+			catch (Exception $e) {
+				$data["sendSuccess"] = false; //notify of message sending failure
+				$data["sendError"] = 'Message could not be sent. Exception: '.$e->getMessage();
+			}
+		}
+		else{
+			$data["saveError"] = 'Email could not be saved to the database.';
+		}
+
+		$database->close(); //close database connections
+
+		return $data; //pass back the data array
+	}
+
+	//The email to send to the profile owner to let them know of their new confirmation code
+	public function codeConfirmationSendEmail($toAddress, $code){
+		$subject = "International Scholars Database - Confirmation Code";
+
+		$body = "Greetings,
+			Here is your confirmation code to create/update your profile in the WMU International Scholars Database:
+
+			#code
+
+			Please paste this code into the box provided on the Profile Confirmation page. You can find this page at international-scholars.wmich.edu.
+			If you did not choose to create/update a profile on our site, please ignore this email.
+		";
+		$body = str_replace("#code", nl2br($code), $body); //insert the code into the message
+
+		return $this->customEmail($toAddress, $body, $subject);
+	}
+}
+	
+?>

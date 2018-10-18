@@ -1,6 +1,6 @@
 <?php
 	/*Get DB connection*/
-	include_once(dirname(__FILE__) . "/../../server/database.php");
+	include_once(dirname(__FILE__) . "/../../server/DatabaseHelper.php");
 	$database = new DatabaseHelper();
 
 	$profiles = [];

@@ -1,6 +1,6 @@
 <?php
 	/*User validation*/
-	include_once(dirname(__FILE__) . "/../../include/CAS_login.php");
+	include_once(dirname(__FILE__) . "/../../CAS/CAS_login.php");
 	
 	/*Get DB connection*/
 	//nclude_once(dirname(__FILE__) . "/../../functions/database.php");

@@ -1,6 +1,6 @@
 <?php
 	/*Get DB connection*/
-	include_once(dirname(__FILE__) . "/../../server/database.php");
+	include_once(dirname(__FILE__) . "/../../server/DatabaseHelper.php");
 	$database = new DatabaseHelper();
 
 	$profile = null; //profile variable will be set if trying to load one
@@ -83,7 +83,7 @@
 						<h1 class="title" ng-if="!isEditing && !wantsToEdit">User Profile</h1>
 						<h1 class="title" ng-if="wantsToEdit && !isEditing">Profile Confirmation</h1>
 						<h1 class="title" ng-if="isEditing">{{isCreating ? "Create" : "Edit"}} Profile</h1>
-						<h2 class="title expiration" ng-if="expiration_timestamp > 0">Code Expires: {{expiration_timestamp  * 1000 | date:'yyyy-MM-dd HH:mm:ss'}}</h2>
+						<h2 class="title expiration" ng-if="expiration_timestamp > 0">Code Expires On {{expiration_timestamp  * 1000 | date:'yyyy-MM-dd At HH:mm:ss'}}</h2>
 					</div>
 					<!-- Form for viewing or editing profile information -->
 					<div class="row profile" ng-show="(profile || isEditing) && !wantsToEdit">

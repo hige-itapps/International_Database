@@ -285,7 +285,6 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
         }
         else //if there IS an alert message to send, fill out an invisible form & submit so the data can be sent as POST
         {
-            alert("redirecting with " + alert_type + "; " + alert_message);
             var form = $('<form type="hidden" action="' + homeURL + '" method="post">' +
                 '<input type="text" name="alert_type" value="' + alert_type + '" />' +
                 '<input type="text" name="alert_message" value="' + alert_message + '" />' +

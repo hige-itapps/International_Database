@@ -1,14 +1,20 @@
 <?php
+/*This file serves as the project's RESTful API. Simply send a get request to this file with a specified function name, with additional POST data when necessary.*/
+
 /*Get DB connection*/
-include_once(dirname(__FILE__) . "/../server/database.php");
-/*This file serves as the project's RESTful API. */
+include_once(dirname(__FILE__) . "/../server/DatabaseHelper.php");
+
+/*for sending emails*/
+include_once(dirname(__FILE__) . "/../server/EmailHelper.php");
+
+$database = new DatabaseHelper(); //database helper object used for some verification and insertion
+$emailHelper = new EmailHelper(); //email helper for sending custom emails
 
 //For creating a new profile
 if (array_key_exists('create_profile', $_GET)) {
     $returnVal = []; //associative array to return afterwards
     $returnVal["success"] = false; //set to true if there are no errors after validation & running
     $returnVal["errors"] = []; //push errors to this array if any arise
-    $database = new DatabaseHelper(); //database helper object used for some verification and insertion
 
     //define error messages
     $requiredError = "This field is required";
@@ -99,7 +105,6 @@ if (array_key_exists('create_profile', $_GET)) {
         }
     }
 
-    $database->close();
     if(empty($returnVal["errors"])){$returnVal["success"] = true;} //if no errors, define success as true
     echo json_encode($returnVal); //return results
 }
@@ -111,9 +116,8 @@ else if (array_key_exists('send_code', $_GET)) {
     $returnVal = []; //associative array to return afterwards
     $returnVal["success"] = false; //set to true if there are no errors after validation & running
     $returnVal["error"] = []; //push errors to this array if any arise
-    $database = new DatabaseHelper(); //database helper object
 
-    if(isset($_POST["email"])){ //if email was sent
+    if(isset($_POST["email"])){ //if email address was sent
         $email = trim($_POST["email"]);
 
         if($database->isCodePending($email)){ //code already pending
@@ -128,12 +132,21 @@ else if (array_key_exists('send_code', $_GET)) {
             if(!$result){ //database error
                 $returnVal["error"] = "Error inserting new code into database.";
             }
+            else{ //no errors so far, continue and send email
+                $emailResult = $emailHelper->codeConfirmationSendEmail($email, $hex);
+                //set error codes if any
+                if(!$emailResult["saveSuccess"]){
+                    $returnVal["error"] = $emailResult["saveError"];
+                }
+                else if(!$emailResult["sendSuccess"]){
+                    $returnVal["error"] = $emailResult["sendError"];
+                }
+            }
         }
-    }else{ //email not sent
+    }else{ //email address not sent
         $returnVal["error"] = "No valid email specified!";
     }
 
-    $database->close();
     if(empty($returnVal["error"])){$returnVal["success"] = true;} //if no errors, define success as true
     echo json_encode($returnVal); //return results
 }
@@ -145,7 +158,6 @@ else if (array_key_exists('confirm_code', $_GET)) {
     $returnVal = []; //associative array to return afterwards
     $returnVal["success"] = false; //set to true if there are no errors after validation & running
     $returnVal["error"] = []; //push errors to this array if any arise
-    $database = new DatabaseHelper(); //database helper object
 
     if(isset($_POST["userID"]) && isset($_POST["email"]) && isset($_POST["code"])){ //if userID, email, and code were sent
         $userID = $_POST["userID"];
@@ -169,14 +181,18 @@ else if (array_key_exists('confirm_code', $_GET)) {
         $returnVal["error"] = "Code, email address, or user ID was not given.";
     }
 
-    $database->close();
     if(empty($returnVal["error"])){$returnVal["success"] = true;} //if no errors, define success as true
     echo json_encode($returnVal); //return results
 }
 
 
 
+//no appropriate function called
 else{
     echo json_encode("No function called");
 }
+
+
+
+$database->close(); //close database connections
 ?>

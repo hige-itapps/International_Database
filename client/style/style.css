@@ -133,6 +133,8 @@ h1, h2, h3, h4, h5{
 
 /*By default, have alerts be fixed at the bottom of the screen. Increase the z-index a bit to render in front of some other elements that might otherwise get in the way*/
 .alert{
+	padding-left: 15px!important;
+	padding-top: 0px!important;
 	position: fixed;
 	bottom: 0;
 	min-width: 80%;
@@ -140,6 +142,7 @@ h1, h2, h3, h4, h5{
     transform: translateX(-50%);
 	z-index: 2;
 	transition: visibility 0s linear 0s, opacity 150ms; /*turn visibility on immediately at first*/
+	white-space: pre-line; /*render newlines*/
 }
 .alert button{
 	opacity: 1;

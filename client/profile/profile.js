@@ -5,8 +5,8 @@ var higeApp = angular.module('HIGE-app', []);
 higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     //get PHP init variables
     $scope.profile = scope_profile;
-    $scope.isCreating = scope_isCreating;
-    $scope.isEditing = $scope.isCreating; //copy the 'isCreating' value to 'isEditing'
+    $scope.state = scope_state; //control the state of the page ('CreatePending', 'Create', 'EditPending', 'Edit', 'View') to determine how to render everything
+
     $scope.issues = scope_issues;
     $scope.countries = scope_countries;
     $scope.regions = scope_regions;
@@ -28,7 +28,6 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     $scope.errors = []; //list of form errors
     $scope.code = ''; //the user's specified code
     $scope.expiration_timestamp = null; //set to the code's expiration timestamp if there is one
-    $scope.wantsToEdit = false; //set to true if user wishes to edit their profile
     $scope.codeVerified = false; //set to true if the code & login_email combination is verified as correct
 
     $scope.maxFirstName = $scope.usersMaxLengths["firstname"];
@@ -193,17 +192,20 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
 
     //initiate the editing process
     $scope.editProfile = function(){
-        $scope.wantsToEdit = true;
+        $scope.state = "EditPending";
     }
 
 
     //try to send a confirmation code
     $scope.sendCode = function(){
         $scope.loadingAlert(); //start a loading alert
+        var email = $scope.state === 'CreatePending' ? $scope.create_email : $scope.profile.email; //decide to use the new email address specified if creating, or the existing one if editing
+        var creating = $scope.state === 'CreatePending' ? true : false; //determine if creating a new profile or just editing
+
         $http({
             method  : 'POST',
             url     : '../api.php?send_code',
-            data    : $.param({email: $scope.profile.email}),  // pass in the profile object
+            data    : $.param({email: email, creating: creating}),  // pass in the profile object
             headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  //standard paramater encoding
         })
         .then(function (response) {
@@ -220,7 +222,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
             }
             else{ //no errors
                 $scope.alertType = "success";
-                $scope.alertMessage = "A confirmation code was successfully sent out to this profile's email address.";
+                $scope.alertMessage = "A confirmation code was successfully sent out to the appropriate email address.";
                 $scope.codePending = true;
             }
            
@@ -235,10 +237,13 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     //try to confirm a confirmation code
     $scope.confirmCode = function(){
         $scope.loadingAlert(); //start a loading alert
+        var email = $scope.state === 'CreatePending' ? $scope.create_email : $scope.profile.email; //decide to use the new email address specified if creating, or the existing one if editing
+        var userID = $scope.state === 'CreatePending' ? null : $scope.profile.id; //only pass in the userID if editing, not creating
+
         $http({
             method  : 'POST',
             url     : '../api.php?confirm_code',
-            data    : $.param({userID: $scope.profile.id, email: $scope.profile.email, code: $scope.code}),  // pass in the profile object
+            data    : $.param({userID: userID, email: email, code: $scope.code}),  // pass in the profile object
             headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  //standard paramater encoding
         })
         .then(function (response) {
@@ -256,8 +261,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
             else{ //no errors
                 $scope.alertType = "success";
                 $scope.alertMessage = "Confirmation Code Verified! Please submit your edits before the specified expiration time.";
-                $scope.wantsToEdit = false;
-                $scope.isEditing = true;
+                $scope.state = "Edit";
                 $scope.profile.login_email = response.data.login_email; //set the wmu address
                 $scope.profile.alternate_email = response.data.alternate_email; //set the optional non-wmu address
                 $scope.expiration_timestamp = response.data.expiration_time; //set the expiration time
@@ -277,7 +281,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
 
         if(alert_type == null) //if no alert message to send, simply redirect
         {
-            if($scope.isEditing)
+            if($scope.state === "Create" || $scope.state === "Edit")
             {
                 if(!confirm ('Are you sure you want to leave this page? Any unsaved data will be lost.')){return;} //don't leave page if user decides not to
             }

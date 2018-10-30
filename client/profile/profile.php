@@ -4,9 +4,9 @@
 	$database = new DatabaseHelper();
 
 	$profile = null; //profile variable will be set if trying to load one
-	$isCreating = false; //variable set to true if creating a new profile
+	$state = 'View'; //default to view-only
 	$loaded_profile = false; //check if profile was loaded correctly
-	$codePending = true; //set if loading a users profile; used to check if a pending confirmation code exists
+	$codePending = false; //set if loading a users profile; used to check if a pending confirmation code exists
 	$issues = $database->getIssues();
 	$countries = $database->getCountries();
 	$regions = $database->getRegions();
@@ -25,7 +25,7 @@
 		
 	}
 	else if(isset($_GET["create"])){
-		$isCreating = true;	
+		$state = 'CreatePending'; //set to the create pending state if user wants to create a profile
 	}
 
 	$database->close();
@@ -48,7 +48,7 @@
 		<script type="text/javascript">
 			var scope_profile = <?php echo json_encode($profile); ?>;
 			var scope_codePending = <?php echo json_encode(boolval($codePending)); ?>;
-			var scope_isCreating = <?php echo json_encode($isCreating); ?>;
+			var scope_state = <?php echo json_encode($state); ?>;
 			var scope_issues = <?php echo json_encode($issues); ?>;
 			var scope_countries = <?php echo json_encode($countries); ?>;
 			var scope_regions = <?php echo json_encode($regions); ?>;
@@ -80,15 +80,16 @@
 
 					
 					<div class="row">
-						<h1 class="title" ng-if="!isEditing && !wantsToEdit">User Profile</h1>
-						<h1 class="title" ng-if="wantsToEdit && !isEditing">Profile Confirmation</h1>
-						<h1 class="title" ng-if="isEditing">{{isCreating ? "Create" : "Edit"}} Profile</h1>
+						<h1 class="title" ng-if="state === 'View'">User Profile</h1>
+						<h1 class="title" ng-if="state === 'CreatePending' || state === 'EditPending'">Profile Confirmation</h1>
+						<h1 class="title" ng-if="state === 'Create'">Create Profile</h1>
+						<h1 class="title" ng-if="state === 'Edit'">Edit Profile</h1>
 						<h2 class="title expiration" ng-if="expiration_timestamp > 0">Code Expires On {{expiration_timestamp  * 1000 | date:'yyyy-MM-dd At HH:mm:ss'}}</h2>
 					</div>
 					<!-- Form for viewing or editing profile information -->
-					<div class="row profile" ng-show="(profile || isEditing) && !wantsToEdit">
+					<div class="row profile" ng-show="state === 'View' || state === 'Create' || state === 'Edit'">
 						<div class="col-md-1"></div>
-						<div class="col-md-3 profile-summary" ng-if="!isEditing">
+						<div class="col-md-3 profile-summary" ng-if="state === 'View'">
 							<h2>{{profile.firstname}} {{profile.lastname}}</h2>
 							<hr>
 							<h3>{{profile.affiliations}}</h3>
@@ -96,7 +97,7 @@
 							<h3 ng-if="profile.phone">{{profile.phone}}</h3>
 							<h3 ng-if="profile.social_link">{{profile.social_link}}</h3>
 						</div>
-						<div class="col-md-3 profile-summary" ng-if="isEditing">
+						<div class="col-md-3 profile-summary" ng-if="state === 'Create' || state === 'Edit'">
 							<div class="form-group" ng-class="{errorHighlight: errors.loginEmail}">
 								<label for="login_email">Login Email Address- this is your WMICH address (Required) ({{(maxLoginEmail-profile.login_email.length)}} characters remaining):</label>
 								<input type="text" class="form-control" maxlength="{{maxLoginEmail}}" ng-model="profile.login_email" id="login_email" name="login_email" placeholder="Enter WMICH Email Address" />
@@ -136,66 +137,66 @@
 						</div>
 						<div class="col-md-7 profile-info">
 							<div ng-class="{errorHighlight: errors.issuesExpertise}">
-								<h2>Issues of Expertise{{isEditing ? " (Required)" : ""}}</h2>
-								<ul ng-if="!isEditing" class="compactList">
+								<h2>Issues of Expertise{{state === 'Create' || state === 'Edit' ? " (Required)" : ""}}</h2>
+								<ul ng-if="state === 'View'" class="compactList">
 									<li ng-repeat="issue in profile.issues_expertise">{{issue.issue}}</li>
 									<li ng-if="profile.issues_expertise_other">{{profile.issues_expertise_other}}</li>
 								</ul>
-								<div ng-if="isEditing" class="form-group">
+								<div ng-if="state === 'Create' || state === 'Edit'" class="form-group">
 									<label for="issuesExpertise">Issues of Expertise:</label>
 									<select class="form-control" ng-change="addIssueExpertise()" ng-model="selectIssuesExpertise" id="issuesExpertise" name="issuesExpertise"
 										ng-options="issue as issue.issue for issue in issues">
 									</select>
 								</div>
-								<h3 ng-if="isEditing">Selected Issues:</h3>
-								<ul ng-if="isEditing" class="user-list">
+								<h3 ng-if="state === 'Create' || state === 'Edit'">Selected Issues:</h3>
+								<ul ng-if="state === 'Create' || state === 'Edit'" class="user-list">
 									<li ng-repeat="issue in profile.issues_expertise">{{issue.issue}} <a href ng-click="removeIssueExpertise($index)" class="btn btn-danger">delete</a></li>
 								</ul>
-								<div ng-if="isEditing" class="form-group">
+								<div ng-if="state === 'Create' || state === 'Edit'" class="form-group">
 									<label for="issuesExpertiseOther">Other Issues of Expertise ({{(maxOtherIssues-profile.issues_expertise_other.length)}} characters remaining):</label>
 									<input type="text" class="form-control" maxlength="{{maxOtherIssues}}" ng-model="profile.issues_expertise_other" id="issuesExpertiseOther" name="issuesExpertiseOther" placeholder="Enter Any Other Issues Of Expertise" />
 								</div>
 								<span class="help-block" ng-show="errors.issuesExpertise" aria-live="polite">{{ errors.issuesExpertise }}</span> 
 							</div>
 							<div ng-class="{errorHighlight: errors.countriesExpertise}">
-								<h2>Countries of Expertise{{isEditing ? " (Required)" : ""}}</h2>
-								<ul ng-if="!isEditing" class="compactList">
+								<h2>Countries of Expertise{{state === 'Create' || state === 'Edit' ? " (Required)" : ""}}</h2>
+								<ul ng-if="state === 'View'" class="compactList">
 									<li ng-repeat="country in profile.countries_expertise">{{country.country_name}}</li>
 									<li ng-if="profile.countries_expertise_other">{{profile.countries_expertise_other}}</li>
 								</ul>
-								<div ng-if="isEditing" class="form-group">
+								<div ng-if="state === 'Create' || state === 'Edit'" class="form-group">
 									<label for="countriesExpertise">Countries of Expertise:</label>
 									<select class="form-control" ng-change="addCountryExpertise()" ng-model="selectCountriesExpertise" id="countriesExpertise" name="countriesExpertise"
 										ng-options="country as country.country_name for country in countries">
 									</select>
 								</div>
-								<h3 ng-if="isEditing">Selected Countries:</h3>
-								<ul ng-if="isEditing" class="user-list">
+								<h3 ng-if="state === 'Create' || state === 'Edit'">Selected Countries:</h3>
+								<ul ng-if="state === 'Create' || state === 'Edit'" class="user-list">
 									<li ng-repeat="country in profile.countries_expertise">{{country.country_name}} <a href ng-click="removeCountryExpertise($index)" class="btn btn-danger">delete</a></li>
 								</ul>
-								<div ng-if="isEditing" class="form-group">
+								<div ng-if="state === 'Create' || state === 'Edit'" class="form-group">
 									<label for="countriesExpertiseOther">Other Countries of Expertise ({{(maxOtherCountriesExpertise-profile.countries_expertise_other.length)}} characters remaining):</label>
 									<input type="text" class="form-control" maxlength="{{maxOtherCountriesExpertise}}" ng-model="profile.countries_expertise_other" id="countriesExpertiseOther" name="countriesExpertiseOther" placeholder="Enter Any Other Countries Of Expertise" />
 								</div>
 								<span class="help-block" ng-show="errors.countriesExpertise" aria-live="polite">{{ errors.countriesExpertise }}</span> 
 							</div>
 							<div ng-class="{errorHighlight: errors.regionsExpertise}">
-								<h2>Regions of Expertise{{isEditing ? " (Required)" : ""}}</h2>
-								<ul ng-if="!isEditing" class="compactList">
+								<h2>Regions of Expertise{{state === 'Create' || state === 'Edit' ? " (Required)" : ""}}</h2>
+								<ul ng-if="state === 'View'" class="compactList">
 									<li ng-repeat="region in profile.regions_expertise">{{region.region}}</li>
 									<li ng-if="profile.regions_expertise_other">{{profile.regions_expertise_other}}</li>
 								</ul>
-								<div ng-if="isEditing" class="form-group">
+								<div ng-if="state === 'Create' || state === 'Edit'" class="form-group">
 									<label for="regionsExpertise">Regions of Expertise:</label>
 									<select class="form-control" ng-change="addRegionExpertise()" ng-model="selectRegionsExpertise" id="regionsExpertise" name="regionsExpertise"
 										ng-options="region as region.region for region in regions">
 									</select>
 								</div>
-								<h3 ng-if="isEditing">Selected Regions:</h3>
-								<ul ng-if="isEditing" class="user-list">
+								<h3 ng-if="state === 'Create' || state === 'Edit'">Selected Regions:</h3>
+								<ul ng-if="state === 'Create' || state === 'Edit'" class="user-list">
 									<li ng-repeat="region in profile.regions_expertise">{{region.region}} <a href ng-click="removeRegionExpertise($index)" class="btn btn-danger">delete</a></li>
 								</ul>
-								<div ng-if="isEditing" class="form-group">
+								<div ng-if="state === 'Create' || state === 'Edit'" class="form-group">
 									<label for="regionsExpertiseOther">Other Regions of Expertise ({{(maxOtherRegions-profile.regions_expertise_other.length)}} characters remaining):</label>
 									<input type="text" class="form-control" maxlength="{{maxOtherRegions}}" ng-model="profile.regions_expertise_other" id="regionsExpertiseOther" name="regionsExpertiseOther" placeholder="Enter Any Other Regions Of Expertise" />
 								</div>
@@ -203,17 +204,17 @@
 							</div>
 							<div>
 								<h2>Languages</h2>
-								<ul ng-if="!isEditing">
+								<ul ng-if="state === 'View'">
 									<li class="languages" ng-repeat="language in profile.languages">{{language.name}} -- {{language.proficiency_level.proficiency_level}}</li>
 								</ul>
-								<div ng-if="isEditing" class="form-group">
+								<div ng-if="state === 'Create' || state === 'Edit'" class="form-group">
 									<label for="languages">Languages:</label>
 									<select class="form-control" ng-change="addLanguage()" ng-model="selectLanguages" id="languages" name="languages"
 										ng-options="language as language.name for language in languages">
 									</select>
 								</div>
-								<h3 ng-if="isEditing">Selected Languages:</h3>
-								<ul ng-if="isEditing" class="user-list">
+								<h3 ng-if="state === 'Create' || state === 'Edit'">Selected Languages:</h3>
+								<ul ng-if="state === 'Create' || state === 'Edit'" class="user-list">
 									<li ng-class="{errorHighlight: errors['language '+language.id]}" ng-repeat="language in profile.languages">{{language.name}} 
 										<label for="proficiency{{$index}}">Proficiency Level (Required):</label>
 										<select class="form-control" ng-model="profile.languages[($index)].proficiency_level" id="proficiency{{$index}}" name="proficiency{{$index}}"
@@ -226,7 +227,7 @@
 							</div>
 							<div>
 								<h2>Country Experience</h2>
-								<ul ng-if="!isEditing">
+								<ul ng-if="state === 'View'">
 									<li class="country-experience" ng-repeat="country in profile.countries_experience">
 										<h3>{{country.country_name}}</h3>
 										<ul>
@@ -235,14 +236,14 @@
 										</ul>
 									</li>
 								</ul>
-								<div ng-if="isEditing" class="form-group">
+								<div ng-if="state === 'Create' || state === 'Edit'" class="form-group">
 									<label for="countriesExperience">Countries you've lived in:</label>
 									<select class="form-control" ng-change="addCountryExperience()" ng-model="selectCountriesExperience" id="countriesExperience" name="countriesExperience"
 										ng-options="country as country.country_name for country in countries">
 									</select>
 								</div>
-								<h3 ng-if="isEditing">Selected Countries:</h3>
-								<ul ng-if="isEditing" class="user-list">
+								<h3 ng-if="state === 'Create' || state === 'Edit'">Selected Countries:</h3>
+								<ul ng-if="state === 'Create' || state === 'Edit'" class="user-list">
 									<li ng-class="{errorHighlight: errors['country '+country.id]}" ng-repeat="(index, country) in profile.countries_experience">{{country.country_name}} 
 										<label for="countryExperience{{index}}">Experiences:</label>
 										<select class="form-control"  ng-change="addCountryExperienceLevel(index)" ng-model="profile.countries_experience[index].selectedExperience" id="countryExperience{{index}}" name="countryExperience{{index}}"
@@ -266,11 +267,15 @@
 						</div>
 						<div class="col-md-1"></div>
 					</div>
-					<!-- Code confirmation form for when user wants to edit their profile -->
-					<div class="row profile-code" ng-show="wantsToEdit && !isEditing">
+					<!-- Code confirmation form for when user wants to create a profile or edit their profile -->
+					<div class="row profile-code" ng-show="state === 'CreatePending' || state === 'EditPending'">
 						<div class="col-md-4"></div>
 						<div class="col-md-4">
-							<label for="code">To edit your profile, you must enter your confirmation code:</label>
+							<div class="input-group" ng-show="state === 'CreatePending'">
+								<label for="create_email">WMU Email Address:</label>
+								<input type="text" class="form-control" ng-model="create_email" id="create_email" name="create_email" placeholder="Enter your email address" />
+							</div>
+							<label for="code">To {{state === 'CreatePending' ? "create" : "edit"}} your profile, you must enter your confirmation code:</label>
 							<div class="input-group">
 								<input type="text" class="form-control" ng-model="code" id="code" name="code" placeholder="Enter your confirmation code">
 								<span class="input-group-btn">
@@ -278,13 +283,14 @@
 								</span> CONFIRM CODE</button>
 							</span>
 							</div>
-							<h2 ng-if="!codePending">Click 'SEND CODE' to send a confirmation code to this profile's email address.</h2>
-							<h2 ng-if="codePending">A confirmation code for this profile is still pending; another cannot be sent at this time.</h2>
+							<h2 ng-if="state === 'CreatePending' && !codePending">Click 'SEND CODE' to send a confirmation code to the specified email address.</h2>
+							<h2 ng-if="state === 'EditPending' && !codePending">Click 'SEND CODE' to send a confirmation code to this profile's email address.</h2>
+							<h2 ng-if="codePending">a confirmation code for this profile was sent to {{profile.email}} and is still pending; another cannot be sent at this time.</h2>
 						</div>
 						<div class="col-md-4"></div>
 					</div>
 					<!-- Message for when no profile is loaded -->
-					<div class="row" ng-show="!profile && !isEditing">
+					<div class="row" ng-show="!profile && state === 'View'">
 						<h2>No valid profile selected!</h2>
 					</div>
 
@@ -296,9 +302,9 @@
 
 
 					<div class="buttons-group bottom-buttons"> 
-						<button ng-show="profile && !isEditing && !wantsToEdit" type="button" ng-click="editProfile()" class="btn btn-warning">EDIT PROFILE</button> <!-- To initiate the editing process -->
-						<button ng-show="profile && !isEditing && wantsToEdit" ng-disabled="codePending" type="button" ng-click="sendCode()" class="btn btn-warning">SEND CODE</button> <!-- To initiate the editing process -->
-						<button ng-show="isEditing" type="button" ng-click="createProfile()" class="btn btn-success">SUBMIT</button> <!-- For user submitting for first time -->
+						<button ng-show="profile && state === 'View'" type="button" ng-click="editProfile()" class="btn btn-warning">EDIT PROFILE</button> <!-- To initiate the editing process -->
+						<button ng-show="profile && (state === 'CreatePending' || state === 'EditPending')" ng-disabled="codePending" type="button" ng-click="sendCode()" class="btn btn-warning">SEND CODE</button> <!-- To initiate the editing process -->
+						<button ng-show="state === 'Create'" type="button" ng-click="createProfile()" class="btn btn-success">SUBMIT</button> <!-- For user submitting for first time -->
 						<a href="" class="btn btn-info" ng-click="redirectToHomepage(null, null)">LEAVE PAGE</a> <!-- For anyone to leave the page -->
 					</div>
 				</form>

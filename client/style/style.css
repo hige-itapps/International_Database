@@ -347,6 +347,9 @@ hr{
 	font-size: 1.2em;
 	font-weight: bold;
 }
+.profile-code .input-group{
+	width: 100%;
+}
 /*Format expiration time*/
 .expiration{
 	color: #c92a2a;

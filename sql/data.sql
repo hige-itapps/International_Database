@@ -51,7 +51,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `language_proficiencies` WRITE;
 /*!40000 ALTER TABLE `language_proficiencies` DISABLE KEYS */;
-INSERT INTO `language_proficiencies` VALUES (1,'basic understanding'),(2,'moderate understanding'),(3,'advanced understanding');
+INSERT INTO `language_proficiencies` VALUES (1,'basic understanding'),(2,'moderate understanding'),(3,'advanced understanding'),(4,'native language');
 /*!40000 ALTER TABLE `language_proficiencies` ENABLE KEYS */;
 UNLOCK TABLES;
 

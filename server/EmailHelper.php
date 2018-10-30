@@ -19,11 +19,11 @@ if (!class_exists('PHPMailer'))
 	require_once dirname(__FILE__) . '/../PHPMAILER/src/SMTP.php';
 
 /*Logger*/
-//include_once(dirname(__FILE__) . "/Logger.php");
+include_once(dirname(__FILE__) . "/Logger.php");
 
 class EmailHelper
 {
-	//private $logger; //for logging to files
+	private $logger; //for logging to files
 	private $mailHost; //mail server information from config.ini
 	private $mailUsername;
 	private $mailNoReply;
@@ -34,7 +34,7 @@ class EmailHelper
 
 	/* Constructior retrieves configurations and initializes private vars */
 	public function __construct(){
-		//$this->logger = new Logger(); //initialize the logger
+		$this->logger = new Logger(); //initialize the logger
 		$config_url = dirname(__FILE__).'/../config.ini'; //set config file url
 		$settings = parse_ini_file($config_url); //get all settings		
 		$this->mailHost = $settings["mail_host"]; //load mail host
@@ -66,6 +66,7 @@ class EmailHelper
 
 		$saveResult = $database->saveEmail($toAddress, $customSubject, $fullMessage); //try to save the email message
 		$data["saveSuccess"] = $saveResult; //save it to return it later
+		$data["sendSuccess"] = false; //initialize to false, set to true if it sends correctly
 
 		if($saveResult === true){//if it saved, then try to send it
 			//insert <br>s where newlines are so the message renders correctly in email clients
@@ -95,16 +96,22 @@ class EmailHelper
 
 				$data["sendSuccess"] = $mail->send(); //notify of successful sending of message (or unsuccessful if it fails)
 				if(!$data["sendSuccess"]){ //error
-					$data["sendError"] = 'Message could not be sent. Mailer Error: '.$mail->ErrorInfo;
+					$errorMessage = $this->logger->logError("Email message could not be sent: ".$mail->ErrorInfo, $toAddress, dirname(__FILE__), true);
+					$data["sendError"] = "Error: Email message could not be sent. ".$errorMessage;
 				}
 			}
+			catch (phpmailerException $e) { //catch phpMailer specific exceptions
+				$errorMessage = $this->logger->logError("Email message could not be sent: ".$e->errorMessage(), $toAddress, dirname(__FILE__), true);
+				$data["sendError"] = "Error: Email message could not be sent. ".$errorMessage;
+			}
 			catch (Exception $e) {
-				$data["sendSuccess"] = false; //notify of message sending failure
-				$data["sendError"] = 'Message could not be sent. Exception: '.$e->getMessage();
+				$errorMessage = $this->logger->logError("Email message could not be sent: ".$e->getMessage(), $toAddress, dirname(__FILE__), true);
+				$data["sendError"] = "Error: Email message could not be sent. ".$errorMessage;
 			}
 		}
 		else{
-			$data["saveError"] = 'Email could not be saved to the database.';
+			$errorMessage = $this->logger->logError("Email could not be saved to the database.", $toAddress, dirname(__FILE__), true);
+			$data["saveError"] = "Error: Email could not be saved to the database. ".$errorMessage;
 		}
 
 		$database->close(); //close database connections

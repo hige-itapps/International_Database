@@ -84,7 +84,7 @@
 						<h1 class="title" ng-if="state === 'CreatePending' || state === 'EditPending'">Profile Confirmation</h1>
 						<h1 class="title" ng-if="state === 'Create'">Create Profile</h1>
 						<h1 class="title" ng-if="state === 'Edit'">Edit Profile</h1>
-						<h2 class="title expiration" ng-if="expiration_timestamp > 0">Code Expires On {{expiration_timestamp  * 1000 | date:'yyyy-MM-dd At HH:mm:ss'}}</h2>
+						<h2 class="title expiration" ng-if="expiration_timestamp > 0">Code expires in: {{hoursRemaining}} hour{{hoursRemaining !== 1 ? "s" : ""}}, {{minutesRemaining}} minute{{minutesRemaining !== 1 ? "s" : ""}}, {{secondsRemaining}} second{{secondsRemaining !== 1 ? "s" : ""}}</h2>
 					</div>
 					<!-- Form for viewing or editing profile information -->
 					<div class="row profile" ng-show="state === 'View' || state === 'Create' || state === 'Edit'">
@@ -285,7 +285,7 @@
 							</div>
 							<h2 ng-if="state === 'CreatePending' && !codePending">Click 'SEND CODE' to send a confirmation code to the specified email address.</h2>
 							<h2 ng-if="state === 'EditPending' && !codePending">Click 'SEND CODE' to send a confirmation code to this profile's email address.</h2>
-							<h2 ng-if="codePending">a confirmation code for this profile was sent to {{profile.email}} and is still pending; another cannot be sent at this time.</h2>
+							<h2 ng-if="codePending">A confirmation code for this profile was sent to {{profile.email}} and is still pending; another cannot be sent at this time.</h2>
 						</div>
 						<div class="col-md-4"></div>
 					</div>

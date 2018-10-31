@@ -29,6 +29,11 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     $scope.code = ''; //the user's specified code
     $scope.expiration_timestamp = null; //set to the code's expiration timestamp if there is one
     $scope.codeVerified = false; //set to true if the code & login_email combination is verified as correct
+    $scope.expirationCountdown = null; //countdown timer to the expiration timestamp
+    //$scope.millisRemaining = 0; //milliseconds remaining in the countdown
+    $scope.secondsRemaining = 0; //seconds remaining in the countdown
+    $scope.minutesRemaining = 0;
+    $scope.hoursRemaining = 0;
 
     $scope.maxFirstName = $scope.usersMaxLengths["firstname"];
     $scope.maxLastName = $scope.usersMaxLengths["lastname"];
@@ -123,6 +128,29 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     }
 
 
+    //tick down the remaining time
+    //Source: https://stackoverflow.com/questions/45999422/angularjs-countdown-timer-in-decreasing-order
+    $scope.countdown_tick = function(){
+        //How many milliseconds remaining: expiration time - current time
+        $scope.totalSecondsRemaining = $scope.expiration_timestamp - new Date().getTime()/1000;
+        /*console.log($scope.expiration_timestamp);
+        console.log(new Date().getTime());
+        console.log($scope.millisRemaining);*/
+        
+        if ($scope.totalSecondsRemaining <= 0) {//stop timer
+            clearInterval($scope.expirationCountdown);
+            $scope.expirationCountdown = null;
+            console.log('Your time is up!');
+        }
+
+        $scope.secondsRemaining = Math.floor((($scope.totalSecondsRemaining) % 60));
+        $scope.minutesRemaining = Math.floor((($scope.totalSecondsRemaining / (60)) % 60));
+        $scope.hoursRemaining = Math.floor((($scope.totalSecondsRemaining / (60 * 60)) % 24));
+
+        $scope.$apply();
+    }
+
+
     //display a generic loading alert to the page
     $scope.loadingAlert = function(){
         $scope.alertType = "info";
@@ -163,7 +191,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
             if(typeof response.data.success === 'undefined'){ //unexpected result!
                 console.log(JSON.stringify(response, null, 4));
                 $scope.alertType = "danger";
-                $scope.alertMessage = "There was an unexpected error with your submission! Server response: " + JSON.stringify(response, null, 4);
+                $scope.alertMessage = "There was an unexpected error with your submission! Please let an administrator know the details and time of this issue.";
             }
             else if(!response.data.success){ //there was at least 1 error
                 $scope.errors = response.data.errors;
@@ -185,7 +213,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
         },function (error){
             console.log(error, 'can not get data.');
             $scope.alertType = "danger";
-            $scope.alertMessage = "There was an unexpected error when trying to create your profile: " + error.status + " " + error.statusText + ". Please contact an admin about this issue!";
+            $scope.alertMessage = "There was an unexpected error when trying to create your profile! Please let an administrator know the details and time of this issue.";
         });
     }
 
@@ -214,7 +242,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
             if(typeof response.data.success === 'undefined'){ //unexpected result!
                 console.log(JSON.stringify(response, null, 4));
                 $scope.alertType = "danger";
-                $scope.alertMessage = "There was an unexpected error with your submission! Server response: " + JSON.stringify(response, null, 4);
+                $scope.alertMessage = "There was an unexpected error with your submission! Please let an administrator know the details and time of this issue.";
             }
             else if(!response.data.success){ //there was at least 1 error
                 $scope.alertType = "danger";
@@ -223,13 +251,15 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
             else{ //no errors
                 $scope.alertType = "success";
                 $scope.alertMessage = "A confirmation code was successfully sent out to the appropriate email address.";
-                $scope.codePending = true;
+                if($scope.state === "EditPending"){
+                    $scope.codePending = true;
+                }
             }
            
         },function (error){
             console.log(error, 'can not get data.');
             $scope.alertType = "danger";
-            $scope.alertMessage = "There was an unexpected error when trying to send your code: " + error.status + " " + error.statusText + ". Please contact an admin about this issue!";
+            $scope.alertMessage = "There was an unexpected error when trying to send your code! Please let an administrator know the details and time of this issue.";
         });
     }
 
@@ -252,7 +282,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
             if(typeof response.data.success === 'undefined'){ //unexpected result!
                 console.log(JSON.stringify(response, null, 4));
                 $scope.alertType = "danger";
-                $scope.alertMessage = "There was an unexpected error with your submission! Server response: " + JSON.stringify(response, null, 4);
+                $scope.alertMessage = "There was an unexpected error with your submission! Please let an administrator know the details and time of this issue.";
             }
             else if(!response.data.success){ //there was at least 1 error
                 $scope.alertType = "danger";
@@ -261,16 +291,23 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
             else{ //no errors
                 $scope.alertType = "success";
                 $scope.alertMessage = "Confirmation Code Verified! Please submit your edits before the specified expiration time.";
-                $scope.state = "Edit";
-                $scope.profile.login_email = response.data.login_email; //set the wmu address
-                $scope.profile.alternate_email = response.data.alternate_email; //set the optional non-wmu address
+                if($scope.state === "CreatePending"){
+                    $scope.state = "Create";
+                    $scope.profile.login_email = email; //set the wmu address
+                }
+                else if($scope.state === "EditPending"){
+                    $scope.state = "Edit";
+                    $scope.profile.login_email = response.data.login_email; //set the wmu address
+                    $scope.profile.alternate_email = response.data.alternate_email; //set the optional non-wmu address
+                }
                 $scope.expiration_timestamp = response.data.expiration_time; //set the expiration time
+                $scope.expirationCountdown = setInterval($scope.countdown_tick, 1000); //start the expiration countdown
             }
            
         },function (error){
             console.log(error, 'can not get data.');
             $scope.alertType = "danger";
-            $scope.alertMessage = "There was an unexpected error when trying to confirm your code: " + error.status + " " + error.statusText + ". Please contact an admin about this issue!";
+            $scope.alertMessage = "There was an unexpected error when trying to confirm your code! Please let an administrator know the details and time of this issue.";
         });
     }
 

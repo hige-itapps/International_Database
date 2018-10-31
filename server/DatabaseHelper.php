@@ -185,8 +185,10 @@ class DatabaseHelper
 
     /*Check if a confirmation code was already sent for a user (returns 1 or 0)*/
     public function isCodePending($email){
-        $this->sql = $this->conn->prepare("SELECT EXISTS(SELECT 1 FROM users_codes WHERE email = :email)");
+        $currentTime = time(); //get current timestamp
+        $this->sql = $this->conn->prepare("SELECT EXISTS(SELECT 1 FROM users_codes WHERE email = :email AND expiration_timestamp >= :currentTime)");
         $this->sql->bindParam(':email', $email);
+        $this->sql->bindParam(':currentTime', $currentTime);
         $this->sql->execute();
         return $this->sql->fetch(PDO::FETCH_COLUMN);
     }
@@ -202,6 +204,13 @@ class DatabaseHelper
 
     /* Save a profile's code to the database -- need to specify an expiration date */
     public function saveCode($email, $code, $expiration_timestamp){
+        //first, remove an existing code if one exists and its timestamp is outdated
+        $this->sql = $this->conn->prepare("DELETE FROM users_codes WHERE email = :email AND expiration_timestamp < :expiration_timestamp");
+        $this->sql->bindParam(':email', $email);
+        $this->sql->bindParam(':expiration_timestamp', $expiration_timestamp);
+        $this->sql->execute();
+
+        //now insert the new code
         $this->sql = $this->conn->prepare("INSERT INTO users_codes(email, code, expiration_timestamp) VALUES(:email, :code, :expiration_timestamp)");
         $this->sql->bindParam(':email', $email);
         $this->sql->bindParam(':code', $code);

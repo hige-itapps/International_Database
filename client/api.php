@@ -122,47 +122,51 @@ else if (array_key_exists('send_code', $_GET)) {
         $creating = $_POST["creating"];
 
         if($email !== ''){ //not empty
-            if($creating){ //if creating new profile, make sure email is a wmu address and isn't associated with any existing profiles
-                list($em, $domain) = explode('@', $email);
-                if (strtolower($domain) != "wmich.edu"){ //make sure login email is actually a WMICH email address
-                    $returnVal["error"] = "You must use a wmich.edu address to create a profile!";;
-                }
-                else if($database->doesLoginEmailExist($email)){ //make sure email address is unique
-                    $returnVal["error"] = "This address is already in use with another profile!";
-                }
-            }
-
-            //As long as there were no errors from a new user trying to create a profile above, continue and check to see if the code is pending
-            if(empty($returnVal["error"])){
-                if($database->isCodePending($email)){ //code already pending
-                    $returnVal["error"] = "Code already pending!";
-                }
-            }
-
-            //If there were no errors yet, go ahead and send the confirmation code
-            if(empty($returnVal["error"])){
-                //generate a new code, save it to the database, and send it in an email.
-                $totalBytes = 16; //byte length of the string
-                $bytes = openssl_random_pseudo_bytes($totalBytes, $cstrong);
-                $hex   = bin2hex($bytes); //final code in hex
-                $current_timestamp = time(); //current datetime
-                $expiration_timestamp = strtotime('+1 day', $current_timestamp); //add 1 day to the deadline
-                $result = $database->saveCode($email, $hex, $expiration_timestamp); //save to database
-                if(!$result){ //database error
-                    $returnVal["error"] = "Error inserting new code into database.";
-                }
-                else{ //no errors so far, continue and send email
-                    $emailResult = $emailHelper->codeConfirmationSendEmail($email, $hex);
-                    //set error codes if any
-                    if(!$emailResult["saveSuccess"]){
-                        $returnVal["error"] = $emailResult["saveError"];
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) { //valid format
+                if($creating){ //if creating new profile, make sure email is a wmu address and isn't associated with any existing profiles
+                    list($em, $domain) = explode('@', $email);
+                    if (strtolower($domain) != "wmich.edu"){ //make sure login email is actually a WMICH email address
+                        $returnVal["error"] = "You must use a wmich.edu address to create a profile!";;
                     }
-                    else if(!$emailResult["sendSuccess"]){
-                        $returnVal["error"] = $emailResult["sendError"];
+                    else if($database->doesLoginEmailExist($email)){ //make sure email address is unique
+                        $returnVal["error"] = "This address is already in use with another profile!";
                     }
                 }
+    
+                //As long as there were no errors from a new user trying to create a profile above, continue and check to see if the code is pending
+                if(empty($returnVal["error"])){
+                    if($database->isCodePending($email)){ //code already pending
+                        $returnVal["error"] = "Code already pending!";
+                    }
+                }
+    
+                //If there were no errors yet, go ahead and send the confirmation code
+                if(empty($returnVal["error"])){
+                    //generate a new code, save it to the database, and send it in an email.
+                    $totalBytes = 16; //byte length of the string
+                    $bytes = openssl_random_pseudo_bytes($totalBytes, $cstrong);
+                    $hex   = bin2hex($bytes); //final code in hex
+                    $current_timestamp = time(); //current datetime
+                    $expiration_timestamp = strtotime('+1 day', $current_timestamp); //add 1 day to the deadline
+                    $result = $database->saveCode($email, $hex, $expiration_timestamp); //save to database
+                    if(!$result){ //database error
+                        $returnVal["error"] = "Error inserting new code into database.";
+                    }
+                    else{ //no errors so far, continue and send email
+                        $emailResult = $emailHelper->codeConfirmationSendEmail($email, $hex);
+                        //set error codes if any
+                        if(!$emailResult["saveSuccess"]){
+                            $returnVal["error"] = $emailResult["saveError"];
+                        }
+                        else if(!$emailResult["sendSuccess"]){
+                            $returnVal["error"] = $emailResult["sendError"];
+                        }
+                    }
+                }
             }
-            
+            else{
+                $returnVal["error"] = "Invalid email address given!";
+            }
         }else{ //gvien email was empty
             $returnVal["error"] = "Empty email address given!";
         }

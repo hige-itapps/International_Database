@@ -2,7 +2,7 @@
 var higeApp = angular.module('HIGE-app', []);
 
 /*App Controller*/
-higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
+higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scope, $http, $timeout){
     //get PHP init variables
     $scope.profile = scope_profile;
     $scope.state = scope_state; //control the state of the page ('CreatePending', 'Create', 'EditPending', 'Edit', 'View') to determine how to render everything
@@ -29,7 +29,6 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
     $scope.code = ''; //the user's specified code
     $scope.expiration_timestamp = null; //set to the code's expiration timestamp if there is one
     $scope.codeVerified = false; //set to true if the code & login_email combination is verified as correct
-    $scope.expirationCountdown = null; //countdown timer to the expiration timestamp
     //$scope.millisRemaining = 0; //milliseconds remaining in the countdown
     $scope.secondsRemaining = 0; //seconds remaining in the countdown
     $scope.minutesRemaining = 0;
@@ -137,17 +136,20 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
         console.log(new Date().getTime());
         console.log($scope.millisRemaining);*/
         
-        if ($scope.totalSecondsRemaining <= 0) {//stop timer
-            clearInterval($scope.expirationCountdown);
-            $scope.expirationCountdown = null;
+        if ($scope.totalSecondsRemaining <= 0) {//timer is done, so stop it
+            $scope.secondsRemaining = 0;
+            $scope.minutesRemaining = 0;
+            $scope.hoursRemaining = 0;
             console.log('Your time is up!');
         }
-
-        $scope.secondsRemaining = Math.floor((($scope.totalSecondsRemaining) % 60));
-        $scope.minutesRemaining = Math.floor((($scope.totalSecondsRemaining / (60)) % 60));
-        $scope.hoursRemaining = Math.floor((($scope.totalSecondsRemaining / (60 * 60)) % 24));
-
-        $scope.$apply();
+        else{
+            $scope.secondsRemaining = Math.floor((($scope.totalSecondsRemaining) % 60));
+            $scope.minutesRemaining = Math.floor((($scope.totalSecondsRemaining / (60)) % 60));
+            $scope.hoursRemaining = Math.floor((($scope.totalSecondsRemaining / (60 * 60)) % 24));
+            
+            //recurse and tick again after 1 second
+            $timeout($scope.countdown_tick, 1000);
+        }
     }
 
 
@@ -301,7 +303,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', function($scope, $http){
                     $scope.profile.alternate_email = response.data.alternate_email; //set the optional non-wmu address
                 }
                 $scope.expiration_timestamp = response.data.expiration_time; //set the expiration time
-                $scope.expirationCountdown = setInterval($scope.countdown_tick, 1000); //start the expiration countdown
+                $scope.countdown_tick();//start the expiration countdown
             }
            
         },function (error){

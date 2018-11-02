@@ -84,7 +84,7 @@
 						<h1 class="title" ng-if="state === 'CreatePending' || state === 'EditPending'">Profile Confirmation</h1>
 						<h1 class="title" ng-if="state === 'Create'">Create Profile</h1>
 						<h1 class="title" ng-if="state === 'Edit'">Edit Profile</h1>
-						<h2 class="title expiration" ng-if="expiration_timestamp > 0">Code expires in: {{hoursRemaining}} hour{{hoursRemaining !== 1 ? "s" : ""}}, {{minutesRemaining}} minute{{minutesRemaining !== 1 ? "s" : ""}}, {{secondsRemaining}} second{{secondsRemaining !== 1 ? "s" : ""}}</h2>
+						<h2 class="title expiration" ng-if="expiration_timestamp > 0">Code expires in: {{hoursRemaining}} hour{{hoursRemaining !== 1 ? "s" : ""}}, {{minutesRemaining}} minute{{minutesRemaining !== 1 ? "s" : ""}}</h2>
 					</div>
 					<!-- Form for viewing or editing profile information -->
 					<div class="row profile" ng-show="state === 'View' || state === 'Create' || state === 'Edit'">
@@ -99,8 +99,8 @@
 						</div>
 						<div class="col-md-3 profile-summary" ng-if="state === 'Create' || state === 'Edit'">
 							<div class="form-group" ng-class="{errorHighlight: errors.loginEmail}">
-								<label for="login_email">Login Email Address- this is your WMICH address (Required) ({{(maxLoginEmail-profile.login_email.length)}} characters remaining):</label>
-								<input type="text" class="form-control" maxlength="{{maxLoginEmail}}" ng-model="profile.login_email" id="login_email" name="login_email" placeholder="Enter WMICH Email Address" />
+								<label for="login_email">Login Email Address- this is your WMICH address</label>
+								<input disabled type="text" class="form-control" maxlength="{{maxLoginEmail}}" ng-model="profile.login_email" id="login_email" name="login_email" placeholder="Enter WMICH Email Address" />
 								<span class="help-block" ng-show="errors.loginEmail" aria-live="polite">{{ errors.loginEmail }}</span> 
 							</div>
 							<div class="form-group" ng-class="{errorHighlight: errors.firstname}">

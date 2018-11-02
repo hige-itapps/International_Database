@@ -129,6 +129,7 @@ class EmailHelper
 			#code
 
 			Please paste this code into the box provided on the Profile Confirmation page. You can find this page at international-scholars.wmich.edu.
+			This code will expire in 24 hours, or once your profile has been created/updated.
 			If you did not choose to create/update a profile on our site, please ignore this email.
 		";
 		$body = str_replace("#code", nl2br($code), $body); //insert the code into the message

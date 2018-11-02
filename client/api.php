@@ -53,12 +53,12 @@ if (array_key_exists('create_profile', $_GET)) {
         $countries_experience = isset($_POST["countries_experience"]) ? json_decode($_POST["countries_experience"]) : null; //country experiences
 
         //make sure required fields are present 
-        if((!isset($issues_expertise) || empty($issues_expertise)) && (!isset($issues_expertise_other) || empty($issues_expertise_other))) {$returnVal["errors"]["issuesExpertise"] = $requiredError;} //require >= 1 issue of expertise
-        if((!isset($countries_expertise) || empty($countries_expertise)) && (!isset($countries_expertise_other) || empty($countries_expertise_other))) {$returnVal["errors"]["countriesExpertise"] = $requiredError;} //require >= 1 country of expertise
-        if((!isset($regions_expertise) || empty($regions_expertise)) && (!isset($regions_expertise_other) || empty($regions_expertise_other))) {$returnVal["errors"]["regionsExpertise"] = $requiredError;} //require >= 1 region of expertise
-        if(!isset($firstname) || empty($firstname)) {$returnVal["errors"]["firstname"] = $requiredError;} //require first name
-        if(!isset($lastname) || empty($lastname)) {$returnVal["errors"]["lastname"] = $requiredError;} //require last name
-        if(!isset($affiliations) || empty($affiliations)) {$returnVal["errors"]["affiliations"] = $requiredError;} //require affiliations
+        if((empty($issues_expertise)) && (empty($issues_expertise_other))) {$returnVal["errors"]["issuesExpertise"] = $requiredError;} //require >= 1 issue of expertise
+        if((empty($countries_expertise)) && (empty($countries_expertise_other))) {$returnVal["errors"]["countriesExpertise"] = $requiredError;} //require >= 1 country of expertise
+        if((empty($regions_expertise)) && (empty($regions_expertise_other))) {$returnVal["errors"]["regionsExpertise"] = $requiredError;} //require >= 1 region of expertise
+        if(empty($firstname)) {$returnVal["errors"]["firstname"] = $requiredError;} //require first name
+        if(empty($lastname)) {$returnVal["errors"]["lastname"] = $requiredError;} //require last name
+        if(empty($affiliations)) {$returnVal["errors"]["affiliations"] = $requiredError;} //require affiliations
         //require language proficiency level
         for ($i = 0; $i < count($languages); $i++) {
             if(!property_exists($languages[$i], 'proficiency_level')){
@@ -74,9 +74,9 @@ if (array_key_exists('create_profile', $_GET)) {
             }
         }
 
-        if (isset($phone) && !ctype_digit($phone)) {$returnVal["errors"]["phone"] = $phoneDigitsError;} //make sure phone number only includes digits
+        if (!empty($phone) && !ctype_digit($phone)) {$returnVal["errors"]["phone"] = $phoneDigitsError;} //make sure phone number only includes digits
 
-        if(!isset($login_email) || empty($login_email)){ //make sure login email is specified
+        if(empty($login_email)){ //make sure login email is specified
             $returnVal["errors"]["loginEmail"] = $requiredError;
         }
         else if(!filter_var($login_email, FILTER_VALIDATE_EMAIL)){ //make sure the email is correctly formatted
@@ -92,7 +92,7 @@ if (array_key_exists('create_profile', $_GET)) {
             }
         }
 
-        if(isset($alternate_email)){ //only worry about the alternate email if it's specified
+        if(!empty($alternate_email)){ //only worry about the alternate email if it's specified
             if(!filter_var($alternate_email, FILTER_VALIDATE_EMAIL)){ //make sure the email is correctly formatted
                 $returnVal["errors"]["alternateEmail"] = $emailFormatError;
             }

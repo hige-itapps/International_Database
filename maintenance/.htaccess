@@ -1,0 +1,15 @@
+#Redirect requests to the maintenance.php page, EXCEPT FOR /include and /style, so that the page can be styled as normal during maintenance
+#Also don't redirect users coming from the IP exceptions (so that admins can still access the site normally)
+RewriteEngine On
+RewriteBase /
+#IP exceptions go here; specify your appropriate IP address, and you will be able to access the site like normal while other users get redirected
+RewriteCond %{REMOTE_ADDR} !^10\.80\.174\.94$
+#Prevent infinite recursion by not redirecting users who go to the maintenance page
+RewriteCond %{REQUEST_URI} !maintenance.php$
+#Allow access to subdirectories that contain common resources, so that pages can visually look the same during maintenance
+RewriteCond %{REQUEST_URI} !include
+RewriteCond %{REQUEST_URI} !images
+RewriteCond %{REQUEST_URI} !style
+#Redirect to maintenance.php while simultaneously sending a 503: service unavailable header (so that the maintenance page isn't mistakenly indexed)
+RewriteRule ^(.*)$ /maintenance.php [R=503,L]
+ErrorDocument 503 /maintenance.php

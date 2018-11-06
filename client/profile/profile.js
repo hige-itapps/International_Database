@@ -220,8 +220,64 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
     }
 
 
+    //edit an existing profile; send data to the server for verification- if accepted, then redirect to homepage with message, otherwise display errors
+    $scope.editProfile = function() {
+        console.log($scope.profile);
+
+        if(!confirm ('By submitting, your edits will be saved to the database while your old profile stays public. Once an admin has approved your new profile, it will replace your old one, and become publicly searchable. ')) {return;} //submission confirmation required
+        var fd = new FormData();
+        
+        $scope.loadingAlert(); //start a loading alert
+
+        //loop through form data, appending each field to the profile object
+        for (var key in $scope.profile) {
+            if ($scope.profile.hasOwnProperty(key)) {
+                fd.append(key, JSON.stringify($scope.profile[key]));
+            }
+        }
+
+        $http({
+            method  : 'POST',
+            url     : '../api.php?create_profile&editing',
+            data    : fd,  // pass in the profile object
+            transformRequest: angular.identity,
+            headers : { 'Content-Type': undefined } //don't encode the profile array
+        })
+        .then(function (response) {
+            console.log(response, 'res');
+            //data = response.data;
+            if(typeof response.data.success === 'undefined'){ //unexpected result!
+                console.log(JSON.stringify(response, null, 4));
+                $scope.alertType = "danger";
+                $scope.alertMessage = "There was an unexpected error with your submission! Please let an administrator know the details and time of this issue.";
+            }
+            else if(!response.data.success){ //there was at least 1 error
+                $scope.errors = response.data.errors;
+                $scope.alertType = "danger";
+                if(typeof $scope.errors["other"] !== 'undefined') //there was an 'other' (non-normal) error
+                {
+                    if(Object.keys($scope.errors).length === 1){$scope.alertMessage = "There was an error with your submission: " + $scope.errors["other"];}//just the other error
+                    else{$scope.alertMessage = "There was an error with your submission, please double check your form for errors, then try resubmitting. In addition, there was another error with your submission: " + $scope.errors["other"];}//the other error + normal errors
+                }
+                else {$scope.alertMessage = "There was an error with your submission, please double check your form for errors, then try resubmitting.";}//just normal errors
+            }
+            else{ //no errors
+                $scope.errors = []; //clear any old errors
+                var newAlertType = "success";
+                var newAlertMessage = "Success! Your profile has been updated and is awaiting administrator approval. Once approved, it will replace your old one, and become publicly searchable.";
+                $scope.redirectToHomepage(newAlertType, newAlertMessage); //redirect to the homepage with the message
+            }
+           
+        },function (error){
+            console.log(error, 'can not get data.');
+            $scope.alertType = "danger";
+            $scope.alertMessage = "There was an unexpected error when trying to edit your profile! Please let an administrator know the details and time of this issue.";
+        });
+    }
+
+
     //initiate the editing process
-    $scope.editProfile = function(){
+    $scope.initializeEditProfile = function(){
         $scope.state = "EditPending";
     }
 
@@ -301,6 +357,10 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
                     $scope.state = "Edit";
                     $scope.profile.login_email = response.data.login_email; //set the wmu address
                     $scope.profile.alternate_email = response.data.alternate_email; //set the optional non-wmu address
+
+                    //save the original alternate email if there was one
+                    if($scope.profile.alternate_email){$scope.profile.alternate_email_original = $scope.profile.alternate_email;}
+
                 }
                 $scope.expiration_timestamp = response.data.expiration_time; //set the expiration time
                 $scope.countdown_tick();//start the expiration countdown

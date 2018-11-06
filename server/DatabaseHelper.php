@@ -360,6 +360,14 @@ class DatabaseHelper
         return $this->sql->fetch(PDO::FETCH_COLUMN);
     }
 
+    /* Check if a profile is currently pending (approved = 0) for a given email (returns 1 or 0). If this is the login email, check the profile associated with it, otherwise find the profile associated with the given alternate email */
+    public function isProfilePending($email){
+        $this->sql = $this->conn->prepare("SELECT EXISTS(SELECT 1 FROM users WHERE (login_email = :email OR login_email = (SELECT u.login_email FROM users u WHERE u.alternate_email = :email)) AND approved = 0 )");
+        $this->sql->bindParam(':email', $email);
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_COLUMN);
+    }
+
     /*Check if a confirmation code is correct for a given email (returns an expiration timestamp if so, or nothing otherwise)*/
     public function confirmCode($email, $code){
         $this->sql = $this->conn->prepare("SELECT expiration_timestamp FROM users_codes WHERE email = :email AND code = :code LIMIT 1");
@@ -426,6 +434,14 @@ class DatabaseHelper
     public function doesAlternateEmailExist($testEmail){
         $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM users u WHERE u.alternate_email = :email");
         $this->sql->bindParam(':email', $testEmail);
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_COLUMN);
+    }
+    /*Return number of users using this alternate email EXCEPT a user with the given login email (should be 0 or 1)*/
+    public function doesAlternateEmailExistIgnoreProfile($testEmail, $profileEmail){
+        $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM users u WHERE u.alternate_email = :testemail AND u.login_email != :profileemail");
+        $this->sql->bindParam(':testemail', $testEmail);
+        $this->sql->bindParam(':profileemail', $profileEmail);
         $this->sql->execute();
         return $this->sql->fetch(PDO::FETCH_COLUMN);
     }

@@ -304,9 +304,10 @@
 
 
 					<div class="buttons-group bottom-buttons"> 
-						<button ng-show="profile && state === 'View'" type="button" ng-click="editProfile()" class="btn btn-warning">EDIT PROFILE</button> <!-- To initiate the editing process -->
+						<button ng-show="profile && state === 'View'" type="button" ng-click="initializeEditProfile()" class="btn btn-warning">EDIT PROFILE</button> <!-- To initiate the editing process -->
 						<button ng-show="profile && (state === 'CreatePending' || state === 'EditPending')" ng-disabled="codePending" type="button" ng-click="sendCode()" class="btn btn-warning">SEND CODE</button> <!-- To initiate the editing process -->
 						<button ng-show="state === 'Create'" type="button" ng-click="createProfile()" class="btn btn-success">SUBMIT</button> <!-- For user submitting for first time -->
+						<button ng-show="state === 'Edit'" type="button" ng-click="editProfile()" class="btn btn-success">SUBMIT</button> <!-- For user editing their profile -->
 						<a href="" class="btn btn-info" ng-click="redirectToHomepage(null, null)">LEAVE PAGE</a> <!-- For anyone to leave the page -->
 					</div>
 				</form>

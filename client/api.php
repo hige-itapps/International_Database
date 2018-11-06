@@ -10,7 +10,7 @@ include_once(dirname(__FILE__) . "/../server/EmailHelper.php");
 $database = new DatabaseHelper(); //database helper object used for some verification and insertion
 $emailHelper = new EmailHelper(); //email helper for sending custom emails
 
-//For creating a new profile
+//For creating a new profile or editing an existing one. If editing, pass in 'editing' as a GET parameter
 if (array_key_exists('create_profile', $_GET)) {
     $returnVal = []; //associative array to return afterwards
     $returnVal["success"] = false; //set to true if there are no errors after validation & running
@@ -25,22 +25,40 @@ if (array_key_exists('create_profile', $_GET)) {
     $emailFormatError = "This address is not a valid email address";
     $nonUniqueEmailError = "This address is already in use";
 
+    //find out if editing
+    $editing = isset($_GET["editing"]) ? true : false;
+
     //get the login email first to verify that it doesn't already exist in the database and that there is a pending code for it
     $login_email = isset($_POST["login_email"]) ? trim(json_decode($_POST["login_email"], true)) : null; //login email
-    if($database->doesLoginEmailExist($login_email)){ //make sure email address is unique
-        $returnVal["errors"]["other"] = "This address is already in use with another profile!";
+    $primaryEmail = $login_email; //by default, set the primary email to the login email address
+
+    //get the original alternate email if there was one
+    $alternate_email_original = isset($_POST["alternate_email_original"]) && !empty(trim($_POST["alternate_email_original"])) ? trim(json_decode($_POST["alternate_email_original"], true)) : null; //original alternate email
+
+    if(!$editing){ //if creating, make sure email address is unique, and that there is a pending code for it
+        if($database->doesLoginEmailExist($login_email)){
+            $returnVal["errors"]["other"] = "This address is already in use with another profile!";
+        }
+        else if(!boolval($database->isCodePending($login_email))){ //make sure there is a pending code for it
+            $returnVal["errors"]["other"] = "There is currently no pending code for this profile.";
+        }
     }
-    else if(!boolval($database->isCodePending($login_email))){ //make sure there is a pending code for it
-        $returnVal["errors"]["other"] = "There is currently no pending code for this profile.";
+    else{ //if editing, make sure the primary email address has a pending code
+        if(!empty($alternate_email_original)){$primaryEmail = $alternate_email_original;}  //set the primary address to the original alternate email if there was one
+
+        if(!boolval($database->isCodePending($primaryEmail))){ //make sure there is a pending code for it
+            $returnVal["errors"]["other"] = "There is currently no pending code for this profile.";
+        }
     }
+    
 
     //If no errors yet, then proceed with data validation
     if(empty($returnVal["errors"])){
         //set vars if possible (also trim excess whitespace off strings where possible)
         $firstname = isset($_POST["firstname"]) ? trim(json_decode($_POST["firstname"], true)) : null; //first name
         $lastname = isset($_POST["lastname"]) ? trim(json_decode($_POST["lastname"], true)) : null; //last name
-        $alternate_email = isset($_POST["alternate_email"]) ? trim(json_decode($_POST["alternate_email"], true)) : null; //alternate email
         $affiliations = isset($_POST["affiliations"]) ? trim(json_decode($_POST["affiliations"], true)) : null; //affiliations
+        $alternate_email = isset($_POST["alternate_email"]) && !empty(trim($_POST["alternate_email_original"])) ? trim(json_decode($_POST["alternate_email"], true)) : null; //alternate email
         $phone = isset($_POST["phone"]) ? trim(json_decode($_POST["phone"], true)) : null; //phone number
         $issues_expertise_other = isset($_POST["issues_expertise_other"]) ? trim(json_decode($_POST["issues_expertise_other"], true)) : null; //other issues
         $regions_expertise_other = isset($_POST["regions_expertise_other"]) ? trim(json_decode($_POST["regions_expertise_other"], true)) : null; //other regions
@@ -87,8 +105,10 @@ if (array_key_exists('create_profile', $_GET)) {
             if (strtolower($domain) != "wmich.edu"){ //make sure login email is actually a WMICH email address
                 $returnVal["errors"]["loginEmail"] = $wmichEmailOnlyError;
             }
-            else if($database->doesLoginEmailExist($login_email)){ //make sure the address is unique
-                $returnVal["errors"]["loginEmail"] = $nonUniqueEmailError;
+            else if(!$editing){ //if creating, make sure the address is unique
+                if($database->doesLoginEmailExist($login_email)){
+                    $returnVal["errors"]["loginEmail"] = $nonUniqueEmailError;
+                }
             }
         }
 
@@ -101,8 +121,15 @@ if (array_key_exists('create_profile', $_GET)) {
                 if (strtolower($domain) == "wmich.edu"){ //make sure alternate email is not a WMICH email address
                     $returnVal["errors"]["alternateEmail"] = $nonWmichEmailOnlyError;
                 }
-                else if($database->doesAlternateEmailExist($alternate_email)){ //make sure the address is unique
-                    $returnVal["errors"]["alternateEmail"] = $nonUniqueEmailError;
+                else if(!$editing){ //if creating, make sure the address is unique
+                    if($database->doesAlternateEmailExist($alternate_email)){
+                        $returnVal["errors"]["alternateEmail"] = $nonUniqueEmailError;
+                    }
+                }
+                else{ //if editing, make sure the address is unique, ignoring the current profile
+                    if($database->doesAlternateEmailExistIgnoreProfile($alternate_email, $login_email)){
+                        $returnVal["errors"]["alternateEmail"] = $nonUniqueEmailError;
+                    }
                 }
             }
         }
@@ -110,12 +137,19 @@ if (array_key_exists('create_profile', $_GET)) {
 
     //If there are no errors after all validation, then attempt to insert the data
     if(empty($returnVal["errors"])){
+        
         $insertRes = $database->insertProfile($login_email, $firstname, $lastname, $alternate_email, $affiliations, $phone, $issues_expertise_other, $regions_expertise_other, $countries_expertise_other, $social_link, $issues_expertise, $countries_expertise, $regions_expertise, $languages, $countries_experience);
-        if(isset($insertRes["error"])){ //if there was an error inserting
-            $returnVal["errors"]["other"] = "There was an error inserting your profile into the database: ".$insertRes["error"];
+    
+        if(isset($insertRes["error"])){ //if there was an error inserting or editing
+            if(!$editing){ //creating
+                $returnVal["errors"]["other"] = "There was an error inserting your profile into the database: ".$insertRes["error"];
+            }
+            else{ //editing
+                $returnVal["errors"]["other"] = "There was an error updating your profile in the database: ".$insertRes["error"];
+            }
         }
         else{ //no errors, so delete pending code
-            $database->removeCode($login_email);
+            $database->removeCode($primaryEmail);
         }
     }
 
@@ -133,7 +167,7 @@ else if (array_key_exists('send_code', $_GET)) {
 
     if(isset($_POST["email"]) && isset($_POST["creating"])){ //if email address was sent
         $email = trim($_POST["email"]);
-        $creating = $_POST["creating"];
+        $creating = $_POST["creating"] === "true" ? true : false; //convert string to boolean
 
         if($email !== ''){ //not empty
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) { //valid format
@@ -151,6 +185,13 @@ else if (array_key_exists('send_code', $_GET)) {
                 if(empty($returnVal["error"])){
                     if($database->isCodePending($email)){ //code already pending
                         $returnVal["error"] = "Code already pending!";
+                    }
+                }
+
+                //If no errors yet, check to see if there is already a pending profile for the given email
+                if(empty($returnVal["error"])){
+                    if($database->isProfilePending($email)){ //update already pending
+                        $returnVal["error"] = "An update for this profile is currently pending, so a new code cannot be created!";
                     }
                 }
     

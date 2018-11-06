@@ -4,7 +4,7 @@
 	$database = new DatabaseHelper();
 
 	$profile = null; //profile variable will be set if trying to load one
-	$state = 'View'; //default to view-only
+	$state = null; //no state by default
 	$loaded_profile = false; //check if profile was loaded correctly
 	$codePending = false; //set if loading a users profile; used to check if a pending confirmation code exists
 	$issues = $database->getIssues();
@@ -21,6 +21,7 @@
 		if ($profile) {
 			$loaded_profile = true;
 			$codePending = $database->isCodePending($profile["email"]);
+			$state = 'View'; //enter the View state
 		}
 		
 	}
@@ -80,6 +81,7 @@
 
 					
 					<div class="row">
+						<h1 class="title" ng-if="state == null">This Profile Does Not Exist</h1>
 						<h1 class="title" ng-if="state === 'View'">User Profile</h1>
 						<h1 class="title" ng-if="state === 'CreatePending' || state === 'EditPending'">Profile Confirmation</h1>
 						<h1 class="title" ng-if="state === 'Create'">Create Profile</h1>

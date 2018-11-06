@@ -114,6 +114,9 @@ if (array_key_exists('create_profile', $_GET)) {
         if(isset($insertRes["error"])){ //if there was an error inserting
             $returnVal["errors"]["other"] = "There was an error inserting your profile into the database: ".$insertRes["error"];
         }
+        else{ //no errors, so delete pending code
+            $database->removeCode($login_email);
+        }
     }
 
     if(empty($returnVal["errors"])){$returnVal["success"] = true;} //if no errors, define success as true

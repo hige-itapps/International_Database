@@ -139,7 +139,156 @@ class DatabaseHelper
     public function insertProfile($login_email, $firstname, $lastname, $alternate_email, $affiliations, $phone, $issues_expertise_other, $regions_expertise_other, $countries_expertise_other, $social_link, $issues_expertise, $countries_expertise, $regions_expertise, $languages, $countries_experience){
         //return false;
         $retval = [];
-        $retval["error"] = "Not implemented yet!";
+        $newProfileID = null; // the ID of the profile just inserted
+
+        $this->conn->beginTransaction(); //begin atomic transaction
+
+        //insert base profile first
+        $this->sql = $this->conn->prepare("INSERT INTO users(login_email, firstname, lastname, alternate_email, affiliations, phone, issues_expertise_other, regions_expertise_other, countries_expertise_other, social_link, approved)
+            VALUES(:login_email, :firstname, :lastname, :alternate_email, :affiliations, :phone, :issues_expertise_other, :regions_expertise_other, :countries_expertise_other, :social_link, 0)");
+        $this->sql->bindParam(':login_email', $login_email);
+        $this->sql->bindParam(':firstname', $firstname);
+        $this->sql->bindParam(':lastname', $lastname);
+        $this->sql->bindParam(':alternate_email', $alternate_email);
+        $this->sql->bindParam(':affiliations', $affiliations);
+        $this->sql->bindParam(':phone', $phone);
+        $this->sql->bindParam(':issues_expertise_other', $issues_expertise_other);
+        $this->sql->bindParam(':regions_expertise_other', $regions_expertise_other);
+        $this->sql->bindParam(':countries_expertise_other', $countries_expertise_other);
+        $this->sql->bindParam(':social_link', $social_link);
+        
+        if ($this->sql->execute() !== TRUE){//query failed
+            $this->conn->rollBack();
+            $retval["error"] = "Failed to insert base profile.";
+        }
+
+        if(empty($retval["error"])){ //no errors yet, so continue
+            //get the profile ID of the just-added profile
+            $this->sql = $this->conn->prepare("SELECT max(id) FROM users WHERE login_email = :login_email LIMIT 1");
+            $this->sql->bindParam(':login_email', $login_email);
+            $this->sql->execute();
+            $newProfileID = $this->sql->fetch(PDO::FETCH_COLUMN);//now we have the current ID!
+
+            //insert user's issues of expertise
+            foreach($issues_expertise as $i){//go through issues
+                $this->sql = $this->conn->prepare("INSERT INTO users_issues(user_id, issue_id) VALUES(:user_id, :issue_id)");
+                $this->sql->bindParam(':user_id', $newProfileID);
+                $this->sql->bindParam(':issue_id', $i["id"]);
+
+                if ($this->sql->execute() !== TRUE){//query failed
+                    $this->conn->rollBack();
+                    $retval["error"] = "Failed to insert an issue of expertise.";
+                    break;
+                }
+            }
+        }
+
+        if(empty($retval["error"])){ //no errors yet, so continue
+            //insert user's countries of expertise
+            foreach($countries_expertise as $i){//go through countries
+                $this->sql = $this->conn->prepare("INSERT INTO users_country_expertise(user_id, country_id) VALUES(:user_id, :country_id)");
+                $this->sql->bindParam(':user_id', $newProfileID);
+                $this->sql->bindParam(':country_id', $i["id"]);
+
+                if ($this->sql->execute() !== TRUE){//query failed
+                    $this->conn->rollBack();
+                    $retval["error"] = "Failed to insert a country of expertise.";
+                    break;
+                }
+            }
+        }
+
+        if(empty($retval["error"])){ //no errors yet, so continue
+            //insert user's regions of expertise
+            foreach($regions_expertise as $i){//go through regions
+                $this->sql = $this->conn->prepare("INSERT INTO users_regions(user_id, region_id) VALUES(:user_id, :region_id)");
+                $this->sql->bindParam(':user_id', $newProfileID);
+                $this->sql->bindParam(':region_id', $i["id"]);
+
+                if ($this->sql->execute() !== TRUE){//query failed
+                    $this->conn->rollBack();
+                    $retval["error"] = "Failed to insert a region of expertise.";
+                    break;
+                }
+            }
+        }
+
+        if(empty($retval["error"])){ //no errors yet, so continue
+            //insert user's languages
+            foreach($languages as $i){//go through languages
+                $this->sql = $this->conn->prepare("INSERT INTO users_languages(user_id, language_id, proficiency_id) VALUES(:user_id, :language_id, :proficiency_id)");
+                $this->sql->bindParam(':user_id', $newProfileID);
+                $this->sql->bindParam(':language_id', $i->id);
+                $this->sql->bindParam(':proficiency_id', $i->proficiency_level->id);
+
+                if ($this->sql->execute() !== TRUE){//query failed
+                    $this->conn->rollBack();
+                    $retval["error"] = "Failed to insert a language.";
+                    break;
+                }
+            }
+        }
+
+        if(empty($retval["error"])){ //no errors yet, so continue
+            //insert user's country experience
+            foreach($countries_experience as $i){//go through countries
+
+                foreach($i->experiences as $experience){//go through regular experiences
+                    $this->sql = $this->conn->prepare("INSERT INTO users_country_experience(user_id, country_id, experience_id) VALUES(:user_id, :country_id, :experience_id)");
+                    $this->sql->bindParam(':user_id', $newProfileID);
+                    $this->sql->bindParam(':country_id', $i->id);
+                    $this->sql->bindParam(':experience_id', $experience->id);
+
+                    if ($this->sql->execute() !== TRUE){//query failed
+                        $this->conn->rollBack();
+                        $retval["error"] = "Failed to insert a country experience.";
+                        break;
+                    }
+                }
+                
+                //check for an "other" experience, if no errors yet
+                if(empty($retval["error"])){
+                    if($i->other_experience !== ""){ //an other experience exists
+                        $otherExperienceID = null; // the ID of the added other experience
+
+                        $this->sql = $this->conn->prepare("INSERT INTO other_country_experience(experience) VALUES(:experience)");
+                        $this->sql->bindParam(':experience', $i->other_experience);
+
+                        if ($this->sql->execute() === TRUE){//successfully added other experience
+                            $otherExperienceID = $this->conn->lastInsertId();
+                        }
+                        else{ //query failed
+                            $this->conn->rollBack();
+                            $retval["error"] = "Failed to insert other country experience.";
+                            break;
+                        }
+                        
+                        //if inserting other experience was successful
+                        if(empty($retval["error"])){
+                            $this->sql = $this->conn->prepare("INSERT INTO users_country_experience(user_id, country_id, other_experience_id) VALUES(:user_id, :country_id, :other_experience_id)");
+                            $this->sql->bindParam(':user_id', $newProfileID);
+                            $this->sql->bindParam(':country_id', $i->id);
+                            $this->sql->bindParam(':other_experience_id', $otherExperienceID);
+
+                            if ($this->sql->execute() !== TRUE){//query failed
+                                $this->conn->rollBack();
+                                $retval["error"] = "Failed to insert other user country experience.";
+                                break;
+                            }
+                        }
+                    }
+                }
+                else{ //if there already is an error, then break
+                    break;
+                }
+            }
+        }
+
+        if(empty($retval["error"])){ //no errors, so queries can be committed
+            $this->conn->commit();
+        }
+
+        //$retval["error"] = "Not implemented yet!";
         return $retval;
     }
 
@@ -233,6 +382,13 @@ class DatabaseHelper
         $this->sql->bindParam(':email', $email);
         $this->sql->bindParam(':code', $code);
         $this->sql->bindParam(':expiration_timestamp', $expiration_timestamp);
+        return $this->sql->execute();
+    }
+
+    /* Remove a code if pending */
+    public function removeCode($email){
+        $this->sql = $this->conn->prepare("DELETE FROM users_codes WHERE email = :email");
+        $this->sql->bindParam(':email', $email);
         return $this->sql->execute();
     }
 

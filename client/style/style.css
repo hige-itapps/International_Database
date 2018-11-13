@@ -244,13 +244,15 @@ hr{
 .profile-summary-affiliations, .profile-summary-email{
 	height: 38.4px; /*height of 2 lines*/
 }
-.profile-summary-keyterm{
+.profile-summary-wildcard{
 	height: 60px; /*height of 3 lines*/
 }
 
 .search-subtext{
 	font-size: 18px;
 }
+
+/*Format Search Form*/
 
 #profileSearchForm{
 	text-align: center;
@@ -266,7 +268,19 @@ hr{
 	max-width: 400px;
 	margin: auto;
 }
-
+#profileSearchForm .row{
+	margin: 0; /*override default negative margins*/
+}
+#profileSearchForm .advancedSearch h2{
+	font-size: 14px;
+	font-weight: 700
+}
+#profileSearchForm .advancedSearch .row:nth-child(odd){
+	background-color: #f4f4f4;
+}
+#profileSearchForm .advancedSearch ul.user-list{
+	text-align: left;
+}
 
 /*Format user profiles*/
 .profile-summary{

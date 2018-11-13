@@ -109,10 +109,9 @@ class DatabaseHelper
             }
 
             //get user's country experience
-            $this->sql = $this->conn->prepare("SELECT c.id AS country_id, c.country_name AS country_name, ce.id AS experience_id, ce.experience AS experience, oce.experience AS other_experience FROM users_country_experience uce 
+            $this->sql = $this->conn->prepare("SELECT c.id AS country_id, c.country_name AS country_name, ce.id AS experience_id, ce.experience AS experience, uce.other_experience AS other_experience FROM users_country_experience uce 
                 INNER JOIN countries c ON uce.country_id = c.id 
                 LEFT JOIN country_experience ce ON uce.experience_id = ce.id
-                LEFT JOIN other_country_experience oce ON uce.other_experience_id = oce.id
             WHERE uce.user_id = :id");
             $this->sql->bindParam(':id', $userID);
             $this->sql->execute();
@@ -249,32 +248,16 @@ class DatabaseHelper
                 //check for an "other" experience, if no errors yet
                 if(empty($retval["error"])){
                     if($i->other_experience !== ""){ //an other experience exists
-                        $otherExperienceID = null; // the ID of the added other experience
+                        //$otherExperienceID = null; // the ID of the added other experience
+                        $this->sql = $this->conn->prepare("INSERT INTO users_country_experience(user_id, country_id, other_experience) VALUES(:user_id, :country_id, :other_experience)");
+                        $this->sql->bindParam(':user_id', $newProfileID);
+                        $this->sql->bindParam(':country_id', $i->id);
+                        $this->sql->bindParam(':other_experience', $i->other_experience);
 
-                        $this->sql = $this->conn->prepare("INSERT INTO other_country_experience(experience) VALUES(:experience)");
-                        $this->sql->bindParam(':experience', $i->other_experience);
-
-                        if ($this->sql->execute() === TRUE){//successfully added other experience
-                            $otherExperienceID = $this->conn->lastInsertId();
-                        }
-                        else{ //query failed
+                        if ($this->sql->execute() !== TRUE){//query failed
                             $this->conn->rollBack();
                             $retval["error"] = "Failed to insert other country experience.";
                             break;
-                        }
-                        
-                        //if inserting other experience was successful
-                        if(empty($retval["error"])){
-                            $this->sql = $this->conn->prepare("INSERT INTO users_country_experience(user_id, country_id, other_experience_id) VALUES(:user_id, :country_id, :other_experience_id)");
-                            $this->sql->bindParam(':user_id', $newProfileID);
-                            $this->sql->bindParam(':country_id', $i->id);
-                            $this->sql->bindParam(':other_experience_id', $otherExperienceID);
-
-                            if ($this->sql->execute() !== TRUE){//query failed
-                                $this->conn->rollBack();
-                                $retval["error"] = "Failed to insert other user country experience.";
-                                break;
-                            }
                         }
                     }
                 }
@@ -295,40 +278,46 @@ class DatabaseHelper
 
     /* For Static Data */
 
+    //get all issues, with ids as keys
     public function getIssues(){
-        $this->sql = $this->conn->prepare("Select * FROM issues");
+        $this->sql = $this->conn->prepare("Select issues.id, issues.* FROM issues");
         $this->sql->execute();
-        return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
     }
 
+    //get all countries, with ids as keys
     public function getCountries(){
-        $this->sql = $this->conn->prepare("Select * FROM countries");
+        $this->sql = $this->conn->prepare("Select countries.id, countries.* FROM countries");
         $this->sql->execute();
-        return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
     }
 
+    //get all regions, with ids as keys
     public function getRegions(){
-        $this->sql = $this->conn->prepare("Select * FROM regions");
+        $this->sql = $this->conn->prepare("Select regions.id, regions.* FROM regions");
         $this->sql->execute();
-        return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
     }
 
+    //get all languages, with ids as keys
     public function getLanguages(){
-        $this->sql = $this->conn->prepare("Select * FROM languages");
+        $this->sql = $this->conn->prepare("Select languages.id, languages.* FROM languages");
         $this->sql->execute();
-        return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
     }
 
+    //get all language proficiencies, with ids as keys
     public function getLanguageProficiencies(){
-        $this->sql = $this->conn->prepare("Select * FROM language_proficiencies");
+        $this->sql = $this->conn->prepare("Select language_proficiencies.id, language_proficiencies.* FROM language_proficiencies");
         $this->sql->execute();
-        return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
     }
 
+    //get all country experiences, with ids as keys
     public function getCountryExperiences(){
-        $this->sql = $this->conn->prepare("Select * FROM country_experience");
+        $this->sql = $this->conn->prepare("Select country_experience.id, country_experience.* FROM country_experience");
         $this->sql->execute();
-        return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
     }
 
     /*return an array of the maximum lengths of every column in the users table*/
@@ -345,7 +334,7 @@ class DatabaseHelper
     
     /*Get the maximum length of other country experiences (just an integer, not an array)*/
     public function getOtherCountryExperiencesMaxLength(){
-        $this->sql = $this->conn->prepare("Select CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE table_schema = '" . $this->settings["database_name"] . "' AND table_name = 'other_country_experience' AND COLUMN_NAME = 'experience'");
+        $this->sql = $this->conn->prepare("Select CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE table_schema = '" . $this->settings["database_name"] . "' AND table_name = 'users_country_experience' AND COLUMN_NAME = 'other_experience'");
         $this->sql->execute();
         return $this->sql->fetch(PDO::FETCH_COLUMN);
     }
@@ -513,6 +502,301 @@ class DatabaseHelper
             $editedResults[$result["id"]]["foundIn"][] = $result["foundIn"]; //push the foundIn category
         }
         return $editedResults;
+    }
+
+    /*Search the database with individual fields; returns all matching user summaries. Also only return approved profiles unless specified otherwise with $approvedOnly = false*/
+    public function advancedSearch($name, $affiliations, $email, $phone, $social_link, $issues_expertise, $issues_expertise_other, 
+    $countries_expertise, $countries_expertise_other, $regions_expertise, $regions_expertise_other, $languages, $countries_experience, $approvedOnly = true){
+        //return func_get_args();
+        //If no parameters given, don't waste time doing complicated queries, just return all profiles
+        if($name == null && $affiliations == null && $email == null && $phone == null && $social_link == null && $issues_expertise == null && $issues_expertise_other == null
+            && $countries_expertise == null && $countries_expertise_other == null && $regions_expertise == null && $regions_expertise_other == null && $languages == null && $countries_experience == null){
+            return $this->getAllUsersSummaries($approvedOnly);
+        }
+
+        //Start with the base query
+        $query = "SELECT res.id, res.firstname, res.lastname, res.affiliations, COALESCE(res.alternate_email, res.login_email) as email, res.phone, res.social_link, res.issues_expertise_other, res.regions_expertise_other, res.countries_expertise_other FROM( ";
+
+        //At least 1 field isn't null, so build up the query by first collecting any necessary search term strings
+        $textQueryTerms = [];
+        $textQuery = "";
+
+        //add text search terms
+        if($name !== NULL) {                        $textQueryTerms[] = "CONCAT(u.firstname,' ', u.lastname) LIKE :name";}
+        if($affiliations !== NULL) {                $textQueryTerms[] = "u.affiliations LIKE :affiliations";}
+        if($email !== NULL) {                       $textQueryTerms[] = "COALESCE(u.alternate_email, u.login_email) LIKE :email";}
+        if($phone !== NULL) {                       $textQueryTerms[] = "u.phone LIKE :phone";}
+        if($social_link !== NULL) {                 $textQueryTerms[] = "u.social_link LIKE :social_link";}
+        if($issues_expertise_other !== NULL) {      $textQueryTerms[] = "u.issues_expertise_other LIKE :issues_expertise_other";}
+        if($countries_expertise_other !== NULL) {   $textQueryTerms[] = "u.countries_expertise_other LIKE :countries_expertise_other";}
+        if($regions_expertise_other !== NULL) {     $textQueryTerms[] = "u.regions_expertise_other LIKE :regions_expertise_other";}
+
+        if(sizeof($textQueryTerms) > 0){$textQuery.="SELECT u.* FROM users u WHERE ".$textQueryTerms[0]." ";} //add first search term, starting with 'Where'
+        for($i = 1; $i < sizeof($textQueryTerms); $i++){
+            $textQuery.="AND ".$textQueryTerms[$i]." "; //loop through remaining search terms with AND
+        }
+
+        //build queries for other search terms
+
+        //build issues of expertise query
+        $issuesExpertiseQuery = "";
+        if($issues_expertise !== NULL){ //at least 1 issue of expertise
+            for($i = 0; $i < sizeof($issues_expertise); $i++){ //add queries for each specified issue of expertise
+                if($i == 0){ //setup first-issue-specific syntax
+                    $issuesExpertiseQuery.="SELECT DISTINCT issue_expertise0.* FROM";
+                }else{ //secondary issue
+                    $issuesExpertiseQuery.="INNER JOIN";
+                }
+
+                $issuesExpertiseQuery.= "(SELECT DISTINCT u.* FROM users u
+                INNER JOIN users_issues ui ON u.id = ui.user_id
+                WHERE ui.issue_id = :issue_expertise".$i;
+
+                $issuesExpertiseQuery.=") issue_expertise".$i." ";
+
+                if($i > 0){ //setup secondary-issue-specific syntax
+                    $issuesExpertiseQuery.="on issue_expertise0.id = issue_expertise".$i.".id ";
+                }
+            }
+        }
+
+        //build countries of expertise query
+        $countriesExpertiseQuery = "";
+        if($countries_expertise !== NULL){ //at least 1 country of expertise
+            for($i = 0; $i < sizeof($countries_expertise); $i++){ //add queries for each specified country of expertise
+                if($i == 0){ //setup first-country-specific syntax
+                    $countriesExpertiseQuery.="SELECT DISTINCT country_expertise0.* FROM";
+                }else{ //secondary country
+                    $countriesExpertiseQuery.="INNER JOIN";
+                }
+
+                $countriesExpertiseQuery.= "(SELECT DISTINCT u.* FROM users u
+                INNER JOIN users_country_expertise uce ON u.id = uce.user_id
+                WHERE uce.country_id = :country_expertise".$i;
+
+                $countriesExpertiseQuery.=") country_expertise".$i." ";
+
+                if($i > 0){ //setup secondary-country-specific syntax
+                    $countriesExpertiseQuery.="on country_expertise0.id = country_expertise".$i.".id ";
+                }
+            }
+        }
+
+        //build regions of expertise query
+        $regionsExpertiseQuery = "";
+        if($regions_expertise !== NULL){ //at least 1 region of expertise
+            for($i = 0; $i < sizeof($regions_expertise); $i++){ //add queries for each specified region of expertise
+                if($i == 0){ //setup first-region-specific syntax
+                    $regionsExpertiseQuery.="SELECT DISTINCT region_expertise0.* FROM";
+                }else{ //secondary region
+                    $regionsExpertiseQuery.="INNER JOIN";
+                }
+
+                $regionsExpertiseQuery.= "(SELECT DISTINCT u.* FROM users u
+                INNER JOIN users_regions ur ON u.id = ur.user_id
+                WHERE ur.region_id = :region_expertise".$i;
+
+                $regionsExpertiseQuery.=") region_expertise".$i." ";
+
+                if($i > 0){ //setup secondary-region-specific syntax
+                    $regionsExpertiseQuery.="on region_expertise0.id = region_expertise".$i.".id ";
+                }
+            }
+        }
+
+        //build language query
+        $languageQuery = "";
+        if($languages !== NULL){ //at least 1 specified language
+            for($i = 0; $i < sizeof($languages); $i++){ //add queries for each specified language
+                if($i == 0){ //setup first-language-specific syntax
+                    $languageQuery.="SELECT DISTINCT language0.* FROM";
+                }else{ //secondary language
+                    $languageQuery.="INNER JOIN";
+                }
+
+                $languageQuery.= "(SELECT DISTINCT u.* FROM users u
+                INNER JOIN users_languages ul ON u.id = ul.user_id
+                WHERE ul.language_id = :language".$i;
+
+                if(is_array($languages[$i])){ //language has a specified proficiency, so add that to the query
+                    $languageQuery.=" AND ul.proficiency_id = :proficiency".$i;
+                }
+
+                $languageQuery.=") language".$i." ";
+
+                if($i > 0){ //setup secondary-language-specific syntax
+                    $languageQuery.="on language0.id = language".$i.".id ";
+                }
+            }
+        }
+
+        //build countries experience query
+        $countriesExperienceQuery = "";
+        if($countries_experience !== NULL){ //at least 1 country experience
+            for($i = 0; $i < sizeof($countries_experience); $i++){ //add queries for each specified country experience
+                if($i == 0){ //setup first-country-specific syntax
+                    $countriesExperienceQuery.="SELECT DISTINCT country_experience0.* FROM";
+                }else{ //secondary country
+                    $countriesExperienceQuery.="INNER JOIN";
+                }
+
+                if(is_object($countries_experience[$i])){ //country has a specified experience and/or other experience
+
+                    if(property_exists($countries_experience[$i], 'experiences')){ //go through regular experiences
+                        for($j = 0; $j < sizeof($countries_experience[$i]->experiences); $j++){
+                            if($j == 0){ //setup first-country_experience-specific syntax
+                                $countriesExperienceQuery.="( SELECT DISTINCT country_experience".$i."_experience0.* FROM";
+                            }else{ //secondary country_experience
+                                $countriesExperienceQuery.="INNER JOIN";
+                            }
+
+                            $countriesExperienceQuery.= "(SELECT DISTINCT u.* FROM users u
+                            INNER JOIN users_country_experience uce ON u.id = uce.user_id
+                            WHERE uce.country_id = :country_experience".$i." AND uce.experience_id = :country_experience".$i."_experience".$j.") country_experience".$i."_experience".$j." ";
+
+                            if($j > 0){ //setup secondary-country_experience-specific syntax
+                                $countriesExperienceQuery.="on country_experience".$i."_experience0.id = country_experience".$i."_experience".$j.".id ";
+                            }
+                        } 
+                    }
+                    
+                    if(property_exists($countries_experience[$i], 'other_experience')){ //add other experience
+                        if(property_exists($countries_experience[$i], 'experiences')){ //if regular experiences were also specified, then add an inner join prefix
+                            $countriesExperienceQuery.="INNER JOIN";
+                        }
+                        else{ //only other experience
+                            $countriesExperienceQuery.="( SELECT DISTINCT country_experience".$i."_other_experience.* FROM";
+                        }
+
+                        $countriesExperienceQuery.= "(SELECT DISTINCT u.* FROM users u
+                            INNER JOIN users_country_experience uce ON u.id = uce.user_id
+                            WHERE uce.country_id = :country_experience".$i." AND uce.other_experience LIKE :country_experience".$i."_other_experience) country_experience".$i."_other_experience ";
+                        
+                        if(property_exists($countries_experience[$i], 'experiences')){ //if regular experiences were also specified, then add an inner join on suffix
+                            $countriesExperienceQuery.="on country_experience".$i."_experience0.id = country_experience".$i."_other_experience.id ";
+                        }
+                    }
+                }
+                else{ //just a country id
+                    $countriesExperienceQuery.= "(SELECT DISTINCT u.* FROM users u
+                    INNER JOIN users_country_experience uce ON u.id = uce.user_id
+                    WHERE uce.country_id = :country_experience".$i;
+                }
+
+                $countriesExperienceQuery.=") country_experience".$i." ";
+
+                if($i > 0){ //setup secondary-country-specific syntax
+                    $countriesExperienceQuery.="on country_experience0.id = country_experience".$i.".id ";
+                }
+            }
+        }
+
+
+        //add search term queries to base query
+        $allQueries = [];
+        if($textQuery != ""){$allQueries[] = $textQuery;}
+        if($issuesExpertiseQuery != ""){$allQueries[] = $issuesExpertiseQuery;}
+        if($countriesExpertiseQuery != ""){$allQueries[] = $countriesExpertiseQuery;}
+        if($regionsExpertiseQuery != ""){$allQueries[] = $regionsExpertiseQuery;}
+        if($languageQuery != ""){$allQueries[] = $languageQuery;}
+        if($countriesExperienceQuery != ""){$allQueries[] = $countriesExperienceQuery;}
+
+
+        if(sizeof($allQueries) == 1){ //only 1 query to consider
+            $query.=$allQueries[0];
+        }
+        else{ //multiple sub-queries, build them into 1 long query string with inner-joins
+            for($i = 0; $i < sizeof($allQueries); $i++){
+                if($i == 0){ //setup first-query-specific syntax
+                    $query.="SELECT DISTINCT results0.* FROM(";
+                }else{ //secondary-query-specific syntax, need to inner join results
+                    $query.="INNER JOIN(";
+                }
+
+                $query.=$allQueries[$i];
+
+                $query.=") results".$i." ";
+
+                if($i > 0){ //inner join on results id
+                    $query.="on results0.id = results".$i.".id ";
+                }
+            }
+        }
+        
+
+
+
+
+        //finish query
+        $query.=") res";
+        if($approvedOnly) {$query.=" WHERE res.approved = 1";} //only approved if necessary
+
+        //return $query;
+
+        $this->sql = $this->conn->prepare($query);
+
+        //bind parameters, wrap them with %s so that any part of the text can be matched
+        if($name !== NULL){                         $name = '%'.$name.'%';                                              $this->sql->bindParam(':name', $name); }
+        if($affiliations !== NULL){                 $affiliations = '%'.$affiliations.'%';                              $this->sql->bindParam(':affiliations', $affiliations); }
+        if($email !== NULL){                        $email = '%'.$email.'%';                                            $this->sql->bindParam(':email', $email); }
+        if($phone !== NULL){                        $phone = '%'.$phone.'%';                                            $this->sql->bindParam(':phone', $phone); }
+        if($social_link !== NULL){                  $social_link = '%'.$social_link.'%';                                $this->sql->bindParam(':social_link', $social_link); }
+        if($issues_expertise_other !== NULL){       $issues_expertise_other = '%'.$issues_expertise_other.'%';          $this->sql->bindParam(':issues_expertise_other', $issues_expertise_other); }
+        if($countries_expertise_other !== NULL){    $countries_expertise_other = '%'.$countries_expertise_other.'%';    $this->sql->bindParam(':countries_expertise_other', $countries_expertise_other); }
+        if($regions_expertise_other !== NULL){      $regions_expertise_other = '%'.$regions_expertise_other.'%';        $this->sql->bindParam(':regions_expertise_other', $regions_expertise_other); }
+
+        if($issues_expertise !== NULL){ //at least 1 specified issue of expertise
+            for($i = 0; $i < sizeof($issues_expertise); $i++){
+                $this->sql->bindParam(':issue_expertise'.$i, $issues_expertise[$i]);
+            }
+        }
+
+        if($countries_expertise !== NULL){ //at least 1 specified country of expertise
+            for($i = 0; $i < sizeof($countries_expertise); $i++){
+                $this->sql->bindParam(':country_expertise'.$i, $countries_expertise[$i]);
+            }
+        }
+
+        if($regions_expertise !== NULL){ //at least 1 specified region of expertise
+            for($i = 0; $i < sizeof($regions_expertise); $i++){
+                $this->sql->bindParam(':region_expertise'.$i, $regions_expertise[$i]);
+            }
+        }
+
+        if($languages !== NULL){ //at least 1 specified language
+            for($i = 0; $i < sizeof($languages); $i++){
+                if(is_array($languages[$i])){ //language has a specified proficiency
+                    $this->sql->bindParam(':language'.$i, $languages[$i][0]);
+                    $this->sql->bindParam(':proficiency'.$i, $languages[$i][1]);
+                }
+                else{ //no specified proficiency
+                    $this->sql->bindParam(':language'.$i, $languages[$i]);
+                }
+            }
+        }
+
+        if($countries_experience !== NULL){ //at least 1 specified country experience
+            for($i = 0; $i < sizeof($countries_experience); $i++){
+                if(is_object($countries_experience[$i])){ //country has a specified experience and/or other experience
+                    $this->sql->bindParam(':country_experience'.$i, $countries_experience[$i]->id);
+                    if(property_exists($countries_experience[$i], 'experiences')){ //country has specified experiences
+                        for($j = 0; $j < sizeof($countries_experience[$i]->experiences); $j++){
+                            $this->sql->bindParam(':country_experience'.$i.'_experience'.$j, $countries_experience[$i]->experiences[$j]); //bind each individual experience id
+                        }
+                    }
+                    if(property_exists($countries_experience[$i], 'other_experience')){
+                        $countries_experience[$i]->other_experience = '%'.$countries_experience[$i]->other_experience.'%'; //wrap text field so that any part of it can be matched
+                        $this->sql->bindParam(':country_experience'.$i.'_other_experience', $countries_experience[$i]->other_experience); //bind the other experience string
+                    }
+                }
+                else{ //only id
+                    $this->sql->bindParam(':country_experience'.$i, $countries_experience[$i]);
+                }
+            }
+        }
+
+        $this->sql->execute();
+        return $this->sql->fetchAll(PDO::FETCH_ASSOC);
     }
 
 

@@ -1,7 +1,19 @@
 <?php
+	/*Get BroncoNetID if CAS session started*/
+	include_once(dirname(__FILE__) . "/../../CAS/CAS_session.php");
+
 	/*Get DB connection*/
 	include_once(dirname(__FILE__) . "/../../server/DatabaseHelper.php");
-	$database = new DatabaseHelper();
+
+	/*Logger*/
+	include_once(dirname(__FILE__) . "/../../server/Logger.php");
+
+	/*Site Warning*/
+	include_once(dirname(__FILE__) . "/../../server/SiteWarning.php");
+
+	$logger = new Logger(); //for logging to files
+	$database = new DatabaseHelper($logger); //database helper object used for some verification and insertion
+	$siteWarning = new SiteWarning($database); //used to determine if a site warning exists and should be displayed
 
 	$searchProfile = null;
 	$isSearching = false; //set to true if user is searching at all
@@ -15,7 +27,16 @@
 	$languageProficiencies = $database->getLanguageProficiencies();
 	$countryExperiences = $database->getCountryExperiences();
 
-	if(isset($_GET["search"])){
+	$adminPendingProfiles = false; //set to true if admin is getting pending profiles only
+
+	$alertType = isset($_POST["alert_type"]) ? $_POST["alert_type"] : null; //set the alert type if it exists, otherwise set to null
+	$alertMessage = isset($_POST["alert_message"]) ? $_POST["alert_message"] : null; //set the alert type if it exists, otherwise set to null
+
+	if(isset($CASbroncoNetID) && $database->isAdministrator($CASbroncoNetID) && isset($_GET["pending"])){ //admin trying to get pending profiles
+		$adminPendingProfiles = true;
+	}
+
+	if(isset($_GET["search"])){ //any user trying to search profiles
 		$isSearching = true;
 
 		if(isset($_GET["advanced"])){
@@ -133,13 +154,37 @@
 			}
 
 			//retrieve all relevant profiles
-			$profiles = $database->advancedSearch($searchName, $searchAffiliations, $searchEmail, $searchPhone, $searchSocialLink, $searchIssuesExpertise, $searchIssuesExpertiseOther,
-				$searchCountriesExpertise, $searchCountriesExpertiseOther, $searchRegionsExpertise, $searchRegionsExpertiseOther, $searchLanguages, $searchCountriesExperience);
-			//echo($profiles);
+			if(!$adminPendingProfiles){ //for regular users
+				$profiles = $database->advancedSearch($searchName, $searchAffiliations, $searchEmail, $searchPhone, $searchSocialLink, $searchIssuesExpertise, $searchIssuesExpertiseOther,
+					$searchCountriesExpertise, $searchCountriesExpertiseOther, $searchRegionsExpertise, $searchRegionsExpertiseOther, $searchLanguages, $searchCountriesExperience);
+			}
+			else{ //for admins searching pending profiles
+				$profiles = $database->advancedSearch($searchName, $searchAffiliations, $searchEmail, $searchPhone, $searchSocialLink, $searchIssuesExpertise, $searchIssuesExpertiseOther,
+					$searchCountriesExpertise, $searchCountriesExpertiseOther, $searchRegionsExpertise, $searchRegionsExpertiseOther, $searchLanguages, $searchCountriesExperience, false);
+			}
 		}
 		if(isset($_GET["wildcard"])){
 			$wildcard = $_GET["wildcard"];
-			$profiles = $database->searchByWildcard($wildcard);
+			if(!$adminPendingProfiles){ //for regular users
+				$profiles = $database->searchByWildcard($wildcard);
+			}
+			else{
+				$profiles = $database->searchByWildcard($wildcard, false);
+			}
+		}
+	}
+
+	if($adminPendingProfiles){ //if the admin is getting pending profiles, go through each profile and determine if it is a new one, or an update to an old one
+
+		if(!isset($_GET["advanced"]) && !isset($_GET["wildcard"])){//if admin hadn't searched anything yet, return all pending profiles by default
+			$profiles = $database->getAllUsersSummaries(false);
+		}
+
+		foreach ($profiles as $key => &$value) {
+			$value["newProfile"] = true;
+			if(boolval($database->doesProfileExist($value["email"]))){
+				$value["newProfile"] = false;
+			}
 		}
 	}
 
@@ -178,6 +223,9 @@
 			var scope_languages = <?php echo json_encode($languages); ?>;
 			var scope_languageProficiencies = <?php echo json_encode($languageProficiencies); ?>;
 			var scope_countryExperiences = <?php echo json_encode($countryExperiences); ?>;
+			var scope_adminPendingProfiles = <?php echo json_encode($adminPendingProfiles); ?>;
+			var alert_type = <?php echo json_encode($alertType); ?>;
+			var alert_message = <?php echo json_encode($alertMessage); ?>;
 		</script>
 		<!-- AngularJS Script -->
 		<script type="module" src="profile_list.js"></script>
@@ -186,15 +234,17 @@
 	<!-- Page Body -->
 	<body ng-app="HIGE-app">
 		<!-- Shared Site Banner -->
-		<?php include '../include/site_banner.html'; ?>
+		<?php include '../include/site_banner.php'; ?>
 
 		<div id="MainContent" role="main">
+			<?php $siteWarning->showIfExists() ?> <!-- show site warning if it exists -->
 			<script src="../include/outdatedbrowser.js" nomodule></script> <!-- show site error if outdated -->
 			<?php include '../include/noscript.html'; ?> <!-- show site error if javascript is disabled -->
 
 			<div class="container-fluid" ng-controller="listCtrl" id="listCtrl">
 				<div class="row">
-					<h1 class="title">Search The Database</h1>
+					<h1 class="title" ng-if="!adminPendingProfiles">Search The Database</h1>
+					<h1 class="title" ng-if="adminPendingProfiles">Search Pending Profiles And Updates</h1>
 					<!-- search form -->
 					<form enctype="multipart/form-data" class="form-horizontal" id="profileSearchForm" name="profileSearchForm" ng-submit="submit()">
 						<!-- Form for regular wildcard search -->
@@ -368,16 +418,18 @@
 					<div class="col-md-12 profile-list-wrapper">
 						<div class="profile-list">
 							<div class="profile profile-summary" ng-repeat="profile in filteredProfiles">
+								<div class="profile-summary-newProfile" ng-if="profile.newProfile == true"><span>NEW</span></div>
+								<div class="profile-summary-updatedProfile" ng-if="profile.newProfile == false"><span>UPDATE</span></div>
 								<h2 class="profile-summary-name">{{profile.firstname}} {{profile.lastname}}</h2>
 								<hr>
 								<h3 class="profile-summary-affiliations" >{{profile.affiliations}}</h3>
 								<h3 class="profile-summary-email">{{profile.email}}</h3>
-								<h2 ng-if="oldWildcard">Key Term Found In</h2>
+								<h2 class="profile-summary-foundIn" ng-if="oldWildcard">Key Term Found In</h2>
 								<ul ng-if="oldWildcard" class="compactList profile-summary-wildcard">
 									<li ng-repeat="category in profile.foundIn">{{category}}</li>
 								</ul>
 								<div class="profile-button">
-									<a class="btn btn-success" href="../profile/profile.php?id={{profile.id}}">View Profile</a>
+									<a class="btn btn-success" href="../profile/profile.php?id={{profile.id}}{{adminPendingProfiles ? '&review' : '' }}">View Profile</a>
 								</div>
 							</div>
 						</div>
@@ -398,5 +450,8 @@
 			</div>
 
 		</div>
+
+		<!-- Shared Site Footer -->
+		<?php include '../include/site_footer.php'; ?>
 	</body>
 </html>

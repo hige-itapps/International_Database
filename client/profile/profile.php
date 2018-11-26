@@ -1,12 +1,30 @@
 <?php
+	/*Get BroncoNetID if CAS session started*/
+	include_once(dirname(__FILE__) . "/../../CAS/CAS_session.php");
+
 	/*Get DB connection*/
 	include_once(dirname(__FILE__) . "/../../server/DatabaseHelper.php");
-	$database = new DatabaseHelper();
+
+	/*Logger*/
+	include_once(dirname(__FILE__) . "/../../server/Logger.php");
+
+	/*Site Warning*/
+	include_once(dirname(__FILE__) . "/../../server/SiteWarning.php");
+
+	$logger = new Logger(); //for logging to files
+	$database = new DatabaseHelper($logger); //database helper object used for some verification and insertion
+	$siteWarning = new SiteWarning($database); //used to determine if a site warning exists and should be displayed
 
 	$profile = null; //profile variable will be set if trying to load one
 	$state = null; //no state by default
 	$loaded_profile = false; //check if profile was loaded correctly
 	$codePending = false; //set if loading a users profile; used to check if a pending confirmation code exists
+
+	$previousProfileID = 0; //set to the ID of the previous profile if this is a pending profile update
+
+	$isAdmin = false; //set to true if signed in with CAS and verified as admin
+	if(isset($CASbroncoNetID) && $database->isAdministrator($CASbroncoNetID)){$isAdmin = true;}
+
 	$issues = $database->getIssues();
 	$countries = $database->getCountries();
 	$regions = $database->getRegions();
@@ -17,13 +35,22 @@
 	$otherCountryExperiencesMaxLength = $database->getOtherCountryExperiencesMaxLength();
 
 	if(isset($_GET["id"])){ //if ID is set, get the full user profile
-		$profile = $database->getUserProfile($_GET["id"]);
-		if ($profile) {
-			$loaded_profile = true;
-			$codePending = $database->isCodePending($profile["email"]);
-			$state = 'View'; //enter the View state
+		if(isset($_GET["review"]) && $isAdmin){ //user is an admin trying to review this profile
+			$profile = $database->getUserProfile($_GET["id"], false, false); //specifically get pending profile, and both email addresses
+			if ($profile) {
+				$loaded_profile = true;
+				$previousProfileID = $database->doesProfileExist($profile["login_email"]);
+				$state = 'AdminReview'; //enter the admin reviw state
+			}
 		}
-		
+		else{ //regular user
+			$profile = $database->getUserProfile($_GET["id"]);
+			if ($profile) {
+				$loaded_profile = true;
+				$codePending = $database->isCodePending($profile["email"]);
+				$state = 'View'; //enter the View state
+			}
+		}
 	}
 	else if(isset($_GET["create"])){
 		$state = 'CreatePending'; //set to the create pending state if user wants to create a profile
@@ -49,7 +76,9 @@
 		<script type="text/javascript">
 			var scope_profile = <?php echo json_encode($profile); ?>;
 			var scope_codePending = <?php echo json_encode(boolval($codePending)); ?>;
+			var scope_previousProfileID = <?php echo json_encode($previousProfileID); ?>;
 			var scope_state = <?php echo json_encode($state); ?>;
+			var scope_isAdmin = <?php echo json_encode($isAdmin); ?>;
 			var scope_issues = <?php echo json_encode($issues); ?>;
 			var scope_countries = <?php echo json_encode($countries); ?>;
 			var scope_regions = <?php echo json_encode($regions); ?>;
@@ -67,9 +96,10 @@
 	<body ng-app="HIGE-app">
 	
 		<!-- Shared Site Banner -->
-		<?php include '../include/site_banner.html'; ?>
+		<?php include '../include/site_banner.php'; ?>
 
 	<div id="MainContent" role="main">
+		<?php $siteWarning->showIfExists() ?> <!-- show site warning if it exists -->
 		<script src="../include/outdatedbrowser.js" nomodule></script> <!-- show site error if outdated -->
 		<?php include '../include/noscript.html'; ?> <!-- show site error if javascript is disabled -->
 
@@ -83,19 +113,23 @@
 					<div class="row">
 						<h1 class="title" ng-if="state == null">This Profile Does Not Exist</h1>
 						<h1 class="title" ng-if="state === 'View'">User Profile</h1>
+						<h1 class="title" ng-if="state === 'AdminReview' && previousProfileID <= 0">New Profile</h1>
+						<h1 class="title" ng-if="state === 'AdminReview' && previousProfileID > 0">Updated Profile - <a href="?id={{previousProfileID}}">View Previous</a></h1>
 						<h1 class="title" ng-if="state === 'CreatePending' || state === 'EditPending'">Profile Confirmation</h1>
 						<h1 class="title" ng-if="state === 'Create'">Create Profile</h1>
 						<h1 class="title" ng-if="state === 'Edit'">Edit Profile</h1>
 						<h2 class="title expiration" ng-if="expiration_timestamp > 0">Code expires in: {{hoursRemaining}} hour{{hoursRemaining !== 1 ? "s" : ""}}, {{minutesRemaining}} minute{{minutesRemaining !== 1 ? "s" : ""}}</h2>
 					</div>
 					<!-- Form for viewing or editing profile information -->
-					<div class="row profile" ng-show="state === 'View' || state === 'Create' || state === 'Edit'">
+					<div class="row profile" ng-show="state === 'View' || state === 'AdminReview' || state === 'Create' || state === 'Edit'">
 						<div class="col-md-1"></div>
-						<div class="col-md-3 profile-summary" ng-if="state === 'View'">
+						<div class="col-md-3 profile-summary" ng-if="state === 'View' || state === 'AdminReview'">
 							<h2>{{profile.firstname}} {{profile.lastname}}</h2>
 							<hr>
 							<h3>{{profile.affiliations}}</h3>
-							<h3>{{profile.email}}</h3>
+							<h3 ng-if="state === 'View'">{{profile.email}}</h3>
+							<h3 ng-if="state === 'AdminReview'">{{profile.login_email}}{{profile.alternate_email ? " (private address, will not publicly appear)" : " (primary contact address)"}}</h3>
+							<h3 ng-if="state === 'AdminReview' && profile.alternate_email">{{profile.alternate_email}} (primary contact address)</h3>
 							<h3 ng-if="profile.phone">{{profile.phone}}</h3>
 							<h3 ng-if="profile.social_link">{{profile.social_link}}</h3>
 						</div>
@@ -127,8 +161,8 @@
 								<span class="help-block" ng-show="errors.alternateEmail" aria-live="polite">{{ errors.alternateEmail }}</span> 
 							</div>
 							<div class="form-group" ng-class="{errorHighlight: errors.phone}">
-								<label for="phone">Phone Number ({{(maxPhone-profile.phone.length)}} digits remaining):</label>
-								<input type="text" class="form-control" maxlength="{{maxPhone}}" ng-model="profile.phone" id="phone" name="phone" placeholder="Enter Phone Number" onkeypress='return (event.which >= 48 && event.which <= 57)'/> <!-- restricted to digits only -->
+								<label for="phone">US Phone Number ({{(maxPhone-profile.phone.length)}} digits remaining):</label>
+								<input type="text" class="form-control" maxlength="{{maxPhone}}" ng-model="profile.phone" id="phone" name="phone" placeholder="Enter US Phone Number" onkeypress='return (event.which >= 48 && event.which <= 57)'/> <!-- restricted to digits only -->
 								<span class="help-block" ng-show="errors.phone" aria-live="polite">{{ errors.phone }}</span> 
 							</div>
 							<div class="form-group" ng-class="{errorHighlight: errors.social_link}">
@@ -140,7 +174,7 @@
 						<div class="col-md-7 profile-info">
 							<div ng-class="{errorHighlight: errors.issuesExpertise}">
 								<h2>Issues of Expertise{{state === 'Create' || state === 'Edit' ? " (Required)" : ""}}</h2>
-								<ul ng-if="state === 'View'" class="compactList">
+								<ul ng-if="state === 'View' || state === 'AdminReview'" class="compactList">
 									<li ng-repeat="issue in profile.issues_expertise">{{issue.issue}}</li>
 									<li ng-if="profile.issues_expertise_other">{{profile.issues_expertise_other}}</li>
 								</ul>
@@ -162,7 +196,7 @@
 							</div>
 							<div ng-class="{errorHighlight: errors.countriesExpertise}">
 								<h2>Countries of Expertise{{state === 'Create' || state === 'Edit' ? " (Required)" : ""}}</h2>
-								<ul ng-if="state === 'View'" class="compactList">
+								<ul ng-if="state === 'View' || state === 'AdminReview'" class="compactList">
 									<li ng-repeat="country in profile.countries_expertise">{{country.country_name}}</li>
 									<li ng-if="profile.countries_expertise_other">{{profile.countries_expertise_other}}</li>
 								</ul>
@@ -184,7 +218,7 @@
 							</div>
 							<div ng-class="{errorHighlight: errors.regionsExpertise}">
 								<h2>Regions of Expertise{{state === 'Create' || state === 'Edit' ? " (Required)" : ""}}</h2>
-								<ul ng-if="state === 'View'" class="compactList">
+								<ul ng-if="state === 'View' || state === 'AdminReview'" class="compactList">
 									<li ng-repeat="region in profile.regions_expertise">{{region.region}}</li>
 									<li ng-if="profile.regions_expertise_other">{{profile.regions_expertise_other}}</li>
 								</ul>
@@ -206,7 +240,7 @@
 							</div>
 							<div>
 								<h2>Languages</h2>
-								<ul ng-if="state === 'View'">
+								<ul ng-if="state === 'View' || state === 'AdminReview'">
 									<li class="languages" ng-repeat="language in profile.languages">{{language.name}} -- {{language.proficiency_level.proficiency_level}}</li>
 								</ul>
 								<div ng-if="state === 'Create' || state === 'Edit'" class="form-group">
@@ -229,7 +263,7 @@
 							</div>
 							<div>
 								<h2>Country Experience</h2>
-								<ul ng-if="state === 'View'">
+								<ul ng-if="state === 'View' || state === 'AdminReview'">
 									<li class="country-experience" ng-repeat="country in profile.countries_experience">
 										<h3>{{country.country_name}}</h3>
 										<ul>
@@ -292,7 +326,7 @@
 						<div class="col-md-4"></div>
 					</div>
 					<!-- Message for when no profile is loaded -->
-					<div class="row" ng-show="!profile && state === 'View'">
+					<div class="row" ng-show="!profile && (state === 'View' || state === 'AdminReview')">
 						<h2>No valid profile selected!</h2>
 					</div>
 
@@ -308,12 +342,21 @@
 						<button ng-show="profile && (state === 'CreatePending' || state === 'EditPending')" ng-disabled="codePending" type="button" ng-click="sendCode()" class="btn btn-warning">SEND CODE</button> <!-- To initiate the editing process -->
 						<button ng-show="state === 'Create'" type="button" ng-click="createProfile()" class="btn btn-success">SUBMIT</button> <!-- For user submitting for first time -->
 						<button ng-show="state === 'Edit'" type="button" ng-click="editProfile()" class="btn btn-success">SUBMIT</button> <!-- For user editing their profile -->
+						<button ng-show="state === 'AdminReview'" type="button" ng-click="approveProfile(true)" class="btn btn-success">APPROVE PROFILE</button> <!-- For admin approving profile -->
+						<button ng-show="state === 'AdminReview'" type="button" ng-click="approveProfile(false)" class="btn btn-danger">DENY PROFILE</button> <!-- For admin denying profile -->
 						<a href="" class="btn btn-info" ng-click="redirectToHomepage(null, null)">LEAVE PAGE</a> <!-- For anyone to leave the page -->
+
+						<div ng-show="isAdmin && (state === 'View' || state ==='AdminReview')" class="delete-button-holder"> <!-- Administrator-only delete profile button -->
+							<button type="button" ng-click="deleteProfile()" class="btn btn-danger">DELETE PROFILE</button>
+						</div>
 					</div>
 				</form>
 
 			</div>
 
 		</div>	
+
+		<!-- Shared Site Footer -->
+		<?php include '../include/site_footer.php'; ?>
 	</body>
 </html>

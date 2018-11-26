@@ -8,6 +8,9 @@ higeApp.controller('listCtrl', function($scope) {
 
     $scope.isSearching = scope_isSearching; //boolean for if user is searching at all
 
+    $scope.alertType = alert_type; //set the alert type if any
+    $scope.alertMessage = alert_message; //set the alert message if any
+
     var tempProfiles = scope_profiles;
     $scope.profiles = new Array();
     for (var profile in tempProfiles){
@@ -23,6 +26,8 @@ higeApp.controller('listCtrl', function($scope) {
     $scope.languages = scope_languages;
     $scope.languageProficiencies = scope_languageProficiencies;
     $scope.countryExperiences = scope_countryExperiences;
+
+    $scope.adminPendingProfiles = scope_adminPendingProfiles;
 
     $scope.filteredProfiles = [];
 
@@ -117,6 +122,18 @@ higeApp.controller('listCtrl', function($scope) {
         this.searchProfile.countries_experience[parentIndex].experiences.splice(index, 1);
     }
 
+
+    //display a generic loading alert to the page
+    $scope.loadingAlert = function(){
+        $scope.alertType = "info";
+        $scope.alertMessage = "Loading...";
+    }
+    //remove the alert from the page
+    $scope.removeAlert = function(){
+        $scope.alertMessage = null;
+    }
+
+
     /*Custom function that compares a given object's 'id' value to the given array's objects' 'id's to see if there is a match. Returns the index if it exists, or -1 otherwise.
     NOTE- it is assumed that both the specified object and objects in the specified array all have the 'id' property!*/
     function indexOfID(testArray, testObject){
@@ -203,11 +220,20 @@ higeApp.controller('listCtrl', function($scope) {
     
     $scope.wildcardSearch = function(){
         if ($scope.wildcard == null) {$scope.wildcard = "";}
-        window.location.replace("?search&wildcard=" + $scope.wildcard);
+
+        if(!$scope.adminPendingProfiles){ //for regular users, redirect with wildcard
+            window.location.replace("?search&wildcard=" + $scope.wildcard);
+        }
+        else{ //for admins searching pending profiles, specify that with &pending
+            window.location.replace("?search&pending&wildcard=" + $scope.wildcard);
+        }
     }
 
     $scope.advancedSearch = function(){
         var searchURL = "?search&advanced"; //the URL to be redirected to
+        if($scope.adminPendingProfiles){
+            searchURL += "&pending"; //specify pending only if admin is searching pending profiles
+        }
         //add parameters here as necessary
         
         //add profile summary text fields

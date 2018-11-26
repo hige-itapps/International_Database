@@ -61,7 +61,7 @@ class Logger
             if(!$shouldReturnMessage){
                 return $logID;
             }else{
-                return "This error been logged with id '".$logID."' at '".date("Y/m/d")." ".date("h:i:s")."'. If this problem persists, please notify the system admin of this error.".PHP_EOL;
+                return "This error been logged with id '".$logID."' at '".date("Y/m/d")." ".date("h:i:s")."'. If this problem persists, please notify the system admin of this error.";
             }
         }
         else {return -1;}

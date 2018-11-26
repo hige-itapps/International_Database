@@ -12,6 +12,16 @@
 		</div>
 		<div class="col-md-4">
 			<a href="/" class="btn btn-home">Home</a>
+			<?php
+				if(isset($CASbroncoNetID)){
+					?>
+					<form id="logoutForm" method="post" action="?logout=">
+						<input type="hidden" name="logoutUser" value="logout" /> 
+						<input type="submit" class="btn btn-home" id="logoutSub" name="logoutSub" value="Logout" />
+					</form>
+					<?php
+				}
+			?>
 		</div>
 	</div>
 	

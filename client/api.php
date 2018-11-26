@@ -1,18 +1,26 @@
 <?php
 /*This file serves as the project's RESTful API. Simply send a get request to this file with a specified function name, with additional POST data when necessary.*/
 
+/*Admin validation*/
+include_once(dirname(__FILE__) . "/../CAS/CAS_session.php");
+
 /*Get DB connection*/
 include_once(dirname(__FILE__) . "/../server/DatabaseHelper.php");
 
 /*for sending emails*/
 include_once(dirname(__FILE__) . "/../server/EmailHelper.php");
 
-$database = new DatabaseHelper(); //database helper object used for some verification and insertion
-$emailHelper = new EmailHelper(); //email helper for sending custom emails
+/*Logger*/
+include_once(dirname(__FILE__) . "/../server/Logger.php");
+
+$logger = new Logger(); //for logging to files
+$database = new DatabaseHelper($logger); //database helper object used for some verification and insertion
+$emailHelper = new EmailHelper($logger); //email helper for sending custom emails
+
+$returnVal = []; //initialize return value as empty. If there is an error, it is expected to be set as $returnVal["error"].
 
 //For creating a new profile or editing an existing one. If editing, pass in 'editing' as a GET parameter
 if (array_key_exists('create_profile', $_GET)) {
-    $returnVal = []; //associative array to return afterwards
     $returnVal["success"] = false; //set to true if there are no errors after validation & running
     $returnVal["errors"] = []; //push errors to this array if any arise
 
@@ -58,7 +66,7 @@ if (array_key_exists('create_profile', $_GET)) {
         $firstname = isset($_POST["firstname"]) ? trim(json_decode($_POST["firstname"], true)) : null; //first name
         $lastname = isset($_POST["lastname"]) ? trim(json_decode($_POST["lastname"], true)) : null; //last name
         $affiliations = isset($_POST["affiliations"]) ? trim(json_decode($_POST["affiliations"], true)) : null; //affiliations
-        $alternate_email = isset($_POST["alternate_email"]) && !empty(trim($_POST["alternate_email_original"])) ? trim(json_decode($_POST["alternate_email"], true)) : null; //alternate email
+        $alternate_email = isset($_POST["alternate_email"]) && !empty(trim(json_decode($_POST["alternate_email"]))) ? trim(json_decode($_POST["alternate_email"], true)) : null; //alternate email
         $phone = isset($_POST["phone"]) ? trim(json_decode($_POST["phone"], true)) : null; //phone number
         $issues_expertise_other = isset($_POST["issues_expertise_other"]) ? trim(json_decode($_POST["issues_expertise_other"], true)) : null; //other issues
         $regions_expertise_other = isset($_POST["regions_expertise_other"]) ? trim(json_decode($_POST["regions_expertise_other"], true)) : null; //other regions
@@ -154,20 +162,18 @@ if (array_key_exists('create_profile', $_GET)) {
     }
 
     if(empty($returnVal["errors"])){$returnVal["success"] = true;} //if no errors, define success as true
-    echo json_encode($returnVal); //return results
 }
 
 
 
 //For sending a confirmation code
 else if (array_key_exists('send_code', $_GET)) {
-    $returnVal = []; //associative array to return afterwards
     $returnVal["success"] = false; //set to true if there are no errors after validation & running
     $returnVal["error"] = []; //push errors to this array if any arise
 
     if(isset($_POST["email"]) && isset($_POST["creating"])){ //if email address was sent
-        $email = trim($_POST["email"]);
-        $creating = $_POST["creating"] === "true" ? true : false; //convert string to boolean
+        $email = trim(json_decode($_POST["email"]));
+        $creating = json_decode($_POST["creating"]);
 
         if($email !== ''){ //not empty
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) { //valid format
@@ -208,7 +214,7 @@ else if (array_key_exists('send_code', $_GET)) {
                         $returnVal["error"] = "Error inserting new code into database.";
                     }
                     else{ //no errors so far, continue and send email
-                        $emailResult = $emailHelper->codeConfirmationSendEmail($email, $hex);
+                        $emailResult = $emailHelper->codeConfirmationSendEmail($email, $hex, null);
                         //set error codes if any
                         if(!$emailResult["saveSuccess"]){
                             $returnVal["error"] = $emailResult["saveError"];
@@ -230,21 +236,19 @@ else if (array_key_exists('send_code', $_GET)) {
     }
 
     if(empty($returnVal["error"])){$returnVal["success"] = true;} //if no errors, define success as true
-    echo json_encode($returnVal); //return results
 }
 
 
 
 //For verifying a confirmation code
 else if (array_key_exists('confirm_code', $_GET)) {
-    $returnVal = []; //associative array to return afterwards
     $returnVal["success"] = false; //set to true if there are no errors after validation & running
     $returnVal["error"] = []; //push errors to this array if any arise
 
     if(isset($_POST["userID"]) && isset($_POST["email"]) && isset($_POST["code"])){ //if userID, email, and code were sent
-        $userID = $_POST["userID"];
-        $email = trim($_POST["email"]);
-        $code = trim($_POST["code"]);
+        $userID = json_decode($_POST["userID"]);
+        $email = trim(json_decode($_POST["email"]));
+        $code = trim(json_decode($_POST["code"]));
 
         if(!boolval($database->isCodePending($email))){ //code isn't pending
             $returnVal["error"] = "There is currently no pending code for this profile.";
@@ -264,7 +268,224 @@ else if (array_key_exists('confirm_code', $_GET)) {
     }
 
     if(empty($returnVal["error"])){$returnVal["success"] = true;} //if no errors, define success as true
-    echo json_encode($returnVal); //return results
+}
+
+
+
+//for adding administrators
+else if(array_key_exists('add_admin', $_GET)){
+    if(isset($_POST["broncoNetID"]) && isset($_POST["name"])){
+        $broncoNetID = json_decode($_POST["broncoNetID"]);
+        $name = json_decode($_POST["name"]);
+
+        //must have permission to do this
+        if($database->isAdministrator($CASbroncoNetID)){
+            try{
+                $returnVal = $database->addAdmin($broncoNetID, $name);
+            }
+            catch(Exception $e){
+                $errorMessage = $logger->logError("Unable to insert administrator due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+			    $returnVal["error"] = "Error: Unable to insert administrator due to an internal exception. ".$errorMessage;
+            }
+        }
+        else{
+            $returnVal["error"] = "Permission denied, you are not permitted to add administrators.";
+        }
+    }
+    else{
+        $returnVal["error"] = "broncoNetID and/or name is not set";
+    }
+}
+
+
+
+//for getting admins
+else if(array_key_exists('get_admins', $_GET)){
+    if($database->isAdministrator($CASbroncoNetID)){
+        try{
+            $returnVal = $database->getAdministrators();
+        }
+        catch(Exception $e){
+            $errorMessage = $logger->logError("Unable to retrieve administrator due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+			$returnVal["error"] = "Error: Unable to retrieve administrator due to an internal exception. ".$errorMessage;
+        }
+    }
+    else{
+        $returnVal["error"] = "Permission denied, you are not permitted to retrieve the administrators list.";
+    }
+}
+
+
+
+//for removing an admin
+else if(array_key_exists('remove_admin', $_GET)){
+    if(isset($_POST["broncoNetID"])){
+        $broncoNetID = json_decode($_POST["broncoNetID"]);
+    
+        //must have permission to do this
+        if($database->isAdministrator($CASbroncoNetID)){
+            if(strcasecmp($CASbroncoNetID, $broncoNetID) != 0){ //not trying to remove self
+                try{
+                    $returnVal = $database->removeAdmin($broncoNetID);
+                }
+                catch(Exception $e){
+                    $errorMessage = $logger->logError("Unable to remove administrator due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+			        $returnVal["error"] = "Error: Unable to remove administrator due to an internal exception. ".$errorMessage;
+                }
+            }
+            else{
+                $returnVal["error"] = "Admins cannot remove themselves";
+            }
+        }
+        else{
+            $returnVal["error"] = "Permission denied, you are not permitted to remove administrators.";
+        }
+    }
+    else{
+        $returnVal["error"] = "broncoNetID is not set";
+    }
+}
+
+
+
+//for saving a site warning
+else if(array_key_exists('save_site_warning', $_GET)){
+    if(isset($_POST["siteWarning"])){
+        $siteWarning = json_decode($_POST["siteWarning"]);
+
+        if(isset($siteWarning) && trim($siteWarning) !== ''){ //must not be an empty string
+            //must have permission to do this
+            if($database->isAdministrator($CASbroncoNetID)){
+                try{
+                    $returnVal = $database->saveSiteWarning(trim($siteWarning));
+                }
+                catch(Exception $e){
+                    $errorMessage = $logger->logError("Unable to save site warning due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+                    $returnVal["error"] = "Error: Unable to save site warning due to an internal exception. ".$errorMessage;
+                }
+            }
+            else{
+                $returnVal["error"] = "Permission denied, you are not permitted to save site warnings.";
+            }
+        }
+        else{
+            $returnVal["error"] = "Warning message is empty";
+        }
+    }
+    else{
+        $returnVal["error"] = "Warning message is not set";
+    }
+}
+//for clearing a site warning
+else if(array_key_exists('clear_site_warning', $_GET)){
+    //must have permission to do this
+    if($database->isAdministrator($CASbroncoNetID)){
+        try{
+            $returnVal = $database->saveSiteWarning("");
+        }
+        catch(Exception $e){
+            $errorMessage = $logger->logError("Unable to clear site warning due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+            $returnVal["error"] = "Error: Unable to clear site warning due to an internal exception. ".$errorMessage;
+        }
+    }
+    else{
+        $returnVal["error"] = "Permission denied, you are not permitted to clear site warnings.";
+    }
+}
+
+
+
+//To approve a profile, which also involves deleting an old profile if there is one, and sending an email to the updated profile's primary contact address
+else if(array_key_exists('approve_profile', $_GET)){
+    //must have permission to do this
+    if(isset($CASbroncoNetID) && $database->isAdministrator($CASbroncoNetID)){
+        if(isset($_POST["userID"]) && isset($_POST["emailAddress"]) && isset($_POST["name"]) && isset($_POST["update"])){
+            $userID = json_decode($_POST["userID"]);
+            $emailAddress = json_decode($_POST["emailAddress"]);
+            $name = json_decode($_POST["name"]);
+            $update = json_decode($_POST["update"]);
+
+            try{
+                $returnVal["approve"] = $database->approveProfile($userID, $CASbroncoNetID);
+                if(!$returnVal["approve"]["success"]){
+                    $errorMessage = $logger->logError("Unable to approve profile.", $CASbroncoNetID, dirname(__FILE__), true);
+                    $returnVal["error"] = "Error: Unable to approve profile. ".$errorMessage;
+                }
+                else{ //successfully approved profile, so now send the email
+                    $returnVal["email"] = $emailHelper->profileApprovedEmail($emailAddress, $name, $update, $CASbroncoNetID); //get results of trying to save/send email message
+                }
+            }catch(Exception $e){
+                $errorMessage = $logger->logError("Unable to approve application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+			    $returnVal["error"] = "Error: Unable to approve application due to an internal exception. ".$errorMessage;
+            }
+        }
+        else{
+            $returnVal["error"] = "UserID, name, email address, and/or update boolean is not set";
+        }
+    }
+    else{
+        $returnVal["error"] = "Permission denied, you are not permitted to approve profiles.";
+    }
+}
+
+
+
+//To deny a profile, which involves deleting the pending profile, and sending an email to the deleted profile's primary contact address
+else if(array_key_exists('deny_profile', $_GET)){
+    //must have permission to do this
+    if(isset($CASbroncoNetID) && $database->isAdministrator($CASbroncoNetID)){
+        if(isset($_POST["userID"]) && isset($_POST["emailAddress"]) && isset($_POST["name"]) && isset($_POST["update"])){
+            $userID = json_decode($_POST["userID"]);
+            $emailAddress = json_decode($_POST["emailAddress"]);
+            $name = json_decode($_POST["name"]);
+            $update = json_decode($_POST["update"]);
+
+            try{
+                $returnVal["approve"] = $database->deleteProfile($userID, $CASbroncoNetID);
+                if(!$returnVal["approve"]["success"]){
+                    $errorMessage = $logger->logError("Unable to deny profile.", $CASbroncoNetID, dirname(__FILE__), true);
+                    $returnVal["error"] = "Error: Unable to deny profile. ".$errorMessage;
+                }
+                else{ //successfully denied profile, so now send the email
+                    $returnVal["email"] = $emailHelper->profileDeniedEmail($emailAddress, $name, $update, $CASbroncoNetID); //get results of trying to save/send email message
+                }
+            }catch(Exception $e){
+                $errorMessage = $logger->logError("Unable to deny application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+                $returnVal["error"] = "Error: Unable to deny application due to an internal exception. ".$errorMessage;
+            }
+        }
+        else{
+            $returnVal["error"] = "UserID, name, email address, and/or update boolean is not set";
+        }
+    }
+    else{
+        $returnVal["error"] = "Permission denied, you are not permitted to deny profiles.";
+    }
+}
+
+
+
+//To completely delete a profile
+else if(array_key_exists('delete_profile', $_GET)){
+    //must have permission to do this
+    if(isset($CASbroncoNetID) && $database->isAdministrator($CASbroncoNetID)){
+        if(isset($_POST["userID"])){
+            $userID = json_decode($_POST["userID"]);
+
+            try{
+                $returnVal = $database->deleteProfile($userID, $CASbroncoNetID);
+            }catch(Exception $e){
+                $errorMessage = $logger->logError("Unable to delete application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+                $returnVal["error"] = "Error: Unable to delete application due to an internal exception. ".$errorMessage;
+            }
+        }
+        else{
+            $returnVal["error"] = "UserID is not set";
+        }
+    }
+    else{
+        $returnVal["error"] = "Permission denied, you are not permitted to delete this profile.";
+    }
 }
 
 
@@ -274,7 +495,7 @@ else{
     echo json_encode("No function called");
 }
 
-
+echo json_encode($returnVal); //return results
 
 $database->close(); //close database connections
 ?>

@@ -33,8 +33,8 @@ class EmailHelper
 	private $customFooter; //custom email footer to be attached to the bottom of every sent message
 
 	/* Constructior retrieves configurations and initializes private vars */
-	public function __construct(){
-		$this->logger = new Logger(); //initialize the logger
+	public function __construct($logger){
+		$this->logger = $logger;
 		$config_url = dirname(__FILE__).'/../config.ini'; //set config file url
 		$settings = parse_ini_file($config_url); //get all settings		
 		$this->mailHost = $settings["mail_host"]; //load mail host
@@ -52,7 +52,9 @@ class EmailHelper
 
 	//Send an email to a specific address, with a custom message and subject. If the subject is left blank, a default one is prepared instead.
 	//NOTE- must save to the database first! Use the appID to save it correctly.
-	public function customEmail($toAddress, $customMessage, $customSubject) {
+	public function customEmail($toAddress, $customMessage, $customSubject, $CASbroncoNetID) {
+		$this->logger->logInfo("Sending Email", $CASbroncoNetID, dirname(__FILE__));
+		
 		$data = array(); // array to pass back data
 
 		$customSubject = trim($customSubject); //remove surrounding spaces
@@ -62,7 +64,7 @@ class EmailHelper
 
 		$fullMessage = $customMessage . $this->customFooter; //combine everything
 
-		$database = new DatabaseHelper(); //database helper object used for some verification and insertion
+		$database = new DatabaseHelper($this->logger); //database helper object used for some verification and insertion
 
 		$saveResult = $database->saveEmail($toAddress, $customSubject, $fullMessage); //try to save the email message
 		$data["saveSuccess"] = $saveResult; //save it to return it later
@@ -120,7 +122,7 @@ class EmailHelper
 	}
 
 	//The email to send to the profile owner to let them know of their new confirmation code
-	public function codeConfirmationSendEmail($toAddress, $code){
+	public function codeConfirmationSendEmail($toAddress, $code, $CASbroncoNetID){
 		$subject = "International Scholars Database - Confirmation Code";
 
 		$body = "Greetings,
@@ -128,12 +130,52 @@ class EmailHelper
 
 			#code
 
-			Please paste this code into the box provided on the Profile Confirmation page. You can find this page at international-scholars.wmich.edu.
+			Please paste this code into the box provided on the Profile Confirmation page. You can find this page at globalexpertise.wmich.edu.
 			This code will expire in 24 hours, or once your profile has been created/updated.
 			If you did not choose to create/update a profile on our site, please ignore this message.";
 		$body = str_replace("#code", nl2br($code), $body); //insert the code into the message
 
-		return $this->customEmail($toAddress, $body, $subject);
+		return $this->customEmail($toAddress, $body, $subject, $CASbroncoNetID);
+	}
+
+	//The email to send to the profile owner to let them know that their pending profile was approved. $update is true if the pending profile was an update of an old one.
+	public function profileApprovedEmail($toAddress, $name, $update, $CASbroncoNetID){
+		$subject = "International Scholars Database - Pending Profile Approved";
+
+		$body = "Dear #name,
+			We are excited to inform you that your pending profile on our site at globalexpertise.wmich.edu has been approved. It is now publicly available and searchable.";
+		if($update){$body.=PHP_EOL."Your previous profile is no longer publicly available.";}
+
+		$body = str_replace("#name", nl2br($name), $body); //insert the code into the message
+
+		return $this->customEmail($toAddress, $body, $subject, $CASbroncoNetID);
+	}
+
+	//The email to send to the profile owner to let them know that their pending profile was denied. $update is true if the pending profile was an update of an old one.
+	public function profileDeniedEmail($toAddress, $name, $update, $CASbroncoNetID){
+		$subject = "International Scholars Database - Pending Profile Denied";
+
+		$body = "Dear #name,
+			We regret to inform you that your pending profile on our site at globalexpertise.wmich.edu has been denied. This was likely due to lacking and/or incorrect information.";
+		if($update){$body.=PHP_EOL."However, your previous profile will still be publicly available unless otherwise specified.";}
+
+		$body = str_replace("#name", nl2br($name), $body); //insert the code into the message
+
+		return $this->customEmail($toAddress, $body, $subject, $CASbroncoNetID);
+	}
+
+
+	//The email to send to all profile owners every X amount of time to remind them to update their profiles if possible
+	public function siteReminderEmail($toAddress, $name, $CASbroncoNetID){
+		$subject = "International Scholars Database - Automatic Website Reminder";
+
+		$body = "Dear #name,
+			This is an automated message to remind you to check your profile on our site at globalexpertise.wmich.edu to make sure your information is up-to-date.".PHP_EOL.
+			"If you wish, you may update your information or remove your profile from the database by visiting your profile on our site and clicking the 'EDIT PROFILE' button.";
+
+		$body = str_replace("#name", nl2br($name), $body); //insert the code into the message
+
+		return $this->customEmail($toAddress, $body, $subject, $CASbroncoNetID);
 	}
 }
 	

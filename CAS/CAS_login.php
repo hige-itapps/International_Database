@@ -59,7 +59,6 @@ if(!isset($_SESSION["phpCAS"]["attributes"])) { //if user data hasn't been retri
 //set local variables from CAS session
 try {
 	$CASbroncoNetID = $_SESSION["phpCAS"]["attributes"]["uid"];
-	$CASemail = $_SESSION["phpCAS"]["attributes"]["mail"];
 } catch (Exception $e) {
 	echo "<h1>Session exception occured! Please refresh the page or try restarting your browser.</h1>";
 	echo "<h1>".$e."</h1>";
@@ -67,8 +66,7 @@ try {
 }
 
 //make sure all variables aren't blank or null
-if(!isset($CASbroncoNetID) || trim($CASbroncoNetID)==='' ||
-	!isset($CASemail) || trim($CASemail)==='')
+if(!isset($CASbroncoNetID) || trim($CASbroncoNetID)==='')
 {
 	echo "<h1>Error retrieving valid user data! Please refresh the page or try restarting your browser.</h1>";
 	exit();

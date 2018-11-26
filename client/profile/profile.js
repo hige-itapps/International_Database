@@ -5,7 +5,8 @@ var higeApp = angular.module('HIGE-app', []);
 higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scope, $http, $timeout){
     //get PHP init variables
     $scope.profile = scope_profile;
-    $scope.state = scope_state; //control the state of the page ('CreatePending', 'Create', 'EditPending', 'Edit', 'View') to determine how to render everything
+    $scope.state = scope_state; //control the state of the page ('CreatePending', 'Create', 'EditPending', 'Edit', 'View', and 'AdminReview') to determine how to render everything
+    $scope.isAdmin = scope_isAdmin; //find out if user is admin or not (not as strict as the state property above)
 
     $scope.issues = scope_issues;
     $scope.countries = scope_countries;
@@ -14,6 +15,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
     $scope.languageProficiencies = scope_languageProficiencies;
     $scope.countryExperiences = scope_countryExperiences;
     $scope.codePending = scope_codePending;
+    $scope.previousProfileID = scope_previousProfileID;
     
     $scope.usersMaxLengths = scope_usersMaxLengths;
     $scope.maxOtherExperience = scope_maxOtherExperience;
@@ -291,7 +293,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
         $http({
             method  : 'POST',
             url     : '../api.php?send_code',
-            data    : $.param({email: email, creating: creating}),  // pass in the profile object
+            data    : $.param({email: JSON.stringify(email), creating: JSON.stringify(creating)}),  // pass in the profile object
             headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  //standard paramater encoding
         })
         .then(function (response) {
@@ -331,7 +333,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
         $http({
             method  : 'POST',
             url     : '../api.php?confirm_code',
-            data    : $.param({userID: userID, email: email, code: $scope.code}),  // pass in the profile object
+            data    : $.param({userID: JSON.stringify(userID), email: JSON.stringify(email), code: JSON.stringify($scope.code)}),  // pass in the profile object
             headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  //standard paramater encoding
         })
         .then(function (response) {
@@ -374,6 +376,123 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
     }
 
 
+    //delete this entire profile -- only admins are capable of doing this
+    $scope.deleteProfile = function(){
+        var retVal = prompt("WARNING - BY DELETING THIS PROFILE, EVERYTHING ASSOCIATED WITH THIS PROFILE WILL BE PERMANENTLY WIPED! (However, if this is an approved profile that has a separate update pending, the update will not be deleted, and will instead be treated as a new pending profile) YOU WILL NOT BE ABLE TO UNDO THIS OPERATION! To confirm, please type 'DELETE' into the confirmation box: ", "confirm delete");
+        if(retVal !== "DELETE"){
+            return; //exit early if not confirmed
+        }
+        //continue if confirmed, start a loading alert
+        $scope.loadingAlert();
+
+        $http({
+            method  : 'POST',
+            url     : '../api.php?delete_profile',
+            data    : $.param({userID: JSON.stringify($scope.profile.id)}),  // pass in userID string
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
+        })
+        .then(function (response) {
+            console.log(response, 'res');
+            if(typeof response.data.error === 'undefined') //ran function as expected
+            {
+                var newAlertType = "success";
+                var newAlertMessage = "Success! The profile was deleted.";
+                $scope.redirectToHomepage(newAlertType, newAlertMessage); //redirect to the homepage with the message
+            }
+            else //failure!
+            {
+                console.log(response.data.error);
+                $scope.alertType = "danger";
+                $scope.alertMessage = "There was an error when trying to delete this profile: " + response.data.error;
+            }
+        },function (error){
+            console.log(error, 'can not get data.');
+            $scope.alertType = "danger";
+            $scope.alertMessage = "There was an unexpected error when trying to delete this profile! Please let an administrator know the details and time of this issue.";
+        });
+    }
+
+
+    //approve or deny this profile - set the approve boolean to true to approve, or false to deny
+    $scope.approveProfile = function(approve){
+        var approveMessage = "By approving, this profile will become publicly searchable, and a notification email will be sent out to the updated profile's primary contact address. ";
+        if($scope.previousProfileID > 0) {approveMessage += "Additionally, the previous profile will be permanently deleted, as this one will replace it. ";}
+        approveMessage += "Are you sure you want to approve this pending profile?";
+
+        var denyMessage = "By denying, this pending profile will be permanently deleted, and a notification email will be sent out to the deleted profile's primary contact address. ";
+        if($scope.previousProfileID > 0) {denyMessage += "However, the previous profile will remain publicly searchable. ";}
+        denyMessage += "Are you sure you want to deny this pending profile?";
+
+        var confirmMessage = approve ? approveMessage : denyMessage; //determine whether to show the approval or denial message
+
+        if(confirm (confirmMessage))
+        {
+            //start a loading alert
+            $scope.loadingAlert();
+
+            var url = approve ? '../api.php?approve_profile' : '../api.php?deny_profile'; //whether to route to the approval or denial API function
+            var sendAddress = $scope.profile.login_email; //determine which address to send to
+            if($scope.profile.alternate_email) {sendAddress = $scope.profile.alternate_email;}
+            var update = $scope.previousProfileID > 0 ? true : false; //send true if this is an update, false otherwise
+
+            $http({
+                method  : 'POST',
+                url     : url,
+                data    : $.param({userID: JSON.stringify($scope.profile.id), emailAddress: JSON.stringify(sendAddress), name: JSON.stringify($scope.profile.firstname), update: JSON.stringify(update)}),  // pass in data as strings
+                headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
+            })
+            .then(function (response) {
+                console.log(response, 'res');
+                if(typeof response.data.error === 'undefined') //ran function as expected
+                {
+                    if(response.data.approve.success === true)//updated
+                    {
+                        var profileStatus = approve ? "approved" : "deleted";
+                        var newAlertType = null;
+                        var newAlertMessage = null;
+
+                        if(response.data.email.saveSuccess === true) //email saved correctly
+                        {
+                            if(response.data.email.sendSuccess === true) //email was sent correctly
+                            {
+                                newAlertType = "success";
+                                newAlertMessage = "Success! The profile has been " + profileStatus + ". An email was successfully saved and sent out to the profile owner.";
+                            }
+                            else
+                            {
+                                newAlertType = "warning";
+                                newAlertMessage = "Warning: The profile has been " + profileStatus + ", and an email was saved, but it could not be sent out to the profile owner: " + response.data.email.sendError;
+                            }
+                        }
+                        else
+                        {
+                            newAlertType = "warning";
+                            newAlertMessage = "Warning: The profile has been " + profileStatus + ", but an email was neither saved nor sent out to the profile owner: " + response.data.email.saveError;
+                        }
+
+                        $scope.redirectToProfileList(newAlertType, newAlertMessage, true); //redirect to the homepage with the message
+                    }
+                    else//didn't update
+                    {
+                        $scope.alertType = "warning";
+                        $scope.alertMessage = "Warning: The profile may not have been updated from its previous state. Please exit this page and determine the profile's status, and let an administrator know if there is a problem.";
+                    }
+                }
+                else //failure!
+                {
+                    console.log(response.data.error);
+                    $scope.alertType = "danger";
+                    $scope.alertMessage = "There was an error with your approval: " + response.data.error;
+                }
+            },function (error){
+                console.log(error, 'can not get data.');
+                $scope.alertType = "danger";
+                $scope.alertMessage = "There was an unexpected error with your approval! Please let an administrator know the details and time of this issue.";
+            });
+        }
+    };
+
+
     //redirect the user to the homepage. Optionally, send an alert which will show up on the next page, consisting of a type(success, warning, danger, etc.) and message
     $scope.redirectToHomepage = function(alert_type, alert_message){
         var homeURL = '../home/home.php'; //url to homepage, required in order to correctly pass POST data
@@ -389,6 +508,27 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
         else //if there IS an alert message to send, fill out an invisible form & submit so the data can be sent as POST
         {
             var form = $('<form type="hidden" action="' + homeURL + '" method="post">' +
+                '<input type="text" name="alert_type" value="' + alert_type + '" />' +
+                '<input type="text" name="alert_message" value="' + alert_message + '" />' +
+            '</form>');
+            $('body').append(form);
+            form.submit();
+        }
+    }
+
+
+    //redirect the profile list page. Optionally, send an alert which will show up on the next page, consisting of a type(success, warning, danger, etc.) and message. Set pendingOnly to true to display pending results.
+    $scope.redirectToProfileList = function(alert_type, alert_message, pendingOnly){
+        var profileListURL = '../profile_list/profile_list.php'; //url to profile_list, required in order to correctly pass POST data
+        if(pendingOnly){profileListURL += '?pending';}
+
+        if(alert_type == null) //if no alert message to send, simply redirect
+        {
+            window.location.replace(profileListURL);
+        }
+        else //if there IS an alert message to send, fill out an invisible form & submit so the data can be sent as POST
+        {
+            var form = $('<form type="hidden" action="' + profileListURL + '" method="post">' +
                 '<input type="text" name="alert_type" value="' + alert_type + '" />' +
                 '<input type="text" name="alert_message" value="' + alert_message + '" />' +
             '</form>');

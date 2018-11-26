@@ -2,18 +2,25 @@
 	/*User validation*/
 	include_once(dirname(__FILE__) . "/../../CAS/CAS_login.php");
 
-	echo $CASbroncoNetID;
-	
 	/*Get DB connection*/
-	//nclude_once(dirname(__FILE__) . "/../../functions/database.php");
-	//$conn = connection();
-		
-	// if(isAdministrator($conn, $CASbroncoNetID)) 
-	// { 
-	// 	$administrators = getAdministrators($conn);
-	// 	$applicationApprovers = getApplicationApprovers($conn);
-	// 	$committee = getCommittee($conn);
-	// 	$finalReportApprovers = getfinalReportApprovers($conn);
+	include_once(dirname(__FILE__) . "/../../server/DatabaseHelper.php");
+
+	/*Logger*/
+	include_once(dirname(__FILE__) . "/../../server/Logger.php");
+
+	/*Site Warning*/
+	include_once(dirname(__FILE__) . "/../../server/SiteWarning.php");
+
+	$logger = new Logger(); //for logging to files
+	$database = new DatabaseHelper($logger); //database helper object used for some verification and insertion
+	$siteWarning = new SiteWarning($database); //used to determine if a site warning exists and should be displayed
+	$numberOfPendingProfiles = 0; //number of pending profiles
+	
+	if($database->isAdministrator($CASbroncoNetID)) 
+	{ 
+		$numberOfPendingProfiles = $database->getNumberOfPendingProfiles();
+		$administrators = $database->getAdministrators();
+		$siteWarningString = $database->getSiteWarning();
 ?>
 
 
@@ -28,9 +35,11 @@
 		<?php include '../include/head_content.html'; ?>
 
 		<!-- Set values from PHP on startup, accessible by the AngularJS Script -->
-		<!-- <script type="text/javascript">
+		<script type="text/javascript">
+			var scope_numberOfPendingProfiles = <?php echo json_encode($numberOfPendingProfiles); ?>;
 			var scope_administrators = <?php echo json_encode($administrators); ?>;
-		</script> -->
+			var scope_siteWarningString = <?php echo json_encode($siteWarningString); ?>;
+		</script>
 		<!-- AngularJS Script -->
 		<script type="module" src="administrator.js"></script>
 	</head>
@@ -39,9 +48,10 @@
 	<body ng-app="HIGE-app">
 	
 		<!-- Shared Site Banner -->
-		<?php include '../include/site_banner.html'; ?>
+		<?php include '../include/site_banner.php'; ?>
 
 		<div id="MainContent" role="main">
+			<?php $siteWarning->showIfExists() ?> <!-- show site warning if it exists -->
 			<script src="../include/outdatedbrowser.js" nomodule></script> <!-- show site error if outdated -->
 			<?php include '../include/noscript.html'; ?> <!-- show site error if javascript is disabled -->
 	
@@ -49,9 +59,15 @@
 				<div class="container-fluid" ng-controller="adminCtrl" id="adminCtrl">
 				
 					<h1 class="title">Administrator View</h1>
-					
+
+					<div class="buttons-group top-buttons"> 
+						<a href="../profile_list/profile_list.php?pending">View Pending Profiles ({{numberOfPendingProfiles}} To Approve)</a>
+					</div>
+
+					<hr>
+
 					<!-- View & Remove Admins -->
-					<!-- <table class="table table-bordered table-sm">
+					<table class="table table-bordered table-sm">
 						<caption class="title">Administrators:</caption>
 						<thead>
 							<tr>
@@ -67,9 +83,9 @@
 								<td><button type="button" ng-click="removeAdmin(admin[0])" class="btn btn-danger">REMOVE</button></td> 
 							</tr>
 						</tbody>
-					</table> -->
+					</table>
 					<!--Add Admin-->
-					<!-- <h3>Add Administrator:</h3>
+					<h3>Add Administrator:</h3>
 					<form class="form-inline" ng-submit="addAdmin()"> 
 						<div class="form-group">
 							<label for="addAdminID">BroncoNetID:</label>
@@ -80,8 +96,23 @@
 							<input type="text" ng-model="addAdminName" id="addAdminName" name="addAdminName">
 						</div>
 						<button type="submit" class="btn btn-success">Submit</button>
-					</form> -->
+					</form>
 
+					<hr>
+
+					
+					<!-- Basic Site Warning Option -->
+					<h3>Site Warning Notification</h3>
+					<h4>Use this option to specify a warning that will appear on the top of every page of the site in a striped yellow banner. This can be used to do things like schedule upcoming down times for site maintenance. If enabled, it will show up upon subsequent page refreshes.</h4>
+					<form class="form-inline site-warning-form" ng-submit="saveSiteWarning()"> 
+						<div class="form-group">
+							<label for="siteWarning">Site Warning Message:</label>
+							<textarea class="form-control" ng-model="siteWarning" id="siteWarning" name="siteWarning" placeholder="Enter Warning Message" rows="2"> </textarea>
+						</div>
+						<button type="submit" class="btn btn-success">Save Message</button>
+						<button type="button" class="btn btn-danger" ng-click="clearSiteWarning()">Clear Message</button>
+					</form>
+					<hr>
 
 					<div class="alert alert-{{alertType}} alert-dismissible" ng-class="{hideAlert: !alertMessage}">
 						<button type="button" title="Close this alert." class="close" aria-label="Close" ng-click="removeAlert()"><span aria-hidden="true">&times;</span></button>{{alertMessage}}
@@ -91,16 +122,24 @@
 					<div class="buttons-group bottom-buttons"> 
 						<a href="../home/home.php" class="btn btn-info">LEAVE PAGE</a>
 					</div>
+
+
+					<div class="alert alert-{{alertType}} alert-dismissible" ng-class="{hideAlert: !alertMessage}">
+						<button type="button" title="Close this alert." class="close" aria-label="Close" ng-click="removeAlert()"><span aria-hidden="true">&times;</span></button>{{alertMessage}}
+					</div>
 				</div>
 
 			</div>
 			
 		</div>
+
+		<!-- Shared Site Footer -->
+		<?php include '../include/site_footer.php'; ?>
 	</body>
 </html>
 <?php
-	// }else{
-	// 	include '../include/permission_denied.html';
-	// }
-	// $conn = null; //close connection
+	}else{
+		include '../include/permission_denied.html';
+	}
+	$database->close(); //close database connections
 ?>

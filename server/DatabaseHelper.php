@@ -36,20 +36,22 @@ class DatabaseHelper
     /* Specific transactions */
 
     /* For Users */
-    /* Just quick summaries; only data from the users table- only return the primary email adresses. Also only return approved profiles unless specified otherwise with $approvedOnly = false */
+    /* Just quick summaries; only data from the users table- only return the primary email adresses. 
+    Also only return approved profiles unless specified otherwise with $approvedOnly = false (denied) or null (pending)*/
     public function getAllUsersSummaries($approvedOnly = true){
         $query = "Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email, u.phone, u.social_link, u.issues_expertise_other, u.regions_expertise_other, u.countries_expertise_other FROM users u";
-        if($approvedOnly){$query.=" WHERE approved = 1";} //only approved if necessary
-        else{$query.=" WHERE approved = 0";} //otherwise, pending only
+        if(!isset($approvedOnly)){$query.=" WHERE approved IS NULL";} //approvedOnly is NULL, so return pending only
+        else if($approvedOnly){$query.=" WHERE approved = 1";} //only approved if necessary
+        else{$query.=" WHERE approved = 0";} //otherwise, denied only
         $this->sql = $this->conn->prepare($query);
         $this->sql->execute();
         return $this->sql->fetchAll(PDO::FETCH_ASSOC); //return names as keys
     }
-
     public function getUserSummary($userID, $approvedOnly = true){
         $query = "Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email, u.phone, u.social_link, u.issues_expertise_other, u.regions_expertise_other, u.countries_expertise_other FROM users u WHERE u.id = :id";
-        if($approvedOnly){$query.=" AND approved = 1";} //only approved if necessary
-        else{$query.=" AND approved = 0";} //otherwise, pending only
+        if(!isset($approvedOnly)){$query.=" AND approved IS NULL";} //approvedOnly is NULL, so return pending only
+        else if($approvedOnly){$query.=" AND approved = 1";} //only approved if necessary
+        else{$query.=" AND approved = 0";} //otherwise, denied only
         $query.= " LIMIT 1"; //only return 1 result
         $this->sql = $this->conn->prepare($query);
         $this->sql->bindParam(':id', $userID);
@@ -57,9 +59,20 @@ class DatabaseHelper
         return $this->sql->fetch(PDO::FETCH_ASSOC); //return names as keys
     }
 
+
+
+    /* Return a denied profile given its (preferably login) email address */
+    public function getDeniedProfile($email){
+        $id = $this->doesProfileExist($email, false); //first, get the ID of the denied profile if it exists
+
+        return $this->getUserProfile($id, false, false); //return only a denied profile for the specified id
+    }
+
+
+
     /* Full user profiles- still only return the primary email addresses. 
     Only return 1 general coalesced 'email' field unless specified otherwise with $coalesceEmails = false
-    Also only return approved profiles unless specified otherwise with $approvedOnly = false */
+    Also only return approved profiles unless specified otherwise with $approvedOnly = false (denied) or null (pending) */
     public function getUserProfile($userID, $coalesceEmails = true, $approvedOnly = true){
         //initialize user object
         $user = null;
@@ -72,8 +85,10 @@ class DatabaseHelper
         
         $query.="u.phone, u.social_link, u.issues_expertise_other, u.regions_expertise_other, u.countries_expertise_other FROM users u WHERE u.id = :id";
 
-        if($approvedOnly){$query.=" AND approved = 1";} //only approved if necessary
-        else{$query.=" AND approved = 0";} //otherwise, pending only
+        if(!isset($approvedOnly)){$query.=" AND approved IS NULL";} //approvedOnly is NULL, so return pending only
+        else if($approvedOnly){$query.=" AND approved = 1";} //only approved if necessary
+        else{$query.=" AND approved = 0";} //otherwise, denied only
+
         $query.= " LIMIT 1"; //only return 1 result
         $this->sql = $this->conn->prepare($query);
         $this->sql->bindParam(':id', $userID);
@@ -148,550 +163,10 @@ class DatabaseHelper
         return $user;
     }
 
-    //Insert a profile into the database. This will only work if there is a current pending code for the login email. 
-    //This operation will automatically set the 'approved' field to false (0).
-    //Error handling should be done beforehand, including verifying that a code is currently pending for the login email.
-    public function insertProfile($login_email, $firstname, $lastname, $alternate_email, $affiliations, $phone, $issues_expertise_other, $regions_expertise_other, $countries_expertise_other, $social_link, $issues_expertise, $countries_expertise, $regions_expertise, $languages, $countries_experience){
-        $retval = [];
-        $newProfileID = null; // the ID of the profile just inserted
 
-        $this->conn->beginTransaction(); //begin atomic transaction
 
-        //insert base profile first
-        $this->sql = $this->conn->prepare("INSERT INTO users(login_email, firstname, lastname, alternate_email, affiliations, phone, issues_expertise_other, regions_expertise_other, countries_expertise_other, social_link, approved)
-            VALUES(:login_email, :firstname, :lastname, :alternate_email, :affiliations, :phone, :issues_expertise_other, :regions_expertise_other, :countries_expertise_other, :social_link, 0)");
-        $this->sql->bindParam(':login_email', $login_email);
-        $this->sql->bindParam(':firstname', $firstname);
-        $this->sql->bindParam(':lastname', $lastname);
-        $this->sql->bindParam(':alternate_email', $alternate_email);
-        $this->sql->bindParam(':affiliations', $affiliations);
-        $this->sql->bindParam(':phone', $phone);
-        $this->sql->bindParam(':issues_expertise_other', $issues_expertise_other);
-        $this->sql->bindParam(':regions_expertise_other', $regions_expertise_other);
-        $this->sql->bindParam(':countries_expertise_other', $countries_expertise_other);
-        $this->sql->bindParam(':social_link', $social_link);
-        
-        if ($this->sql->execute() !== TRUE){//query failed
-            $this->conn->rollBack();
-            $retval["error"] = "Failed to insert base profile.";
-        }
-
-        if(empty($retval["error"])){ //no errors yet, so continue
-            //get the profile ID of the just-added profile
-            $this->sql = $this->conn->prepare("SELECT max(id) FROM users WHERE login_email = :login_email LIMIT 1");
-            $this->sql->bindParam(':login_email', $login_email);
-            $this->sql->execute();
-            $newProfileID = $this->sql->fetch(PDO::FETCH_COLUMN);//now we have the current ID!
-
-            //insert user's issues of expertise
-            foreach($issues_expertise as $i){//go through issues
-                $this->sql = $this->conn->prepare("INSERT INTO users_issues(user_id, issue_id) VALUES(:user_id, :issue_id)");
-                $this->sql->bindParam(':user_id', $newProfileID);
-                $this->sql->bindParam(':issue_id', $i["id"]);
-
-                if ($this->sql->execute() !== TRUE){//query failed
-                    $this->conn->rollBack();
-                    $retval["error"] = "Failed to insert an issue of expertise.";
-                    break;
-                }
-            }
-        }
-
-        if(empty($retval["error"])){ //no errors yet, so continue
-            //insert user's countries of expertise
-            foreach($countries_expertise as $i){//go through countries
-                $this->sql = $this->conn->prepare("INSERT INTO users_country_expertise(user_id, country_id) VALUES(:user_id, :country_id)");
-                $this->sql->bindParam(':user_id', $newProfileID);
-                $this->sql->bindParam(':country_id', $i["id"]);
-
-                if ($this->sql->execute() !== TRUE){//query failed
-                    $this->conn->rollBack();
-                    $retval["error"] = "Failed to insert a country of expertise.";
-                    break;
-                }
-            }
-        }
-
-        if(empty($retval["error"])){ //no errors yet, so continue
-            //insert user's regions of expertise
-            foreach($regions_expertise as $i){//go through regions
-                $this->sql = $this->conn->prepare("INSERT INTO users_regions(user_id, region_id) VALUES(:user_id, :region_id)");
-                $this->sql->bindParam(':user_id', $newProfileID);
-                $this->sql->bindParam(':region_id', $i["id"]);
-
-                if ($this->sql->execute() !== TRUE){//query failed
-                    $this->conn->rollBack();
-                    $retval["error"] = "Failed to insert a region of expertise.";
-                    break;
-                }
-            }
-        }
-
-        if(empty($retval["error"])){ //no errors yet, so continue
-            //insert user's languages
-            foreach($languages as $i){//go through languages
-                $this->sql = $this->conn->prepare("INSERT INTO users_languages(user_id, language_id, proficiency_id) VALUES(:user_id, :language_id, :proficiency_id)");
-                $this->sql->bindParam(':user_id', $newProfileID);
-                $this->sql->bindParam(':language_id', $i->id);
-                $this->sql->bindParam(':proficiency_id', $i->proficiency_level->id);
-
-                if ($this->sql->execute() !== TRUE){//query failed
-                    $this->conn->rollBack();
-                    $retval["error"] = "Failed to insert a language.";
-                    break;
-                }
-            }
-        }
-
-        if(empty($retval["error"])){ //no errors yet, so continue
-            //insert user's country experience
-            foreach($countries_experience as $i){//go through countries
-
-                foreach($i->experiences as $experience){//go through regular experiences
-                    $this->sql = $this->conn->prepare("INSERT INTO users_country_experience(user_id, country_id, experience_id) VALUES(:user_id, :country_id, :experience_id)");
-                    $this->sql->bindParam(':user_id', $newProfileID);
-                    $this->sql->bindParam(':country_id', $i->id);
-                    $this->sql->bindParam(':experience_id', $experience->id);
-
-                    if ($this->sql->execute() !== TRUE){//query failed
-                        $this->conn->rollBack();
-                        $retval["error"] = "Failed to insert a country experience.";
-                        break;
-                    }
-                }
-                
-                //check for an "other" experience, if no errors yet
-                if(empty($retval["error"])){
-                    if($i->other_experience !== ""){ //an other experience exists
-                        //$otherExperienceID = null; // the ID of the added other experience
-                        $this->sql = $this->conn->prepare("INSERT INTO users_country_experience(user_id, country_id, other_experience) VALUES(:user_id, :country_id, :other_experience)");
-                        $this->sql->bindParam(':user_id', $newProfileID);
-                        $this->sql->bindParam(':country_id', $i->id);
-                        $this->sql->bindParam(':other_experience', $i->other_experience);
-
-                        if ($this->sql->execute() !== TRUE){//query failed
-                            $this->conn->rollBack();
-                            $retval["error"] = "Failed to insert other country experience.";
-                            break;
-                        }
-                    }
-                }
-                else{ //if there already is an error, then break
-                    break;
-                }
-            }
-        }
-
-        if(empty($retval["error"])){ //no errors, so queries can be committed
-            $this->conn->commit();
-        }
-
-        //$retval["error"] = "Not implemented yet!";
-        return $retval;
-    }
-
-
-
-    /* Approve a profile; this requires deleting an old application as well if the new one is an update */
-    public function approveProfile($userID, $CASbroncoNetID){
-        $retval = [];
-        $retval["success"] = false;
-        $oldID = -1; //set to the old profile ID if one existed
-
-        $this->conn->beginTransaction(); //begin atomic transaction
-
-        $currentEmail = $this->getLoginEmailFromID($userID);
-        if(isset($currentEmail)){ $oldID = $this->doesProfileExist($currentEmail);} //retrieve old ID
-
-        if($oldID > 0){ //this was an updated profile, so delete the old one
-            //remove any relevant country experiences
-            $this->sql = $this->conn->prepare("DELETE FROM users_country_experience WHERE user_id = :oldID");
-            $this->sql->bindParam(':oldID', $oldID);
-            
-            if ($this->sql->execute() !== TRUE){//query failed
-                $this->conn->rollBack();
-                $retval["error"] = "Failed to delete relevant user country experiences.";
-            }
-
-            if(empty($retval["error"])){ //no errors yet, so continue
-                 //remove any relevant languages
-                $this->sql = $this->conn->prepare("DELETE FROM users_languages WHERE user_id = :oldID");
-                $this->sql->bindParam(':oldID', $oldID);
-                
-                if ($this->sql->execute() !== TRUE){//query failed
-                    $this->conn->rollBack();
-                    $retval["error"] = "Failed to delete relevant user languages.";
-                }
-            }
-
-            if(empty($retval["error"])){ //no errors yet, so continue
-                //remove any relevant regions of expertise
-                $this->sql = $this->conn->prepare("DELETE FROM users_regions WHERE user_id = :oldID");
-                $this->sql->bindParam(':oldID', $oldID);
-                
-                if ($this->sql->execute() !== TRUE){//query failed
-                    $this->conn->rollBack();
-                    $retval["error"] = "Failed to delete relevant user regions of expertise.";
-                }
-            }
-
-            if(empty($retval["error"])){ //no errors yet, so continue
-                //remove any relevant countries of expertise
-                $this->sql = $this->conn->prepare("DELETE FROM users_country_expertise WHERE user_id = :oldID");
-                $this->sql->bindParam(':oldID', $oldID);
-                
-                if ($this->sql->execute() !== TRUE){//query failed
-                    $this->conn->rollBack();
-                    $retval["error"] = "Failed to delete relevant user countries of expertise.";
-                }
-            }
-
-            if(empty($retval["error"])){ //no errors yet, so continue
-                //remove any relevant issues of expertise
-                $this->sql = $this->conn->prepare("DELETE FROM users_issues WHERE user_id = :oldID");
-                $this->sql->bindParam(':oldID', $oldID);
-                
-                if ($this->sql->execute() !== TRUE){//query failed
-                    $this->conn->rollBack();
-                    $retval["error"] = "Failed to delete relevant user issues of expertise.";
-                }
-            }
-
-            if(empty($retval["error"])){ //no errors yet, so continue
-                //remove base profile
-                $this->sql = $this->conn->prepare("DELETE FROM users WHERE id = :oldID");
-                $this->sql->bindParam(':oldID', $oldID);
-                
-                if ($this->sql->execute() !== TRUE){//query failed
-                    $this->conn->rollBack();
-                    $retval["error"] = "Failed to delete relevant user base profile.";
-                }
-            }
-        }
-
-        //now set the pending profile to approved, if no errors yet
-        if(empty($_retval["error"])){
-            $this->sql = $this->conn->prepare("UPDATE users u SET u.approved = 1 WHERE id = :userID");
-            $this->sql->bindParam(':userID', $userID);
-            
-            if ($this->sql->execute() !== TRUE){//query failed
-                $this->conn->rollBack();
-                $retval["error"] = "Failed approve pending profile.";
-            }
-        }
-
-        if(empty($retval["error"])){ //no errors, so queries can be committed
-            $this->conn->commit();
-            $retval["success"] = true;
-        }
-
-        return $retval;
-    }
-
-
-
-    /* Delete a profile from the database; this is used when denying a profile. 
-    This is an atomic transaction, so every related bit of information for this profile will be removed, or none of it. */
-    public function deleteProfile($userID, $CASbroncoNetID){
-        $retval = [];
-        $retval["success"] = false;
-
-        $this->conn->beginTransaction(); //begin atomic transaction
-
-        //remove any relevant country experiences
-        $this->sql = $this->conn->prepare("DELETE FROM users_country_experience WHERE user_id = :userID");
-        $this->sql->bindParam(':userID', $userID);
-        
-        if ($this->sql->execute() !== TRUE){//query failed
-            $this->conn->rollBack();
-            $retval["error"] = "Failed to delete relevant user country experiences.";
-        }
-
-        if(empty($retval["error"])){ //no errors yet, so continue
-                //remove any relevant languages
-            $this->sql = $this->conn->prepare("DELETE FROM users_languages WHERE user_id = :userID");
-            $this->sql->bindParam(':userID', $userID);
-            
-            if ($this->sql->execute() !== TRUE){//query failed
-                $this->conn->rollBack();
-                $retval["error"] = "Failed to delete relevant user languages.";
-            }
-        }
-
-        if(empty($retval["error"])){ //no errors yet, so continue
-            //remove any relevant regions of expertise
-            $this->sql = $this->conn->prepare("DELETE FROM users_regions WHERE user_id = :userID");
-            $this->sql->bindParam(':userID', $userID);
-            
-            if ($this->sql->execute() !== TRUE){//query failed
-                $this->conn->rollBack();
-                $retval["error"] = "Failed to delete relevant user regions of expertise.";
-            }
-        }
-
-        if(empty($retval["error"])){ //no errors yet, so continue
-            //remove any relevant countries of expertise
-            $this->sql = $this->conn->prepare("DELETE FROM users_country_expertise WHERE user_id = :userID");
-            $this->sql->bindParam(':userID', $userID);
-            
-            if ($this->sql->execute() !== TRUE){//query failed
-                $this->conn->rollBack();
-                $retval["error"] = "Failed to delete relevant user countries of expertise.";
-            }
-        }
-
-        if(empty($retval["error"])){ //no errors yet, so continue
-            //remove any relevant issues of expertise
-            $this->sql = $this->conn->prepare("DELETE FROM users_issues WHERE user_id = :userID");
-            $this->sql->bindParam(':userID', $userID);
-            
-            if ($this->sql->execute() !== TRUE){//query failed
-                $this->conn->rollBack();
-                $retval["error"] = "Failed to delete relevant user issues of expertise.";
-            }
-        }
-
-        if(empty($retval["error"])){ //no errors yet, so continue
-            //remove base profile
-            $this->sql = $this->conn->prepare("DELETE FROM users WHERE id = :userID");
-            $this->sql->bindParam(':userID', $userID);
-            
-            if ($this->sql->execute() !== TRUE){//query failed
-                $this->conn->rollBack();
-                $retval["error"] = "Failed to delete relevant user base profile.";
-            }
-        }
-        
-
-        if(empty($retval["error"])){ //no errors, so queries can be committed
-            $this->conn->commit();
-            $retval["success"] = true;
-        }
-
-        return $retval;
-    }
-
-
-
-    /* For Static Data */
-
-    /*Checks if a user is an administrator (true or false)*/
-	public function isAdministrator($broncoNetID){
-		$this->sql = $this->conn->prepare("Select * FROM administrators WHERE broncoNetID = :id");
-		$this->sql->bindParam(':id', $broncoNetID);
-		$this->sql->execute();
-		return boolval($this->sql->fetch(PDO::FETCH_COLUMN));
-    }
-    
-    /* Returns array of all administrators */
-	public function getAdministrators(){
-		$this->sql = $this->conn->prepare("Select broncoNetID, name FROM administrators");
-		$this->sql->execute();
-		return $this->sql->fetchAll(PDO::FETCH_NUM); //return indexes as keys
-    }
-    
-    /* Add an admin to the administrators table */
-	public function addAdmin($broncoNetID, $name){
-		if ($broncoNetID != "" && $name != ""){//valid params
-			$this->logger->logInfo("Inserting administrator (".$broncoNetID.", ".$name.")", $broncoNetID, dirname(__FILE__));
-			$this->sql = $this->conn->prepare("INSERT INTO administrators(BroncoNetID, Name) VALUES(:id, :name)");
-			$this->sql->bindParam(':id', $broncoNetID);
-			$this->sql->bindParam(':name', $name);
-			return $this->sql->execute();
-		}
-    }
-    
-    /* Remove an admin to the administrators table */
-	public function removeAdmin($broncoNetID){
-		if ($broncoNetID != ""){//valid params
-			$this->sql = $this->conn->prepare("DELETE FROM administrators WHERE BroncoNetID = :id");
-			$this->sql->bindParam(':id', $broncoNetID);
-			return $this->sql->execute();
-		}
-	}
-
-    //get all issues, with ids as keys
-    public function getIssues(){
-        $this->sql = $this->conn->prepare("Select issues.id, issues.* FROM issues");
-        $this->sql->execute();
-        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
-    }
-
-    //get all countries, with ids as keys
-    public function getCountries(){
-        $this->sql = $this->conn->prepare("Select countries.id, countries.* FROM countries");
-        $this->sql->execute();
-        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
-    }
-
-    //get all regions, with ids as keys
-    public function getRegions(){
-        $this->sql = $this->conn->prepare("Select regions.id, regions.* FROM regions");
-        $this->sql->execute();
-        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
-    }
-
-    //get all languages, with ids as keys
-    public function getLanguages(){
-        $this->sql = $this->conn->prepare("Select languages.id, languages.* FROM languages");
-        $this->sql->execute();
-        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
-    }
-
-    //get all language proficiencies, with ids as keys
-    public function getLanguageProficiencies(){
-        $this->sql = $this->conn->prepare("Select language_proficiencies.id, language_proficiencies.* FROM language_proficiencies");
-        $this->sql->execute();
-        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
-    }
-
-    //get all country experiences, with ids as keys
-    public function getCountryExperiences(){
-        $this->sql = $this->conn->prepare("Select country_experience.id, country_experience.* FROM country_experience");
-        $this->sql->execute();
-        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
-    }
-
-    /*return an array of the maximum lengths of every column in the users table*/
-    public function getUsersMaxLengths(){
-        $this->sql = $this->conn->prepare("Select COLUMN_NAME, CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE table_schema = '" . $this->settings["database_name"] . "' AND table_name = 'users'");
-        $this->sql->execute();
-        $tempArray = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save to a temporary array.
-        $retVals = []; //init new array which will hold only column names as keys and their lengths as values
-        foreach($tempArray as $maxLength){
-            $retVals[$maxLength["COLUMN_NAME"]] = $maxLength["CHARACTER_MAXIMUM_LENGTH"];
-        }
-        return $retVals;
-    }
-    
-    /*Get the maximum length of other country experiences (just an integer, not an array)*/
-    public function getOtherCountryExperiencesMaxLength(){
-        $this->sql = $this->conn->prepare("Select CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE table_schema = '" . $this->settings["database_name"] . "' AND table_name = 'users_country_experience' AND COLUMN_NAME = 'other_experience'");
-        $this->sql->execute();
-        return $this->sql->fetch(PDO::FETCH_COLUMN);
-    }
-
-    /*Check if a confirmation code was already sent for a user (returns 1 or 0)*/
-    public function isCodePending($email){
-        $currentTime = time(); //get current timestamp
-        $this->sql = $this->conn->prepare("SELECT EXISTS(SELECT 1 FROM users_codes WHERE email = :email AND expiration_timestamp >= :currentTime)");
-        $this->sql->bindParam(':email', $email);
-        $this->sql->bindParam(':currentTime', $currentTime);
-        $this->sql->execute();
-        return $this->sql->fetch(PDO::FETCH_COLUMN);
-    }
-
-    /* Check if a profile is currently pending (approved = 0) for a given email (returns 1 or 0). If this is the login email, check the profile associated with it, otherwise find the profile associated with the given alternate email */
-    public function isProfilePending($email){
-        $this->sql = $this->conn->prepare("SELECT EXISTS(SELECT 1 FROM users WHERE (login_email = :email OR login_email = (SELECT u.login_email FROM users u WHERE u.alternate_email = :email)) AND approved = 0 )");
-        $this->sql->bindParam(':email', $email);
-        $this->sql->execute();
-        return $this->sql->fetch(PDO::FETCH_COLUMN);
-    }
-
-    /* Get number of pending profiles */
-    public function getNumberOfPendingProfiles(){
-        $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM international.users WHERE approved = 0");
-        $this->sql->execute();
-        return $this->sql->fetch(PDO::FETCH_COLUMN);
-    }
-
-    /*Check if a confirmation code is correct for a given email (returns an expiration timestamp if so, or nothing otherwise)*/
-    public function confirmCode($email, $code){
-        $this->sql = $this->conn->prepare("SELECT expiration_timestamp FROM users_codes WHERE email = :email AND code = :code LIMIT 1");
-        $this->sql->bindParam(':email', $email);
-        $this->sql->bindParam(':code', $code);
-        $this->sql->execute();
-        return $this->sql->fetch(PDO::FETCH_COLUMN);
-    }
-
-    /* Save a profile's code to the database -- need to specify an expiration date */
-    public function saveCode($email, $code, $expiration_timestamp){
-        //first, remove an existing code if one exists and its timestamp is outdated
-        $this->sql = $this->conn->prepare("DELETE FROM users_codes WHERE email = :email AND expiration_timestamp < :expiration_timestamp");
-        $this->sql->bindParam(':email', $email);
-        $this->sql->bindParam(':expiration_timestamp', $expiration_timestamp);
-        $this->sql->execute();
-
-        //now insert the new code
-        $this->sql = $this->conn->prepare("INSERT INTO users_codes(email, code, expiration_timestamp) VALUES(:email, :code, :expiration_timestamp)");
-        $this->sql->bindParam(':email', $email);
-        $this->sql->bindParam(':code', $code);
-        $this->sql->bindParam(':expiration_timestamp', $expiration_timestamp);
-        return $this->sql->execute();
-    }
-
-    /* Remove a code if pending */
-    public function removeCode($email){
-        $this->sql = $this->conn->prepare("DELETE FROM users_codes WHERE email = :email");
-        $this->sql->bindParam(':email', $email);
-        return $this->sql->execute();
-    }
-
-    /*Get both possible emails from a user*/
-    public function getBothEmails($userID){
-        $this->sql = $this->conn->prepare("SELECT login_email, alternate_email FROM users WHERE id = :id");
-        $this->sql->bindParam(':id', $userID);
-        $this->sql->execute();
-        return $this->sql->fetch(PDO::FETCH_ASSOC);
-    }
-
-    /*Save a new email message to the database, return true if successful or false otherwise*/
-    public function saveEmail($address, $subject, $message){
-        $curTime = date('Y-m-d H:i:s');//get current timestamp
-                    
-        $this->sql = $this->conn->prepare("INSERT INTO emails(address, subject, message, time) VALUES(:address, :subject, :message, :time)");
-        $this->sql->bindParam(':address', $address);
-        $this->sql->bindParam(':subject', $subject);
-        $this->sql->bindParam(':message', $message);
-        $this->sql->bindParam(':time', $curTime);
-        return $this->sql->execute();
-    }
-
-
-    /*Search functions*/
-
-    /*Return number of users using this login email (should be 0 or 1)*/
-    public function doesLoginEmailExist($testEmail){
-        $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM users u WHERE u.login_email = :email");
-        $this->sql->bindParam(':email', $testEmail);
-        $this->sql->execute();
-        return $this->sql->fetch(PDO::FETCH_COLUMN);
-    }
-    /*Return number of users using this alternate email (should be 0 or 1)*/
-    public function doesAlternateEmailExist($testEmail){
-        $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM users u WHERE u.alternate_email = :email");
-        $this->sql->bindParam(':email', $testEmail);
-        $this->sql->execute();
-        return $this->sql->fetch(PDO::FETCH_COLUMN);
-    }
-    /*Return number of users using this alternate email EXCEPT a user with the given login email (should be 0 or 1)*/
-    public function doesAlternateEmailExistIgnoreProfile($testEmail, $profileEmail){
-        $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM users u WHERE u.alternate_email = :testemail AND u.login_email != :profileemail");
-        $this->sql->bindParam(':testemail', $testEmail);
-        $this->sql->bindParam(':profileemail', $profileEmail);
-        $this->sql->execute();
-        return $this->sql->fetch(PDO::FETCH_COLUMN);
-    }
-    /* Check if a profile already exists for a given email and is not pending. 
-    If this is the login email, check the profile associated with it, otherwise find the profile associated with the given alternate email 
-    Returns the id of the existing profile, or 0 if nonexistant*/
-    public function doesProfileExist($email){
-        $this->sql = $this->conn->prepare("SELECT IFNULL( (SELECT id FROM users WHERE (login_email = :email OR login_email = (SELECT u.login_email FROM users u WHERE u.alternate_email = :email)) AND approved = 1 LIMIT 1), 0)");
-        $this->sql->bindParam(':email', $email);
-        $this->sql->execute();
-        return $this->sql->fetch(PDO::FETCH_COLUMN);
-    }
-
-    /* Get the user's login email given their ID */
-    public function getLoginEmailFromID($userID){
-        $this->sql = $this->conn->prepare("SELECT u.login_email FROM users u WHERE u.id = :userID");
-        $this->sql->bindParam(':userID', $userID);
-        $this->sql->execute();
-        return $this->sql->fetch(PDO::FETCH_COLUMN);
-    }
-
-    /*Search the database using a wildcard term; returns all matching user summaries. Also only return approved profiles unless specified otherwise with $approvedOnly = false*/
+    /*Search the database using a wildcard term; returns all matching user summaries. 
+    Also only return approved profiles unless specified otherwise with $approvedOnly = false (denied) or null (pending)*/
     public function searchByWildcard($wildcard, $approvedOnly = true){
         //If no wildcard given, don't waste time doing complicated queries, just return all profiles
         if($wildcard === ""){
@@ -699,12 +174,7 @@ class DatabaseHelper
         }
         
         $wildcard = '%'.$wildcard.'%'; //add percent signs to search all strings
-        //Combine results from all relevant tables
-        /*
-        SELECT * FROM
-            (SELECT COALESCE(u.alternate_email, u.login_email) AS `email` FROM users u) as e
-        WHERE e.email LIKE '%sam%'
-        */
+        
         //This extra long query combines search results from all relevant tables; return only the primary email addresses
         $query = "SELECT res.id, res.firstname, res.lastname, res.affiliations, res.foundIn, COALESCE(res.alternate_email, res.login_email) as email, res.phone, res.social_link, res.issues_expertise_other, res.regions_expertise_other, res.countries_expertise_other FROM 
         (SELECT u.*, 'profile' as foundIn FROM users u
@@ -742,8 +212,9 @@ class DatabaseHelper
         INNER JOIN languages l ON ul.language_id = l.id
         WHERE l.name LIKE :wildcard) res";
 
-        if($approvedOnly) {$query.=" WHERE res.approved = 1";} //only approved if necessary
-        else{$query.=" WHERE res.approved = 0";} //otherwise, pending only
+        if(!isset($approvedOnly)){$query.=" WHERE res.approved IS NULL";} //approvedOnly is NULL, so return pending only
+        else if($approvedOnly){$query.=" WHERE res.approved = 1";} //only approved if necessary
+        else{$query.=" WHERE res.approved = 0";} //otherwise, denied only
 
         $this->sql = $this->conn->prepare($query);
         $this->sql->bindParam(':wildcard', $wildcard);
@@ -761,7 +232,10 @@ class DatabaseHelper
         return $editedResults;
     }
 
-    /*Search the database with individual fields; returns all matching user summaries. Also only return approved profiles unless specified otherwise with $approvedOnly = false*/
+
+
+    /*Search the database with individual fields; returns all matching user summaries. 
+    Also only return approved profiles unless specified otherwise with $approvedOnly = false (denied) or null (pending)*/
     public function advancedSearch($name, $affiliations, $email, $phone, $social_link, $issues_expertise, $issues_expertise_other, 
     $countries_expertise, $countries_expertise_other, $regions_expertise, $regions_expertise_other, $languages, $countries_experience, $approvedOnly = true){
         //return func_get_args();
@@ -979,12 +453,12 @@ class DatabaseHelper
                 }
             }
         }
-        
 
         //finish query
         $query.=") res";
-        if($approvedOnly) {$query.=" WHERE res.approved = 1";} //only approved if necessary
-        else{$query.=" WHERE res.approved = 0";} //otherwise, pending only
+        if(!isset($approvedOnly)){$query.=" WHERE res.approved IS NULL";} //approvedOnly is NULL, so return pending only
+        else if($approvedOnly){$query.=" WHERE res.approved = 1";} //only approved if necessary
+        else{$query.=" WHERE res.approved = 0";} //otherwise, denied only
 
         //return $query;
 
@@ -1052,6 +526,541 @@ class DatabaseHelper
 
         $this->sql->execute();
         return $this->sql->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+
+    //Insert a profile into the database. This will only work if there is a current pending code for the login email. 
+    //This operation will automatically set the 'approved' field to false (0).
+    //Error handling should be done beforehand, including verifying that a code is currently pending for the login email.
+    public function insertProfile($login_email, $firstname, $lastname, $alternate_email, $affiliations, $phone, $issues_expertise_other, $regions_expertise_other, $countries_expertise_other, $social_link, $issues_expertise, $countries_expertise, $regions_expertise, $languages, $countries_experience){
+        $retval = [];
+        $newProfileID = null; // the ID of the profile just inserted
+
+        $this->conn->beginTransaction(); //begin atomic transaction
+
+        //If there was a previously denied profile for this user, delete it first before inserting a new pending one
+        $deniedProfileID = $this->doesProfileExist($login_email, false);
+        if($deniedProfileID > 0){ //denied profile exists
+            $deleteError = $this->atomicDeleteProfile($deniedProfileID, null); //delete profile
+            if(!empty($deleteError)){$retval["error"] = $deleteError;} //set $retval["error"] if there was an error
+        }
+
+
+        //insert base profile
+        $this->sql = $this->conn->prepare("INSERT INTO users(login_email, firstname, lastname, alternate_email, affiliations, phone, issues_expertise_other, regions_expertise_other, countries_expertise_other, social_link)
+            VALUES(:login_email, :firstname, :lastname, :alternate_email, :affiliations, :phone, :issues_expertise_other, :regions_expertise_other, :countries_expertise_other, :social_link)");
+        $this->sql->bindParam(':login_email', $login_email);
+        $this->sql->bindParam(':firstname', $firstname);
+        $this->sql->bindParam(':lastname', $lastname);
+        $this->sql->bindParam(':alternate_email', $alternate_email);
+        $this->sql->bindParam(':affiliations', $affiliations);
+        $this->sql->bindParam(':phone', $phone);
+        $this->sql->bindParam(':issues_expertise_other', $issues_expertise_other);
+        $this->sql->bindParam(':regions_expertise_other', $regions_expertise_other);
+        $this->sql->bindParam(':countries_expertise_other', $countries_expertise_other);
+        $this->sql->bindParam(':social_link', $social_link);
+        
+        if ($this->sql->execute() !== TRUE){//query failed
+            $this->conn->rollBack();
+            $retval["error"] = "Failed to insert base profile.";
+        }
+
+        if(empty($retval["error"])){ //no errors yet, so continue
+            //get the profile ID of the just-added profile
+            $this->sql = $this->conn->prepare("SELECT max(id) FROM users WHERE login_email = :login_email LIMIT 1");
+            $this->sql->bindParam(':login_email', $login_email);
+            $this->sql->execute();
+            $newProfileID = $this->sql->fetch(PDO::FETCH_COLUMN);//now we have the current ID!
+
+            //insert user's issues of expertise
+            foreach($issues_expertise as $i){//go through issues
+                $this->sql = $this->conn->prepare("INSERT INTO users_issues(user_id, issue_id) VALUES(:user_id, :issue_id)");
+                $this->sql->bindParam(':user_id', $newProfileID);
+                $this->sql->bindParam(':issue_id', $i["id"]);
+
+                if ($this->sql->execute() !== TRUE){//query failed
+                    $this->conn->rollBack();
+                    $retval["error"] = "Failed to insert an issue of expertise.";
+                    break;
+                }
+            }
+        }
+
+        if(empty($retval["error"])){ //no errors yet, so continue
+            //insert user's countries of expertise
+            foreach($countries_expertise as $i){//go through countries
+                $this->sql = $this->conn->prepare("INSERT INTO users_country_expertise(user_id, country_id) VALUES(:user_id, :country_id)");
+                $this->sql->bindParam(':user_id', $newProfileID);
+                $this->sql->bindParam(':country_id', $i["id"]);
+
+                if ($this->sql->execute() !== TRUE){//query failed
+                    $this->conn->rollBack();
+                    $retval["error"] = "Failed to insert a country of expertise.";
+                    break;
+                }
+            }
+        }
+
+        if(empty($retval["error"])){ //no errors yet, so continue
+            //insert user's regions of expertise
+            foreach($regions_expertise as $i){//go through regions
+                $this->sql = $this->conn->prepare("INSERT INTO users_regions(user_id, region_id) VALUES(:user_id, :region_id)");
+                $this->sql->bindParam(':user_id', $newProfileID);
+                $this->sql->bindParam(':region_id', $i["id"]);
+
+                if ($this->sql->execute() !== TRUE){//query failed
+                    $this->conn->rollBack();
+                    $retval["error"] = "Failed to insert a region of expertise.";
+                    break;
+                }
+            }
+        }
+
+        if(empty($retval["error"])){ //no errors yet, so continue
+            //insert user's languages
+            foreach($languages as $i){//go through languages
+                $this->sql = $this->conn->prepare("INSERT INTO users_languages(user_id, language_id, proficiency_id) VALUES(:user_id, :language_id, :proficiency_id)");
+                $this->sql->bindParam(':user_id', $newProfileID);
+                $this->sql->bindParam(':language_id', $i->id);
+                $this->sql->bindParam(':proficiency_id', $i->proficiency_level->id);
+
+                if ($this->sql->execute() !== TRUE){//query failed
+                    $this->conn->rollBack();
+                    $retval["error"] = "Failed to insert a language.";
+                    break;
+                }
+            }
+        }
+
+        if(empty($retval["error"])){ //no errors yet, so continue
+            //insert user's country experience
+            foreach($countries_experience as $i){//go through countries
+
+                foreach($i->experiences as $experience){//go through regular experiences
+                    $this->sql = $this->conn->prepare("INSERT INTO users_country_experience(user_id, country_id, experience_id) VALUES(:user_id, :country_id, :experience_id)");
+                    $this->sql->bindParam(':user_id', $newProfileID);
+                    $this->sql->bindParam(':country_id', $i->id);
+                    $this->sql->bindParam(':experience_id', $experience->id);
+
+                    if ($this->sql->execute() !== TRUE){//query failed
+                        $this->conn->rollBack();
+                        $retval["error"] = "Failed to insert a country experience.";
+                        break;
+                    }
+                }
+                
+                //check for an "other" experience, if no errors yet
+                if(empty($retval["error"])){
+                    if($i->other_experience !== ""){ //an other experience exists
+                        //$otherExperienceID = null; // the ID of the added other experience
+                        $this->sql = $this->conn->prepare("INSERT INTO users_country_experience(user_id, country_id, other_experience) VALUES(:user_id, :country_id, :other_experience)");
+                        $this->sql->bindParam(':user_id', $newProfileID);
+                        $this->sql->bindParam(':country_id', $i->id);
+                        $this->sql->bindParam(':other_experience', $i->other_experience);
+
+                        if ($this->sql->execute() !== TRUE){//query failed
+                            $this->conn->rollBack();
+                            $retval["error"] = "Failed to insert other country experience.";
+                            break;
+                        }
+                    }
+                }
+                else{ //if there already is an error, then break
+                    break;
+                }
+            }
+        }
+
+        if(empty($retval["error"])){ //no errors, so queries can be committed
+            $this->conn->commit();
+        }
+
+        //$retval["error"] = "Not implemented yet!";
+        return $retval;
+    }
+
+
+
+    /* Approve a profile; this requires deleting an old application as well if the new one is an update 
+    Takes $userID, the ID of the profile to be deleted. Also takes an optional broncoNetID to be logged.
+    Returns $retval, an associative array. If there are no errors, $retval["success"] will be true. If there is an error, $retval["error"] will contain an error string.*/
+    public function approveProfile($userID, $CASbroncoNetID){
+        $retval = [];
+        $retval["success"] = false;
+        $oldID = -1; //set to the old profile ID if one existed
+
+        $this->conn->beginTransaction(); //begin atomic transaction
+
+        $currentEmail = $this->getLoginEmailFromID($userID);
+        if(isset($currentEmail)){ $oldID = $this->doesProfileExist($currentEmail);} //retrieve old ID
+
+        if($oldID > 0){ //this was an updated profile, so delete the old one
+            $deleteError = $this->atomicDeleteProfile($userID, $CASbroncoNetID); //delete profile
+            if(!empty($deleteError)){$retval["error"] = $deleteError;} //set $retval["error"] if there was an error
+        }
+
+        //now set the pending profile to approved, if no errors yet
+        if(empty($retval["error"])){
+            $this->sql = $this->conn->prepare("UPDATE users u SET u.approved = 1 WHERE id = :userID");
+            $this->sql->bindParam(':userID', $userID);
+            
+            if ($this->sql->execute() !== TRUE){//query failed
+                $this->conn->rollBack();
+                $retval["error"] = "Failed approve pending profile.";
+            }
+        }
+
+        if(empty($retval["error"])){ //no errors, so queries can be committed
+            $this->conn->commit();
+            $retval["success"] = true;
+        }
+
+        return $retval;
+    }
+
+
+
+    /* Deny a profile; this simply sets the approved boolean to false. When this happens, the profile will no longer be considered pending, 
+    but will privately remain in the database until the profile owner submits a new profile, at which point it will be deleted.*/
+    public function denyProfile($userID, $CASbroncoNetID){
+        $this->sql = $this->conn->prepare("UPDATE users u SET u.approved = 0 WHERE u.id = :userID");
+        $this->sql->bindParam(':userID', $userID);
+        return $this->sql->execute();
+    }
+
+
+
+    /* Completely delete a profile from the database. This is used by admins when deleting a profile.
+    Takes $userID, the ID of the profile to be deleted. Also takes an optional broncoNetID to be logged.
+    Returns $retval, an associative array. If there are no errors, $retval["success"] will be true. If there is an error, $retval["error"] will contain an error string.
+    This is an atomic transaction, so every related bit of information for this profile will be removed, or none of it. */
+    public function deleteProfile($userID, $CASbroncoNetID){
+        $retval = [];
+        $retval["success"] = false;
+
+        $this->conn->beginTransaction(); //begin atomic transaction
+
+        $deleteError = $this->atomicDeleteProfile($userID, $CASbroncoNetID); //delete profile
+        if(!empty($deleteError)){$retval["error"] = $deleteError;} //set $retval["error"] if there was an error
+
+        if(empty($retval["error"])){ //no errors, so queries can be committed
+            $this->conn->commit();
+            $retval["success"] = true;
+        }
+
+        return $retval;
+    }
+
+
+
+    /*Reusable function to delete profiles, specifically set up to be usable as an atomic function along with other sql queries.
+    Takes $userID, the ID of the profile to be deleted. Also takes an optional broncoNetID to be logged.
+    Will return $error, an error string. If $error isn't empty, then an error occured, otherwise everything should have worked correctly.
+    To use this properly, make sure to setup a beginTransaction command before calling this method, and a commit command afterwards (that only triggers if $retval["error"] is empty)*/
+    private function atomicDeleteProfile($userID, $CASbroncoNetID){
+
+        $error = null; //error string to be set if an error occurs
+
+        //remove any relevant country experiences
+        $this->sql = $this->conn->prepare("DELETE FROM users_country_experience WHERE user_id = :userID");
+        $this->sql->bindParam(':userID', $userID);
+        
+        if ($this->sql->execute() !== TRUE){//query failed
+            $this->conn->rollBack();
+            $error = "Failed to delete relevant user country experiences.";
+        }
+
+        if(empty($error)){ //no errors yet, so continue
+                //remove any relevant languages
+            $this->sql = $this->conn->prepare("DELETE FROM users_languages WHERE user_id = :userID");
+            $this->sql->bindParam(':userID', $userID);
+            
+            if ($this->sql->execute() !== TRUE){//query failed
+                $this->conn->rollBack();
+                $error = "Failed to delete relevant user languages.";
+            }
+        }
+
+        if(empty($error)){ //no errors yet, so continue
+            //remove any relevant regions of expertise
+            $this->sql = $this->conn->prepare("DELETE FROM users_regions WHERE user_id = :userID");
+            $this->sql->bindParam(':userID', $userID);
+            
+            if ($this->sql->execute() !== TRUE){//query failed
+                $this->conn->rollBack();
+                $error = "Failed to delete relevant user regions of expertise.";
+            }
+        }
+
+        if(empty($error)){ //no errors yet, so continue
+            //remove any relevant countries of expertise
+            $this->sql = $this->conn->prepare("DELETE FROM users_country_expertise WHERE user_id = :userID");
+            $this->sql->bindParam(':userID', $userID);
+            
+            if ($this->sql->execute() !== TRUE){//query failed
+                $this->conn->rollBack();
+                $error = "Failed to delete relevant user countries of expertise.";
+            }
+        }
+
+        if(empty($error)){ //no errors yet, so continue
+            //remove any relevant issues of expertise
+            $this->sql = $this->conn->prepare("DELETE FROM users_issues WHERE user_id = :userID");
+            $this->sql->bindParam(':userID', $userID);
+            
+            if ($this->sql->execute() !== TRUE){//query failed
+                $this->conn->rollBack();
+                $error = "Failed to delete relevant user issues of expertise.";
+            }
+        }
+
+        if(empty($error)){ //no errors yet, so continue
+            //remove base profile
+            $this->sql = $this->conn->prepare("DELETE FROM users WHERE id = :userID");
+            $this->sql->bindParam(':userID', $userID);
+            
+            if ($this->sql->execute() !== TRUE){//query failed
+                $this->conn->rollBack();
+                $error = "Failed to delete relevant user base profile.";
+            }
+        }
+
+        return $error;
+    }
+
+
+
+    /* For Static Data */
+
+    /*Checks if a user is an administrator (true or false)*/
+	public function isAdministrator($broncoNetID){
+		$this->sql = $this->conn->prepare("Select * FROM administrators WHERE broncoNetID = :id");
+		$this->sql->bindParam(':id', $broncoNetID);
+		$this->sql->execute();
+		return boolval($this->sql->fetch(PDO::FETCH_COLUMN));
+    }
+    
+    /* Returns array of all administrators */
+	public function getAdministrators(){
+		$this->sql = $this->conn->prepare("Select broncoNetID, name FROM administrators");
+		$this->sql->execute();
+		return $this->sql->fetchAll(PDO::FETCH_NUM); //return indexes as keys
+    }
+    
+    /* Add an admin to the administrators table */
+	public function addAdmin($broncoNetID, $name){
+		if ($broncoNetID != "" && $name != ""){//valid params
+			$this->logger->logInfo("Inserting administrator (".$broncoNetID.", ".$name.")", $broncoNetID, dirname(__FILE__));
+			$this->sql = $this->conn->prepare("INSERT INTO administrators(BroncoNetID, Name) VALUES(:id, :name)");
+			$this->sql->bindParam(':id', $broncoNetID);
+			$this->sql->bindParam(':name', $name);
+			return $this->sql->execute();
+		}
+    }
+    
+    /* Remove an admin to the administrators table */
+	public function removeAdmin($broncoNetID){
+		if ($broncoNetID != ""){//valid params
+			$this->sql = $this->conn->prepare("DELETE FROM administrators WHERE BroncoNetID = :id");
+			$this->sql->bindParam(':id', $broncoNetID);
+			return $this->sql->execute();
+		}
+	}
+
+    //get all issues, with ids as keys
+    public function getIssues(){
+        $this->sql = $this->conn->prepare("Select issues.id, issues.* FROM issues");
+        $this->sql->execute();
+        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
+    }
+
+    //get all countries, with ids as keys
+    public function getCountries(){
+        $this->sql = $this->conn->prepare("Select countries.id, countries.* FROM countries");
+        $this->sql->execute();
+        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
+    }
+
+    //get all regions, with ids as keys
+    public function getRegions(){
+        $this->sql = $this->conn->prepare("Select regions.id, regions.* FROM regions");
+        $this->sql->execute();
+        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
+    }
+
+    //get all languages, with ids as keys
+    public function getLanguages(){
+        $this->sql = $this->conn->prepare("Select languages.id, languages.* FROM languages");
+        $this->sql->execute();
+        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
+    }
+
+    //get all language proficiencies, with ids as keys
+    public function getLanguageProficiencies(){
+        $this->sql = $this->conn->prepare("Select language_proficiencies.id, language_proficiencies.* FROM language_proficiencies");
+        $this->sql->execute();
+        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
+    }
+
+    //get all country experiences, with ids as keys
+    public function getCountryExperiences(){
+        $this->sql = $this->conn->prepare("Select country_experience.id, country_experience.* FROM country_experience");
+        $this->sql->execute();
+        return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
+    }
+
+    /*return an array of the maximum lengths of every column in the users table*/
+    public function getUsersMaxLengths(){
+        $this->sql = $this->conn->prepare("Select COLUMN_NAME, CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE table_schema = '" . $this->settings["database_name"] . "' AND table_name = 'users'");
+        $this->sql->execute();
+        $tempArray = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save to a temporary array.
+        $retVals = []; //init new array which will hold only column names as keys and their lengths as values
+        foreach($tempArray as $maxLength){
+            $retVals[$maxLength["COLUMN_NAME"]] = $maxLength["CHARACTER_MAXIMUM_LENGTH"];
+        }
+        return $retVals;
+    }
+    
+    /*Get the maximum length of other country experiences (just an integer, not an array)*/
+    public function getOtherCountryExperiencesMaxLength(){
+        $this->sql = $this->conn->prepare("Select CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE table_schema = '" . $this->settings["database_name"] . "' AND table_name = 'users_country_experience' AND COLUMN_NAME = 'other_experience'");
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_COLUMN);
+    }
+
+    /*Check if a confirmation code was already sent for a user (returns 1 or 0)*/
+    public function isCodePending($email){
+        $currentTime = time(); //get current timestamp
+        $this->sql = $this->conn->prepare("SELECT EXISTS(SELECT 1 FROM users_codes WHERE email = :email AND expiration_timestamp >= :currentTime)");
+        $this->sql->bindParam(':email', $email);
+        $this->sql->bindParam(':currentTime', $currentTime);
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_COLUMN);
+    }
+
+    /* Check if a profile is currently pending (approved IS NULL) for a given email (returns 1 or 0). If this is the login email, check the profile associated with it, otherwise find the profile associated with the given alternate email */
+    public function isProfilePending($email){
+        $this->sql = $this->conn->prepare("SELECT EXISTS(SELECT 1 FROM users WHERE (login_email = :email OR login_email = (SELECT u.login_email FROM users u WHERE u.alternate_email = :email)) AND approved IS NULL )");
+        $this->sql->bindParam(':email', $email);
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_COLUMN);
+    }
+
+    /* Get number of pending profiles */
+    public function getNumberOfPendingProfiles(){
+        $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM international.users WHERE approved IS NULL");
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_COLUMN);
+    }
+
+    /*Check if a confirmation code is correct for a given email (returns an expiration timestamp if so, or nothing otherwise)*/
+    public function confirmCode($email, $code){
+        $this->sql = $this->conn->prepare("SELECT expiration_timestamp FROM users_codes WHERE email = :email AND code = :code LIMIT 1");
+        $this->sql->bindParam(':email', $email);
+        $this->sql->bindParam(':code', $code);
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_COLUMN);
+    }
+
+    /* Save a profile's code to the database -- need to specify an expiration date */
+    public function saveCode($email, $code, $expiration_timestamp){
+        //first, remove an existing code if one exists and its timestamp is outdated
+        $this->sql = $this->conn->prepare("DELETE FROM users_codes WHERE email = :email AND expiration_timestamp < :expiration_timestamp");
+        $this->sql->bindParam(':email', $email);
+        $this->sql->bindParam(':expiration_timestamp', $expiration_timestamp);
+        $this->sql->execute();
+
+        //now insert the new code
+        $this->sql = $this->conn->prepare("INSERT INTO users_codes(email, code, expiration_timestamp) VALUES(:email, :code, :expiration_timestamp)");
+        $this->sql->bindParam(':email', $email);
+        $this->sql->bindParam(':code', $code);
+        $this->sql->bindParam(':expiration_timestamp', $expiration_timestamp);
+        return $this->sql->execute();
+    }
+
+    /* Remove a code if pending */
+    public function removeCode($email){
+        $this->sql = $this->conn->prepare("DELETE FROM users_codes WHERE email = :email");
+        $this->sql->bindParam(':email', $email);
+        return $this->sql->execute();
+    }
+
+    /*Get both possible emails from a user*/
+    public function getBothEmails($userID){
+        $this->sql = $this->conn->prepare("SELECT login_email, alternate_email FROM users WHERE id = :id");
+        $this->sql->bindParam(':id', $userID);
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /*Save a new email message to the database, return true if successful or false otherwise*/
+    public function saveEmail($address, $subject, $message){
+        $curTime = date('Y-m-d H:i:s');//get current timestamp
+                    
+        $this->sql = $this->conn->prepare("INSERT INTO emails(address, subject, message, time) VALUES(:address, :subject, :message, :time)");
+        $this->sql->bindParam(':address', $address);
+        $this->sql->bindParam(':subject', $subject);
+        $this->sql->bindParam(':message', $message);
+        $this->sql->bindParam(':time', $curTime);
+        return $this->sql->execute();
+    }
+
+
+
+    /*Return number of users using this login email (should be 0 or 1). 
+    By default, only approved and pending profiles are considered, but if $deniedOnly is set to true then only denied profiles are considered.*/
+    public function doesLoginEmailExist($testEmail, $deniedOnly = false){
+        $query = "SELECT COUNT(*) FROM users u WHERE u.login_email = :email ";
+
+        if($deniedOnly){$query.=" AND approved = 0";} //only approved if necessary
+        else{$query.=" AND (approved = 1 OR approved IS NULL)";} //otherwise, pending only
+
+        $this->sql = $this->conn->prepare($query);
+        $this->sql->bindParam(':email', $testEmail);
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_COLUMN);
+    }
+    /*Return number of users using this alternate email (should be 0 or 1)*/
+    public function doesAlternateEmailExist($testEmail){
+        $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM users u WHERE u.alternate_email = :email");
+        $this->sql->bindParam(':email', $testEmail);
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_COLUMN);
+    }
+    /*Return number of users using this alternate email EXCEPT a user with the given login email (should be 0 or 1)*/
+    public function doesAlternateEmailExistIgnoreProfile($testEmail, $profileEmail){
+        $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM users u WHERE u.alternate_email = :testemail AND u.login_email != :profileemail");
+        $this->sql->bindParam(':testemail', $testEmail);
+        $this->sql->bindParam(':profileemail', $profileEmail);
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_COLUMN);
+    }
+    /* Check if a profile already exists for a given email. By default, $approvedOnly = true will only return approved profiles, but it can be set to null (pending) or false (denied)
+    If this is the login email, check the profile associated with it, otherwise find the profile associated with the given alternate email 
+    Returns the id of the existing profile, or 0 if nonexistant*/
+    public function doesProfileExist($email, $approvedOnly = true){
+        $query = "SELECT IFNULL( (SELECT id FROM users WHERE (login_email = :email OR login_email = (SELECT u.login_email FROM users u WHERE u.alternate_email = :email))"; //start main query
+
+        if(!isset($approvedOnly)){$query.=" AND approved IS NULL";} //approvedOnly is NULL, so return pending only
+        else if($approvedOnly){$query.=" AND approved = 1";} //only approved if necessary
+        else{$query.=" AND approved = 0";} //otherwise, denied only
+
+        $query.=" LIMIT 1), 0)";//finish query
+
+
+        $this->sql = $this->conn->prepare($query);
+        $this->sql->bindParam(':email', $email);
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_COLUMN);
+    }
+
+    /* Get the user's login email given their ID */
+    public function getLoginEmailFromID($userID){
+        $this->sql = $this->conn->prepare("SELECT u.login_email FROM users u WHERE u.id = :userID");
+        $this->sql->bindParam(':userID', $userID);
+        $this->sql->execute();
+        return $this->sql->fetch(PDO::FETCH_COLUMN);
     }
 
 

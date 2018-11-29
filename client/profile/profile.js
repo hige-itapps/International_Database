@@ -36,6 +36,22 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
     $scope.minutesRemaining = 0;
     $scope.hoursRemaining = 0;
 
+    if($scope.isAdmin){//if user is an admin, initialize the default emails for approval/denial/deletion
+        //set admin email checkboxes to true by default
+        $scope.approveProfileEmailEnable = true;
+        $scope.denyProfileEmailEnable = true;
+        $scope.deleteProfileEmailEnable = true;
+
+        $scope.approveProfileEmail = "Dear " + $scope.profile.firstname + ",\nWe are excited to inform you that your pending profile on our site at globalexpertise.wmich.edu has been approved. It is now publicly available and searchable.";
+		if($scope.previousProfileID > 0){$scope.approveProfileEmail += "\nIt has replaced your previous profile, which is now no longer publicly available.";}
+
+        $scope.denyProfileEmail = "Dear " + $scope.profile.firstname + ",\nWe regret to inform you that your pending profile on our site at globalexpertise.wmich.edu has been denied. This was likely due to lacking and/or incorrect information.";
+        if($scope.previousProfileID > 0){$scope.denyProfileEmail += "\nHowever, your previous profile will still be publicly available unless otherwise specified.";}
+        $scope.denyProfileEmail += "\nYour denied information has been saved so that you may reuse it should you wish to create/update your profile again.";
+
+        $scope.deleteProfileEmail = "Dear " + $scope.profile.firstname + ",\nWe have removed your profile from our site at globalexpertise.wmich.edu due to administrative causes.";
+    }
+
     $scope.maxFirstName = $scope.usersMaxLengths["firstname"];
     $scope.maxLastName = $scope.usersMaxLengths["lastname"];
     $scope.maxAffiliations = $scope.usersMaxLengths["affiliations"];
@@ -164,6 +180,14 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
     $scope.removeAlert = function(){
         $scope.alertMessage = null;
     }
+
+
+
+    //load any profile data specified within an http response into the profile variables
+    $scope.loadDeniedData = function(profile){
+        $scope.profile = profile;
+    }
+
 
 
     //create a new profile; send data to the server for verification- if accepted, then redirect to homepage with message, otherwise display errors
@@ -351,9 +375,14 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
             else{ //no errors
                 $scope.alertType = "success";
                 $scope.alertMessage = "Confirmation Code Verified! Please submit your edits before the specified expiration time.";
+
+                var previousDeniedProfileMessage = "A previously denied profile of yours is still saved to the database. Would you like to load that data? If not, "; //save the beginning of the load denied profile message
+
                 if($scope.state === "CreatePending"){
                     $scope.state = "Create";
                     $scope.profile.login_email = email; //set the wmu address
+
+                    previousDeniedProfileMessage += "you will start from scratch with a new, empty profile."; //end the load denied profile message based on a new profile
                 }
                 else if($scope.state === "EditPending"){
                     $scope.state = "Edit";
@@ -363,7 +392,15 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
                     //save the original alternate email if there was one
                     if($scope.profile.alternate_email){$scope.profile.alternate_email_original = $scope.profile.alternate_email;}
 
+                    previousDeniedProfileMessage += "you will start with your old data from your last approved profile."; //end the load denied profile message based on a new profile
                 }
+
+                //If there was a previously denied profile, give the user the option to use that data or not
+                if(response.data.denied_profile){
+                    if(confirm(previousDeniedProfileMessage)){$scope.loadDeniedData(response.data.denied_profile);}
+                }
+                
+
                 $scope.expiration_timestamp = response.data.expiration_time; //set the expiration time
                 $scope.countdown_tick();//start the expiration countdown
             }
@@ -378,32 +415,61 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
 
     //delete this entire profile -- only admins are capable of doing this
     $scope.deleteProfile = function(){
-        var retVal = prompt("WARNING - BY DELETING THIS PROFILE, EVERYTHING ASSOCIATED WITH THIS PROFILE WILL BE PERMANENTLY WIPED! (However, if this is an approved profile that has a separate update pending, the update will not be deleted, and will instead be treated as a new pending profile) YOU WILL NOT BE ABLE TO UNDO THIS OPERATION! To confirm, please type 'DELETE' into the confirmation box: ", "confirm delete");
+        var retVal = prompt("WARNING - BY DELETING THIS PROFILE, EVERYTHING ASSOCIATED WITH THIS PROFILE WILL BE PERMANENTLY WIPED (However, if this is an approved profile that has a separate update pending, the update will not be deleted, and will instead be treated as a new pending profile)! IF ENABLED, AN EMAIL SPECIFIED BELOW WILL BE SENT TO THE PROFILE OWNER! YOU WILL NOT BE ABLE TO UNDO THIS OPERATION! To confirm, please type 'DELETE' into the confirmation box: ", "confirm delete");
         if(retVal !== "DELETE"){
             return; //exit early if not confirmed
         }
         //continue if confirmed, start a loading alert
         $scope.loadingAlert();
 
+        var sendAddress = $scope.profile.login_email; //determine which address to send to
+        if($scope.profile.alternate_email) {sendAddress = $scope.profile.alternate_email;}
+
         $http({
             method  : 'POST',
             url     : '../api.php?delete_profile',
-            data    : $.param({userID: JSON.stringify($scope.profile.id)}),  // pass in userID string
+            data    : $.param({userID: JSON.stringify($scope.profile.id), sendEmail: JSON.stringify($scope.deleteProfileEmailEnable), email: JSON.stringify($scope.deleteProfileEmail), emailAddress: JSON.stringify(sendAddress)}),  // pass in data as strings
             headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
         })
         .then(function (response) {
             console.log(response, 'res');
-            if(typeof response.data.error === 'undefined') //ran function as expected
-            {
-                var newAlertType = "success";
-                var newAlertMessage = "Success! The profile was deleted.";
-                $scope.redirectToHomepage(newAlertType, newAlertMessage); //redirect to the homepage with the message
+            if(typeof response.data.error === 'undefined'){ //ran function as expected
+                if(response.data.delete.success === true){//updated
+                    var newAlertType = null;
+                    var newAlertMessage = null;
+
+                    if($scope.deleteProfileEmailEnable){ //more specific warning messages if an email was meant to be sent
+                        if(response.data.email.saveSuccess === true){ //email saved correctly
+                            if(response.data.email.sendSuccess === true){ //email was sent correctly
+                                newAlertType = "success";
+                                newAlertMessage = "Success! The profile has been deleted. An email was successfully saved and sent out to the profile owner.";
+                            }
+                            else{
+                                newAlertType = "warning";
+                                newAlertMessage = "Warning: The profile has been deleted, and an email was saved, but it could not be sent out to the profile owner: " + response.data.email.sendError;
+                            }
+                        }
+                        else{
+                            newAlertType = "warning";
+                            newAlertMessage = "Warning: The profile has been deleted, but an email was neither saved nor sent out to the profile owner: " + response.data.email.saveError;
+                        }
+                    }
+                    else{ //no email meant to be sent
+                        newAlertType = "success";
+                        newAlertMessage = "Success! The profile has been deleted. No email was sent to the profile owner.";
+                    }
+
+                    $scope.redirectToProfileList(newAlertType, newAlertMessage, true); //redirect to the homepage with the message
+                }
+                else{//didn't update
+                    $scope.alertType = "warning";
+                    $scope.alertMessage = "Warning: The profile may not have been updated from its previous state. Please exit this page and determine the profile's status, and let an administrator know if there is a problem.";
+                }
             }
-            else //failure!
-            {
+            else{ //failure!
                 console.log(response.data.error);
                 $scope.alertType = "danger";
-                $scope.alertMessage = "There was an error when trying to delete this profile: " + response.data.error;
+                $scope.alertMessage = "There was an error with your deletion: " + response.data.error;
             }
         },function (error){
             console.log(error, 'can not get data.');
@@ -413,73 +479,62 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
     }
 
 
-    //approve or deny this profile - set the approve boolean to true to approve, or false to deny
-    $scope.approveProfile = function(approve){
-        var approveMessage = "By approving, this profile will become publicly searchable, and a notification email will be sent out to the updated profile's primary contact address. ";
+    //approve this profile
+    $scope.approveProfile = function(){
+        var approveMessage = "By approving, this profile will become publicly searchable. ";
+        if($scope.approveProfileEmailEnable) {approveMessage += "A notification email will be sent out to the updated profile's primary contact address. ";}
         if($scope.previousProfileID > 0) {approveMessage += "Additionally, the previous profile will be permanently deleted, as this one will replace it. ";}
         approveMessage += "Are you sure you want to approve this pending profile?";
 
-        var denyMessage = "By denying, this pending profile will be permanently deleted, and a notification email will be sent out to the deleted profile's primary contact address. ";
-        if($scope.previousProfileID > 0) {denyMessage += "However, the previous profile will remain publicly searchable. ";}
-        denyMessage += "Are you sure you want to deny this pending profile?";
-
-        var confirmMessage = approve ? approveMessage : denyMessage; //determine whether to show the approval or denial message
-
-        if(confirm (confirmMessage))
-        {
+        if(confirm(approveMessage)){
             //start a loading alert
             $scope.loadingAlert();
 
-            var url = approve ? '../api.php?approve_profile' : '../api.php?deny_profile'; //whether to route to the approval or denial API function
             var sendAddress = $scope.profile.login_email; //determine which address to send to
             if($scope.profile.alternate_email) {sendAddress = $scope.profile.alternate_email;}
-            var update = $scope.previousProfileID > 0 ? true : false; //send true if this is an update, false otherwise
 
             $http({
                 method  : 'POST',
-                url     : url,
-                data    : $.param({userID: JSON.stringify($scope.profile.id), emailAddress: JSON.stringify(sendAddress), name: JSON.stringify($scope.profile.firstname), update: JSON.stringify(update)}),  // pass in data as strings
+                url     : '../api.php?approve_profile',
+                data    : $.param({userID: JSON.stringify($scope.profile.id), sendEmail: JSON.stringify($scope.approveProfileEmailEnable), email: JSON.stringify($scope.approveProfileEmail), emailAddress: JSON.stringify(sendAddress)}),  // pass in data as strings
                 headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
             })
             .then(function (response) {
                 console.log(response, 'res');
-                if(typeof response.data.error === 'undefined') //ran function as expected
-                {
-                    if(response.data.approve.success === true)//updated
-                    {
-                        var profileStatus = approve ? "approved" : "deleted";
+                if(typeof response.data.error === 'undefined'){ //ran function as expected
+                    if(response.data.approve.success === true){//updated
                         var newAlertType = null;
                         var newAlertMessage = null;
 
-                        if(response.data.email.saveSuccess === true) //email saved correctly
-                        {
-                            if(response.data.email.sendSuccess === true) //email was sent correctly
-                            {
-                                newAlertType = "success";
-                                newAlertMessage = "Success! The profile has been " + profileStatus + ". An email was successfully saved and sent out to the profile owner.";
+                        if($scope.approveProfileEmailEnable){ //more specific warning messages if an email was meant to be sent
+                            if(response.data.email.saveSuccess === true){ //email saved correctly
+                                if(response.data.email.sendSuccess === true){ //email was sent correctly
+                                    newAlertType = "success";
+                                    newAlertMessage = "Success! The profile has been approved. An email was successfully saved and sent out to the profile owner.";
+                                }
+                                else{
+                                    newAlertType = "warning";
+                                    newAlertMessage = "Warning: The profile has been approved, and an email was saved, but it could not be sent out to the profile owner: " + response.data.email.sendError;
+                                }
                             }
-                            else
-                            {
+                            else{
                                 newAlertType = "warning";
-                                newAlertMessage = "Warning: The profile has been " + profileStatus + ", and an email was saved, but it could not be sent out to the profile owner: " + response.data.email.sendError;
+                                newAlertMessage = "Warning: The profile has been approved, but an email was neither saved nor sent out to the profile owner: " + response.data.email.saveError;
                             }
                         }
-                        else
-                        {
-                            newAlertType = "warning";
-                            newAlertMessage = "Warning: The profile has been " + profileStatus + ", but an email was neither saved nor sent out to the profile owner: " + response.data.email.saveError;
+                        else{ //no email meant to be sent
+                            newAlertType = "success";
+                            newAlertMessage = "Success! The profile has been approved. No email was sent to the profile owner.";
                         }
 
                         $scope.redirectToProfileList(newAlertType, newAlertMessage, true); //redirect to the homepage with the message
                     }
-                    else//didn't update
-                    {
+                    else{//didn't update
                         $scope.alertType = "warning";
                         $scope.alertMessage = "Warning: The profile may not have been updated from its previous state. Please exit this page and determine the profile's status, and let an administrator know if there is a problem.";
                     }
                 }
-                else //failure!
-                {
+                else{ //failure!
                     console.log(response.data.error);
                     $scope.alertType = "danger";
                     $scope.alertMessage = "There was an error with your approval: " + response.data.error;
@@ -488,6 +543,75 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
                 console.log(error, 'can not get data.');
                 $scope.alertType = "danger";
                 $scope.alertMessage = "There was an unexpected error with your approval! Please let an administrator know the details and time of this issue.";
+            });
+        }
+    };
+
+
+    //deny this profile
+    $scope.denyProfile = function(){
+        var denyMessage = "By denying, this pending profile will be no longer be pending; it will remain unsearchable. ";
+        if($scope.denyProfileEmailEnable) {denyMessage += "A notification email will be sent out to the updated profile's primary contact address. ";}
+        if($scope.previousProfileID > 0) {denyMessage += "However, the previous profile will remain publicly searchable. ";}
+        denyMessage += "Are you sure you want to deny this pending profile?";
+
+        if(confirm(denyMessage)){
+            //start a loading alert
+            $scope.loadingAlert();
+
+            var sendAddress = $scope.profile.login_email; //determine which address to send to
+            if($scope.profile.alternate_email) {sendAddress = $scope.profile.alternate_email;}
+
+            $http({
+                method  : 'POST',
+                url     : '../api.php?deny_profile',
+                data    : $.param({userID: JSON.stringify($scope.profile.id), sendEmail: JSON.stringify($scope.denyProfileEmailEnable), email: JSON.stringify($scope.denyProfileEmail), emailAddress: JSON.stringify(sendAddress)}),  // pass in data as strings
+                headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
+            })
+            .then(function (response) {
+                console.log(response, 'res');
+                if(typeof response.data.error === 'undefined'){ //ran function as expected
+                    if(response.data.deny === true){//updated
+                        var newAlertType = null;
+                        var newAlertMessage = null;
+
+                        if($scope.denyProfileEmailEnable){ //more specific warning messages if an email was meant to be sent
+                            if(response.data.email.saveSuccess === true){ //email saved correctly
+                                if(response.data.email.sendSuccess === true){ //email was sent correctly
+                                    newAlertType = "success";
+                                    newAlertMessage = "Success! The profile has been denied. An email was successfully saved and sent out to the profile owner.";
+                                }
+                                else{
+                                    newAlertType = "warning";
+                                    newAlertMessage = "Warning: The profile has been denied, and an email was saved, but it could not be sent out to the profile owner: " + response.data.email.sendError;
+                                }
+                            }
+                            else{
+                                newAlertType = "warning";
+                                newAlertMessage = "Warning: The profile has been denied, but an email was neither saved nor sent out to the profile owner: " + response.data.email.saveError;
+                            }
+                        }
+                        else{ //no email meant to be sent
+                            newAlertType = "success";
+                            newAlertMessage = "Success! The profile has been denied. No email was sent to the profile owner.";
+                        }
+
+                        $scope.redirectToProfileList(newAlertType, newAlertMessage, true); //redirect to the homepage with the message
+                    }
+                    else{//didn't update
+                        $scope.alertType = "warning";
+                        $scope.alertMessage = "Warning: The profile may not have been updated from its previous state. Please exit this page and determine the profile's status, and let an administrator know if there is a problem.";
+                    }
+                }
+                else{ //failure!
+                    console.log(response.data.error);
+                    $scope.alertType = "danger";
+                    $scope.alertMessage = "There was an error with your denial: " + response.data.error;
+                }
+            },function (error){
+                console.log(error, 'can not get data.');
+                $scope.alertType = "danger";
+                $scope.alertMessage = "There was an unexpected error with your denial! Please let an administrator know the details and time of this issue.";
             });
         }
     };

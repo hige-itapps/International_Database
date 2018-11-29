@@ -240,7 +240,8 @@ else if (array_key_exists('send_code', $_GET)) {
 
 
 
-//For verifying a confirmation code
+/*For verifying a confirmation code. If verified, get both user emails for the specified profile if possible. 
+Also return the previously denied profiles information if possible*/
 else if (array_key_exists('confirm_code', $_GET)) {
     $returnVal["success"] = false; //set to true if there are no errors after validation & running
     $returnVal["error"] = []; //push errors to this array if any arise
@@ -248,6 +249,7 @@ else if (array_key_exists('confirm_code', $_GET)) {
     if(isset($_POST["userID"]) && isset($_POST["email"]) && isset($_POST["code"])){ //if userID, email, and code were sent
         $userID = json_decode($_POST["userID"]);
         $email = trim(json_decode($_POST["email"]));
+        $loginEmail = $email; //set to the email above, or to the actual login email if this is a profile update
         $code = trim(json_decode($_POST["code"]));
 
         if(!boolval($database->isCodePending($email))){ //code isn't pending
@@ -257,9 +259,16 @@ else if (array_key_exists('confirm_code', $_GET)) {
             if(!$res){ //code/email combo is incorrect
                 $returnVal["error"] = "Incorrect code for this profile!";
             }else{ //everything is correct, append additional data for use on the edit profile page
+                //get both emails
                 $bothEmails = $database->getBothEmails($userID);
                 $returnVal["login_email"] = $bothEmails["login_email"]; //user's wmu email
                 $returnVal["alternate_email"] = $bothEmails["alternate_email"]; //user's optional non-wmu email
+
+                if(!empty($returnVal["login_email"])){$loginEmail = $returnVal["login_email"];} //set the primary email if exists
+
+                //get previously denied profile data
+                $returnVal["denied_profile"] = $database->getDeniedProfile($loginEmail);
+
                 $returnVal["expiration_time"] = $res; //the expiration timestamp of the given code
             }
         } 
@@ -399,28 +408,35 @@ else if(array_key_exists('clear_site_warning', $_GET)){
 else if(array_key_exists('approve_profile', $_GET)){
     //must have permission to do this
     if(isset($CASbroncoNetID) && $database->isAdministrator($CASbroncoNetID)){
-        if(isset($_POST["userID"]) && isset($_POST["emailAddress"]) && isset($_POST["name"]) && isset($_POST["update"])){
+        if(isset($_POST["userID"]) && isset($_POST["emailAddress"]) && isset($_POST["sendEmail"])){
             $userID = json_decode($_POST["userID"]);
             $emailAddress = json_decode($_POST["emailAddress"]);
-            $name = json_decode($_POST["name"]);
-            $update = json_decode($_POST["update"]);
+            $sendEmail = json_decode($_POST["sendEmail"]);
 
-            try{
-                $returnVal["approve"] = $database->approveProfile($userID, $CASbroncoNetID);
-                if(!$returnVal["approve"]["success"]){
-                    $errorMessage = $logger->logError("Unable to approve profile.", $CASbroncoNetID, dirname(__FILE__), true);
-                    $returnVal["error"] = "Error: Unable to approve profile. ".$errorMessage;
+            $email = "";
+            if(isset($_POST["email"])){$email = trim(json_decode($_POST["email"]));}
+
+            if($sendEmail && $email === ''){ //wants to send email, but it's empty
+                $returnVal["error"] = "Email message is empty";
+            }
+            else{
+                try{
+                    $returnVal["approve"] = $database->approveProfile($userID, $CASbroncoNetID);
+                    if(!$returnVal["approve"]["success"]){//failed to approve profile
+                        $errorMessage = $logger->logError("Unable to approve profile.", $CASbroncoNetID, dirname(__FILE__), true);
+                        $returnVal["error"] = "Error: Unable to approve profile. ".$errorMessage;
+                    }
+                    else if($sendEmail && $email !== ''){ //successfully approved profile, so now send the email if specified
+                        $returnVal["email"] = $emailHelper->profileApprovedEmail($emailAddress, $email, $CASbroncoNetID); //get results of trying to save/send email message
+                    }
+                }catch(Exception $e){
+                    $errorMessage = $logger->logError("Unable to approve application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+                    $returnVal["error"] = "Error: Unable to approve application due to an internal exception. ".$errorMessage;
                 }
-                else{ //successfully approved profile, so now send the email
-                    $returnVal["email"] = $emailHelper->profileApprovedEmail($emailAddress, $name, $update, $CASbroncoNetID); //get results of trying to save/send email message
-                }
-            }catch(Exception $e){
-                $errorMessage = $logger->logError("Unable to approve application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
-			    $returnVal["error"] = "Error: Unable to approve application due to an internal exception. ".$errorMessage;
             }
         }
         else{
-            $returnVal["error"] = "UserID, name, email address, and/or update boolean is not set";
+            $returnVal["error"] = "UserID, email address, and/or send email boolean is not set";
         }
     }
     else{
@@ -430,32 +446,39 @@ else if(array_key_exists('approve_profile', $_GET)){
 
 
 
-//To deny a profile, which involves deleting the pending profile, and sending an email to the deleted profile's primary contact address
+//To deny a profile, which will also send an email to the denied profile's primary contact address
 else if(array_key_exists('deny_profile', $_GET)){
     //must have permission to do this
     if(isset($CASbroncoNetID) && $database->isAdministrator($CASbroncoNetID)){
-        if(isset($_POST["userID"]) && isset($_POST["emailAddress"]) && isset($_POST["name"]) && isset($_POST["update"])){
+        if(isset($_POST["userID"]) && isset($_POST["emailAddress"]) && isset($_POST["sendEmail"])){
             $userID = json_decode($_POST["userID"]);
             $emailAddress = json_decode($_POST["emailAddress"]);
-            $name = json_decode($_POST["name"]);
-            $update = json_decode($_POST["update"]);
+            $sendEmail = json_decode($_POST["sendEmail"]);
 
-            try{
-                $returnVal["approve"] = $database->deleteProfile($userID, $CASbroncoNetID);
-                if(!$returnVal["approve"]["success"]){
-                    $errorMessage = $logger->logError("Unable to deny profile.", $CASbroncoNetID, dirname(__FILE__), true);
-                    $returnVal["error"] = "Error: Unable to deny profile. ".$errorMessage;
+            $email = "";
+            if(isset($_POST["email"])){$email = trim(json_decode($_POST["email"]));}
+
+            if($sendEmail && $email === ''){ //wants to send email, but it's empty
+                $returnVal["error"] = "Email message is empty";
+            }
+            else{
+                try{
+                    $returnVal["deny"] = $database->denyProfile($userID, $CASbroncoNetID);
+                    if(!$returnVal["deny"]){//failed to deny profile
+                        $errorMessage = $logger->logError("Unable to deny profile.", $CASbroncoNetID, dirname(__FILE__), true);
+                        $returnVal["error"] = "Error: Unable to deny profile. ".$errorMessage;
+                    }
+                    else if($sendEmail && $email !== ''){ //successfully denied profile, so now send the email if specified
+                        $returnVal["email"] = $emailHelper->profileDeniedEmail($emailAddress, $email, $CASbroncoNetID); //get results of trying to save/send email message
+                    }
+                }catch(Exception $e){
+                    $errorMessage = $logger->logError("Unable to deny application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+                    $returnVal["error"] = "Error: Unable to deny application due to an internal exception. ".$errorMessage;
                 }
-                else{ //successfully denied profile, so now send the email
-                    $returnVal["email"] = $emailHelper->profileDeniedEmail($emailAddress, $name, $update, $CASbroncoNetID); //get results of trying to save/send email message
-                }
-            }catch(Exception $e){
-                $errorMessage = $logger->logError("Unable to deny application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
-                $returnVal["error"] = "Error: Unable to deny application due to an internal exception. ".$errorMessage;
             }
         }
         else{
-            $returnVal["error"] = "UserID, name, email address, and/or update boolean is not set";
+            $returnVal["error"] = "UserID, email address, and/or send email boolean is not set";
         }
     }
     else{
@@ -469,18 +492,35 @@ else if(array_key_exists('deny_profile', $_GET)){
 else if(array_key_exists('delete_profile', $_GET)){
     //must have permission to do this
     if(isset($CASbroncoNetID) && $database->isAdministrator($CASbroncoNetID)){
-        if(isset($_POST["userID"])){
+        if(isset($_POST["userID"]) && isset($_POST["emailAddress"]) && isset($_POST["sendEmail"])){
             $userID = json_decode($_POST["userID"]);
+            $emailAddress = json_decode($_POST["emailAddress"]);
+            $sendEmail = json_decode($_POST["sendEmail"]);
 
-            try{
-                $returnVal = $database->deleteProfile($userID, $CASbroncoNetID);
-            }catch(Exception $e){
-                $errorMessage = $logger->logError("Unable to delete application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
-                $returnVal["error"] = "Error: Unable to delete application due to an internal exception. ".$errorMessage;
+            $email = "";
+            if(isset($_POST["email"])){$email = trim(json_decode($_POST["email"]));}
+
+            if($sendEmail && $email === ''){ //wants to send email, but it's empty
+                $returnVal["error"] = "Email message is empty";
+            }
+            else{
+                try{
+                    $returnVal["delete"] = $database->deleteProfile($userID, $CASbroncoNetID);
+                    if(!$returnVal["delete"]["success"]){//failed to delete profile
+                        $errorMessage = $logger->logError("Unable to delete profile.", $CASbroncoNetID, dirname(__FILE__), true);
+                        $returnVal["error"] = "Error: Unable to delete profile. ".$errorMessage;
+                    }
+                    else if($sendEmail && $email !== ''){ //successfully deleted profile, so now send the email if specified
+                        $returnVal["email"] = $emailHelper->profileDeleteEmail($emailAddress, $email, $CASbroncoNetID); //get results of trying to save/send email message
+                    }
+                }catch(Exception $e){
+                    $errorMessage = $logger->logError("Unable to delete application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+                    $returnVal["error"] = "Error: Unable to delete application due to an internal exception. ".$errorMessage;
+                }
             }
         }
         else{
-            $returnVal["error"] = "UserID is not set";
+            $returnVal["error"] = "UserID, email address, and/or send email boolean is not set";
         }
     }
     else{

@@ -36,7 +36,7 @@
 
 	if(isset($_GET["id"])){ //if ID is set, get the full user profile
 		if(isset($_GET["review"]) && $isAdmin){ //user is an admin trying to review this profile
-			$profile = $database->getUserProfile($_GET["id"], false, false); //specifically get pending profile, and both email addresses
+			$profile = $database->getUserProfile($_GET["id"], false, null); //specifically get pending profile, and both email addresses
 			if ($profile) {
 				$loaded_profile = true;
 				$previousProfileID = $database->doesProfileExist($profile["login_email"]);
@@ -98,10 +98,10 @@
 		<!-- Shared Site Banner -->
 		<?php include '../include/site_banner.php'; ?>
 
-	<div id="MainContent" role="main">
-		<?php $siteWarning->showIfExists() ?> <!-- show site warning if it exists -->
-		<script src="../include/outdatedbrowser.js" nomodule></script> <!-- show site error if outdated -->
-		<?php include '../include/noscript.html'; ?> <!-- show site error if javascript is disabled -->
+		<div id="MainContent" role="main">
+			<?php $siteWarning->showIfExists() ?> <!-- show site warning if it exists -->
+			<script src="../include/outdatedbrowser.js" nomodule></script> <!-- show site error if outdated -->
+			<?php include '../include/noscript.html'; ?> <!-- show site error if javascript is disabled -->
 
 			<!--AngularJS Controller-->
 			<div class="container-fluid" ng-controller="profileCtrl" id="profileCtrl">
@@ -337,19 +337,63 @@
 
 
 
+					<!-- For admin to approve, deny, or delete profile -->
+					<div class="profileDecisionBox">
+						<label for="profileDecision">Select what to do with this profile:</label>
+						<select ng-show="isAdmin && state ==='AdminReview'" ng-model="profileDecision" id="profileDecision" name="profileDecision">
+							<option value=""></option>
+							<option value="Approve">Approve Profile</option>
+							<option value="Deny">Deny Profile</option>
+							<option value="Delete">Delete Profile</option>
+						</select>
+
+						<div ng-show="profileDecision === 'Approve' && isAdmin && state ==='AdminReview'" class="approve-button-holder"> <!-- Administrator-only approve profile button -->
+							<button type="button" ng-click="approveProfile()" class="btn btn-success">APPROVE PROFILE</button>
+							
+							<div class="checkbox">
+								<label><input ng-model="approveProfileEmailEnable" name="approveProfileEmailEnable" id="approveProfileEmailEnable" type="checkbox" value="approveProfileEmailEnable">Send Email Upon Approval</label>
+							</div>
+							<div class="form-group" ng-show="approveProfileEmailEnable">
+								<label for="approveProfileEmail">Approval Email (Contact info will be automatically appended):</label>
+								<textarea class="form-control" rows="8" ng-model="approveProfileEmail" ng-disabled="!approveProfileEmailEnable" id="approveProfileEmail" name="approveProfileEmail" placeholder="Enter approval email to be sent to the profile owner"></textarea>
+							</div>	
+						</div>
+
+						<div ng-show="profileDecision === 'Deny' && isAdmin && state ==='AdminReview'" class="deny-button-holder"> <!-- Administrator-only deny profile button -->
+							<button type="button" ng-click="denyProfile()" class="btn btn-warning">DENY PROFILE</button>
+							
+							<div class="checkbox">
+								<label><input ng-model="denyProfileEmailEnable" name="denyProfileEmailEnable" id="denyProfileEmailEnable" type="checkbox" value="denyProfileEmailEnable">Send Email Upon Denying</label>
+							</div>
+							<div class="form-group" ng-show="denyProfileEmailEnable">
+								<label for="denyProfileEmail">Denial Email (Contact info will be automatically appended):</label>
+								<textarea class="form-control" rows="8" ng-model="denyProfileEmail" ng-disabled="!denyProfileEmailEnable" id="denyProfileEmail" name="denyProfileEmail" placeholder="Enter denial email to be sent to the profile owner"></textarea>
+							</div>	
+						</div>
+
+						<div ng-show="isAdmin && (state === 'View' || (state ==='AdminReview' && profileDecision === 'Delete'))" class="delete-button-holder"> <!-- Administrator-only delete profile button -->
+							<button type="button" ng-click="deleteProfile()" class="btn btn-danger">DELETE PROFILE</button>
+							
+							<div class="checkbox">
+								<label><input ng-model="deleteProfileEmailEnable" name="deleteProfileEmailEnable" id="deleteProfileEmailEnable" type="checkbox" value="deleteProfileEmailEnable">Send Email Upon Deletion</label>
+							</div>
+							<div class="form-group" ng-show="deleteProfileEmailEnable">
+								<label for="deleteProfileEmail">Deletion Email (Contact info will be automatically appended):</label>
+								<textarea class="form-control" rows="8" ng-model="deleteProfileEmail" ng-disabled="!deleteProfileEmailEnable" id="deleteProfileEmail" name="deleteProfileEmail" placeholder="Enter deletion email to be sent to the profile owner"></textarea>
+							</div>	
+						</div>
+					</div>
+
+
+
 					<div class="buttons-group bottom-buttons"> 
 						<button ng-show="profile && state === 'View'" type="button" ng-click="initializeEditProfile()" class="btn btn-warning">EDIT PROFILE</button> <!-- To initiate the editing process -->
 						<button ng-show="profile && (state === 'CreatePending' || state === 'EditPending')" ng-disabled="codePending" type="button" ng-click="sendCode()" class="btn btn-warning">SEND CODE</button> <!-- To initiate the editing process -->
 						<button ng-show="state === 'Create'" type="button" ng-click="createProfile()" class="btn btn-success">SUBMIT</button> <!-- For user submitting for first time -->
 						<button ng-show="state === 'Edit'" type="button" ng-click="editProfile()" class="btn btn-success">SUBMIT</button> <!-- For user editing their profile -->
-						<button ng-show="state === 'AdminReview'" type="button" ng-click="approveProfile(true)" class="btn btn-success">APPROVE PROFILE</button> <!-- For admin approving profile -->
-						<button ng-show="state === 'AdminReview'" type="button" ng-click="approveProfile(false)" class="btn btn-danger">DENY PROFILE</button> <!-- For admin denying profile -->
 						<a href="" class="btn btn-info" ng-click="redirectToHomepage(null, null)">LEAVE PAGE</a> <!-- For anyone to leave the page -->
-
-						<div ng-show="isAdmin && (state === 'View' || state ==='AdminReview')" class="delete-button-holder"> <!-- Administrator-only delete profile button -->
-							<button type="button" ng-click="deleteProfile()" class="btn btn-danger">DELETE PROFILE</button>
-						</div>
 					</div>
+
 				</form>
 
 			</div>

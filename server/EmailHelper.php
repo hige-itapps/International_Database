@@ -138,32 +138,23 @@ class EmailHelper
 		return $this->customEmail($toAddress, $body, $subject, $CASbroncoNetID);
 	}
 
-	//The email to send to the profile owner to let them know that their pending profile was approved. $update is true if the pending profile was an update of an old one.
-	public function profileApprovedEmail($toAddress, $name, $update, $CASbroncoNetID){
+	//The email to send to the profile owner to let them know that their pending profile was approved.
+	public function profileApprovedEmail($toAddress, $message, $CASbroncoNetID){
 		$subject = "International Scholars Database - Pending Profile Approved";
-
-		$body = "Dear #name,
-			We are excited to inform you that your pending profile on our site at globalexpertise.wmich.edu has been approved. It is now publicly available and searchable.";
-		if($update){$body.=PHP_EOL."Your previous profile is no longer publicly available.";}
-
-		$body = str_replace("#name", nl2br($name), $body); //insert the code into the message
-
-		return $this->customEmail($toAddress, $body, $subject, $CASbroncoNetID);
+		return $this->customEmail($toAddress, $message, $subject, $CASbroncoNetID);
 	}
 
-	//The email to send to the profile owner to let them know that their pending profile was denied. $update is true if the pending profile was an update of an old one.
-	public function profileDeniedEmail($toAddress, $name, $update, $CASbroncoNetID){
+	//The email to send to the profile owner to let them know that their pending profile was denied.
+	public function profileDeniedEmail($toAddress, $message, $CASbroncoNetID){
 		$subject = "International Scholars Database - Pending Profile Denied";
-
-		$body = "Dear #name,
-			We regret to inform you that your pending profile on our site at globalexpertise.wmich.edu has been denied. This was likely due to lacking and/or incorrect information.";
-		if($update){$body.=PHP_EOL."However, your previous profile will still be publicly available unless otherwise specified.";}
-
-		$body = str_replace("#name", nl2br($name), $body); //insert the code into the message
-
-		return $this->customEmail($toAddress, $body, $subject, $CASbroncoNetID);
+		return $this->customEmail($toAddress, $message, $subject, $CASbroncoNetID);
 	}
 
+	//The email to send to the profile owner to let them know that their profile was deleted.
+	public function profileDeleteEmail($toAddress, $message, $CASbroncoNetID){
+		$subject = "International Scholars Database - Profile Deleted";
+		return $this->customEmail($toAddress, $message, $subject, $CASbroncoNetID);
+	}
 
 	//The email to send to all profile owners every X amount of time to remind them to update their profiles if possible
 	public function siteReminderEmail($toAddress, $name, $CASbroncoNetID){

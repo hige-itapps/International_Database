@@ -21,9 +21,13 @@ html {
 
 body{
 	position: relative;
-	margin: 0;
-	padding-bottom: 12rem;
-	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+	height: 100vh; /* Avoid the IE 10-11 `min-height` bug. */
+}
+
+#MainContent{
+	flex: 1 0 auto; /* Prevent Chrome, Opera, and Safari from letting these items shrink to smaller than their content's default minimum size. */
 }
 
 /*WMU LOGO*/
@@ -98,25 +102,35 @@ h2.HomeText{
 
 /*Format page footer*/
 .page-footer{
-	max-height: 12rem; /*keep this consistent with the padding-bottom specified in body!*/
-	overflow: hidden;
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	left: 0;
+	width: 100%;
+	flex-shrink: 0; /* Prevent Chrome, Opera, and Safari from letting these items shrink to smaller than their content's default minimum size. */
 	padding: 1rem;
 	background-color: #333333;
 	color: #ffffff;
 	text-align: center;
 }
-h1.FooterText{
+.page-footer h1{
 	font-size: 1.6rem!important;
 }
-h2.FooterText{
+.page-footer h2, .page-footer a, .page-footer input{
 	font-size: 1.4rem!important;
+	color: #c2c2c2;
+}
+.page-footer a{
+	text-decoration: underline;
+}
+.page-footer a:hover, .page-footer a:focus{
+	color: #ffffff;
+}
+/*Condense address info lines*/
+.page-footer .address-info h2{
+	margin-top:0;
+	margin-bottom: 5px;
+}
+.page-footer .address-info h1{
+	margin-bottom: 5px;
 }
 #loginForm .btn-link{
-	color: #c2c2c2;
 	text-decoration: underline;
 	margin-top: 20px;
 	margin-bottom: 10px;
@@ -140,12 +154,23 @@ h2.FooterText{
 .buttons-group{
 	text-align: center;
 }
-.delete-button-holder{
-	display: inline-block;
-	float: right;
+.delete-button-holder, .deny-button-holder, .approve-button-holder{
 	padding: 30px;
-    background-color: rgba(255, 0, 0, 0.2);
-    border-radius: 5px;
+	border-radius: 5px;
+	margin-bottom: 10px;
+}
+.delete-button-holder > .form-group, .deny-button-holder > .form-group, .approve-button-holder > .form-group{
+	margin-left: 0!important;
+	margin-right: 0!important;
+}
+.delete-button-holder{
+	background-color: rgba(255, 0, 0, 0.2);
+}
+.deny-button-holder{
+	background-color: rgba(255, 150, 0, 0.2);
+}
+.approve-button-holder{
+	background-color: rgba(0, 255, 0, 0.2);
 }
 .bottom-buttons{
 	margin-top: 20px;
@@ -500,6 +525,15 @@ hr{
 /*navigation menus (pagination)*/
 nav{
 	text-align: center;
+}
+
+/*Format admin approve/deny/delete decision box*/
+.profileDecisionBox{
+	text-align: center;
+	margin-top: 30px;
+}
+.profileDecisionBox select{
+	margin-bottom: 20px;
 }
 
 /*Change default bootstrap button colors to make them WCAG 2.0 AA compliant

@@ -160,7 +160,7 @@
 			}
 			else{ //for admins searching pending profiles
 				$profiles = $database->advancedSearch($searchName, $searchAffiliations, $searchEmail, $searchPhone, $searchSocialLink, $searchIssuesExpertise, $searchIssuesExpertiseOther,
-					$searchCountriesExpertise, $searchCountriesExpertiseOther, $searchRegionsExpertise, $searchRegionsExpertiseOther, $searchLanguages, $searchCountriesExperience, false);
+					$searchCountriesExpertise, $searchCountriesExpertiseOther, $searchRegionsExpertise, $searchRegionsExpertiseOther, $searchLanguages, $searchCountriesExperience, null);
 			}
 		}
 		if(isset($_GET["wildcard"])){
@@ -168,8 +168,8 @@
 			if(!$adminPendingProfiles){ //for regular users
 				$profiles = $database->searchByWildcard($wildcard);
 			}
-			else{
-				$profiles = $database->searchByWildcard($wildcard, false);
+			else{ //admins searching pending profiles
+				$profiles = $database->searchByWildcard($wildcard, null);
 			}
 		}
 	}
@@ -177,7 +177,7 @@
 	if($adminPendingProfiles){ //if the admin is getting pending profiles, go through each profile and determine if it is a new one, or an update to an old one
 
 		if(!isset($_GET["advanced"]) && !isset($_GET["wildcard"])){//if admin hadn't searched anything yet, return all pending profiles by default
-			$profiles = $database->getAllUsersSummaries(false);
+			$profiles = $database->getAllUsersSummaries(null);
 		}
 
 		foreach ($profiles as $key => &$value) {

@@ -60,6 +60,19 @@ class DatabaseHelper
     }
 
 
+    /* Get the primary email addresses of all users.
+    Also only return approved profiles' addresses unless specified otherwise with $approvedOnly = false (denied) or null (pending) */
+    public function getAllPrimaryEmailAddresses($approvedOnly = true){
+        $query = "SELECT COALESCE(u.alternate_email, u.login_email) as email FROM users u";
+        if(!isset($approvedOnly)){$query.=" WHERE approved IS NULL";} //approvedOnly is NULL, so return pending only
+        else if($approvedOnly){$query.=" WHERE approved = 1";} //only approved if necessary
+        else{$query.=" WHERE approved = 0";} //otherwise, denied only
+        $this->sql = $this->conn->prepare($query);
+        $this->sql->execute();
+        return $this->sql->fetchAll(PDO::FETCH_COLUMN); //return addresses only
+    }
+
+
 
     /* Return a denied profile given its (preferably login) email address */
     public function getDeniedProfile($email){
@@ -831,8 +844,6 @@ class DatabaseHelper
 
 
 
-    /* For Static Data */
-
     /*Checks if a user is an administrator (true or false)*/
 	public function isAdministrator($broncoNetID){
 		$this->sql = $this->conn->prepare("Select * FROM administrators WHERE broncoNetID = :id");
@@ -1076,8 +1087,39 @@ class DatabaseHelper
 		$this->sql = $this->conn->prepare("UPDATE variables v SET v.Value = :warning WHERE v.name = 'SiteWarning'");
 		$this->sql->bindParam(':warning', $warning);
 		return $this->sql->execute();
-	}
+    }
+    
 
+
+    /* Save the current timestamp in the database 'variables' table, to the variable 'ReminderEmailsLastSent' */
+    public function saveReminderEmailsLastSentTime(){
+        $currentTime = time();
+        $this->sql = $this->conn->prepare("UPDATE variables v SET v.Value = :currentTime WHERE v.name = 'ReminderEmailsLastSent'");
+		$this->sql->bindParam(':currentTime', $currentTime);
+		return $this->sql->execute();
+    }
+    /* Get the timestamp from the latest time the reminder emails were sent */
+    public function getReminderEmailsLastSentTime(){
+		$this->sql = $this->conn->prepare("SELECT v.Value FROM variables v WHERE v.name = 'ReminderEmailsLastSent'");
+		$this->sql->execute();
+		return $this->sql->fetch(PDO::FETCH_COLUMN); //return value only
+    }
+    
+
+
+    /* Save the current timestamp in the database 'variables' table, to the variable 'DatabaseLastBackedUp' */
+    public function saveDatabaseLastBackedUpTime(){
+        $currentTime = time();
+        $this->sql = $this->conn->prepare("UPDATE variables v SET v.Value = :currentTime WHERE v.name = 'DatabaseLastBackedUp'");
+		$this->sql->bindParam(':currentTime', $currentTime);
+		return $this->sql->execute();
+    }
+    /* Get the timestamp from the latest time the database was backed up */
+    public function getDatabaseLastBackedUpTime(){
+		$this->sql = $this->conn->prepare("SELECT v.Value FROM variables v WHERE v.name = 'DatabaseLastBackedUp'");
+		$this->sql->execute();
+		return $this->sql->fetch(PDO::FETCH_COLUMN); //return value only
+	}
 
 
 

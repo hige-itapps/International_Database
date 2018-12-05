@@ -459,7 +459,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
                         newAlertMessage = "Success! The profile has been deleted. No email was sent to the profile owner.";
                     }
 
-                    $scope.redirectToProfileList(newAlertType, newAlertMessage, true); //redirect to the homepage with the message
+                    $scope.redirectToProfileList(newAlertType, newAlertMessage); //redirect to the homepage with the message
                 }
                 else{//didn't update
                     $scope.alertType = "warning";
@@ -527,7 +527,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
                             newAlertMessage = "Success! The profile has been approved. No email was sent to the profile owner.";
                         }
 
-                        $scope.redirectToProfileList(newAlertType, newAlertMessage, true); //redirect to the homepage with the message
+                        $scope.redirectToProfileList(newAlertType, newAlertMessage); //redirect to the homepage with the message
                     }
                     else{//didn't update
                         $scope.alertType = "warning";
@@ -596,7 +596,7 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
                             newAlertMessage = "Success! The profile has been denied. No email was sent to the profile owner.";
                         }
 
-                        $scope.redirectToProfileList(newAlertType, newAlertMessage, true); //redirect to the homepage with the message
+                        $scope.redirectToProfileList(newAlertType, newAlertMessage); //redirect to the homepage with the message
                     }
                     else{//didn't update
                         $scope.alertType = "warning";
@@ -641,10 +641,10 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
     }
 
 
-    //redirect the profile list page. Optionally, send an alert which will show up on the next page, consisting of a type(success, warning, danger, etc.) and message. Set pendingOnly to true to display pending results.
-    $scope.redirectToProfileList = function(alert_type, alert_message, pendingOnly){
+    //redirect the profile list page. Optionally, send an alert which will show up on the next page, consisting of a type(success, warning, danger, etc.) and message. If this was a pending profile, redirect with ?pending appended to the url.
+    $scope.redirectToProfileList = function(alert_type, alert_message){
         var profileListURL = '../profile_list/profile_list.php'; //url to profile_list, required in order to correctly pass POST data
-        if(pendingOnly){profileListURL += '?pending';}
+        if($scope.state === "AdminReview"){profileListURL += '?pending';} //pending profiles only
 
         if(alert_type == null) //if no alert message to send, simply redirect
         {

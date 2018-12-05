@@ -15,12 +15,16 @@
 	$database = new DatabaseHelper($logger); //database helper object used for some verification and insertion
 	$siteWarning = new SiteWarning($database); //used to determine if a site warning exists and should be displayed
 	$numberOfPendingProfiles = 0; //number of pending profiles
+	$reminderEmailsLastSent = 0; //timestamp of the last time reminder emails were sent out
+	$databaseLastBackedUp = 0; //timestamp of the last time the database was backed up
 	
 	if($database->isAdministrator($CASbroncoNetID)) 
 	{ 
 		$numberOfPendingProfiles = $database->getNumberOfPendingProfiles();
 		$administrators = $database->getAdministrators();
 		$siteWarningString = $database->getSiteWarning();
+		$reminderEmailsLastSent = $database->getReminderEmailsLastSentTime();
+		$databaseLastBackedUp = $database->getDatabaseLastBackedUpTime();
 ?>
 
 
@@ -39,6 +43,8 @@
 			var scope_numberOfPendingProfiles = <?php echo json_encode($numberOfPendingProfiles); ?>;
 			var scope_administrators = <?php echo json_encode($administrators); ?>;
 			var scope_siteWarningString = <?php echo json_encode($siteWarningString); ?>;
+			var var_reminderEmailsLastSent = <?php echo json_encode($reminderEmailsLastSent); ?>;
+			var var_databaseLastBackedUp = <?php echo json_encode($databaseLastBackedUp); ?>;
 		</script>
 		<!-- AngularJS Script -->
 		<script type="module" src="administrator.js"></script>
@@ -113,6 +119,13 @@
 						<button type="button" class="btn btn-danger" ng-click="clearSiteWarning()">Clear Message</button>
 					</form>
 					<hr>
+
+					<!-- Additional Information -->
+					<h3>Additional Information</h3>
+					<h4>Database last backed up: {{databaseLastBackedUp}}</h4>
+					<h4>Bi-Annual Site Reminder Emails last sent: {{reminderEmailsLastSent}}</h4>
+					<hr>
+
 
 					<div class="alert alert-{{alertType}} alert-dismissible" ng-class="{hideAlert: !alertMessage}">
 						<button type="button" title="Close this alert." class="close" aria-label="Close" ng-click="removeAlert()"><span aria-hidden="true">&times;</span></button>{{alertMessage}}

@@ -24,14 +24,21 @@ if (array_key_exists('create_profile', $_GET)) {
     $returnVal["success"] = false; //set to true if there are no errors after validation & running
     $returnVal["errors"] = []; //push errors to this array if any arise
 
+    //get fields' max lengths
+    $usersMaxLengths = $database->getUsersMaxLengths();
+	$otherCountryExperiencesMaxLength = $database->getOtherCountryExperiencesMaxLength();
+
     //define error messages
     $requiredError = "This field is required";
     $tooLongError = "Field exceeds maximum character limit";
     $phoneDigitsError = "Only digits (0-9) are allowed, please do not include any other formatting";
+    $phoneLengthError = "Phone number must be exactly ".$usersMaxLengths["phone"]." digits long";
     $wmichEmailOnlyError = "This address must be a wmich.edu address";
     $nonWmichEmailOnlyError = "This address must not be a wmich.edu address";
     $emailFormatError = "This address is not a valid email address";
     $nonUniqueEmailError = "This address is already in use";
+    $addressAlreadyInUseError = "This address is already in use with another profile";
+    $noPendingCodeError = "There is currently no pending code for this profile";
 
     //find out if editing
     $editing = isset($_GET["editing"]) ? true : false;
@@ -45,17 +52,17 @@ if (array_key_exists('create_profile', $_GET)) {
 
     if(!$editing){ //if creating, make sure email address is unique, and that there is a pending code for it
         if($database->doesLoginEmailExist($login_email)){
-            $returnVal["errors"]["other"] = "This address is already in use with another profile!";
+            $returnVal["errors"]["other"] = $addressAlreadyInUseError;
         }
         else if(!boolval($database->isCodePending($login_email))){ //make sure there is a pending code for it
-            $returnVal["errors"]["other"] = "There is currently no pending code for this profile.";
+            $returnVal["errors"]["other"] = $noPendingCodeError;
         }
     }
     else{ //if editing, make sure the primary email address has a pending code
         if(!empty($alternate_email_original)){$primaryEmail = $alternate_email_original;}  //set the primary address to the original alternate email if there was one
 
         if(!boolval($database->isCodePending($primaryEmail))){ //make sure there is a pending code for it
-            $returnVal["errors"]["other"] = "There is currently no pending code for this profile.";
+            $returnVal["errors"]["other"] = $noPendingCodeError;
         }
     }
     
@@ -91,19 +98,34 @@ if (array_key_exists('create_profile', $_GET)) {
                 $returnVal["errors"]["language ".$languages[$i]->id] = $requiredError;
             }
         }
-        //require country experiences
+        //require country experiences, make sure if there is an other_experience that it isn't too long
         foreach($countries_experience as $experience) {
             $tempOtherExperience = '';
             if(property_exists($experience, 'other_experience')){$tempOtherExperience = trim($experience->other_experience);}
             if((!property_exists($experience, 'experiences') || empty($experience->experiences)) && empty($tempOtherExperience)){
                 $returnVal["errors"]["country ".$experience->id] = $requiredError;
             }
+            if(!empty($tempOtherExperience) && strlen($tempOtherExperience) > $otherCountryExperiencesMaxLength){
+                $returnVal["errors"]["country ".$experience->id] = $tooLongError;//make sure other experience isn't too long
+            }
         }
 
         if (!empty($phone) && !ctype_digit($phone)) {$returnVal["errors"]["phone"] = $phoneDigitsError;} //make sure phone number only includes digits
+        else if (!empty($phone) && strlen($phone) != $usersMaxLengths["phone"]) {$returnVal["errors"]["phone"] = $phoneLengthError;} //make sure phone number is exactly as long as it needs to be
+
+        if(!empty($firstname) && strlen($firstname) > $usersMaxLengths["firstname"])                                                    {$returnVal["errors"]["firstname"] = $tooLongError;}//make sure first name isn't too long
+        if(!empty($lastname) && strlen($lastname) > $usersMaxLengths["lastname"])                                                       {$returnVal["errors"]["lastname"] = $tooLongError;}//make sure last name isn't too long
+        if(!empty($affiliations) && strlen($affiliations) > $usersMaxLengths["affiliations"])                                           {$returnVal["errors"]["affiliations"] = $tooLongError;}//make sure affiliations aren't too long
+        if(!empty($issues_expertise_other) && strlen($issues_expertise_other) > $usersMaxLengths["issues_expertise_other"])             {$returnVal["errors"]["issues_expertise_other"] = $tooLongError;}//make sure other issues of expertise isn't too long
+        if(!empty($countries_expertise_other) && strlen($countries_expertise_other) > $usersMaxLengths["countries_expertise_other"])    {$returnVal["errors"]["countries_expertise_other"] = $tooLongError;}//make sure other countries of expertise isn't too long
+        if(!empty($regions_expertise_other) && strlen($regions_expertise_other) > $usersMaxLengths["regions_expertise_other"])          {$returnVal["errors"]["regions_expertise_other"] = $tooLongError;}//make sure other regions of expertise isn't too long
+        if(!empty($social_link) && strlen($social_link) > $usersMaxLengths["social_link"])                                              {$returnVal["errors"]["social_link"] = $tooLongError;}//make sure social_link isn't too long
 
         if(empty($login_email)){ //make sure login email is specified
             $returnVal["errors"]["loginEmail"] = $requiredError;
+        }
+        else if(strlen($login_email) > $usersMaxLengths["login_email"]){ //make sure login email isn't too long
+            $returnVal["errors"]["loginEmail"] = $tooLongError;
         }
         else if(!filter_var($login_email, FILTER_VALIDATE_EMAIL)){ //make sure the email is correctly formatted
             $returnVal["errors"]["loginEmail"] = $emailFormatError;
@@ -121,7 +143,10 @@ if (array_key_exists('create_profile', $_GET)) {
         }
 
         if(!empty($alternate_email)){ //only worry about the alternate email if it's specified
-            if(!filter_var($alternate_email, FILTER_VALIDATE_EMAIL)){ //make sure the email is correctly formatted
+            if(strlen($alternate_email) > $usersMaxLengths["alternate_email"]){
+                $returnVal["errors"]["alternateEmail"] = $tooLongError;
+            }
+            else if(!filter_var($alternate_email, FILTER_VALIDATE_EMAIL)){ //make sure the email is correctly formatted
                 $returnVal["errors"]["alternateEmail"] = $emailFormatError;
             }
             else{ 

@@ -24,9 +24,9 @@ include_once(dirname(__FILE__) . "/Logger.php");
 class EmailHelper
 {
 	private $logger; //for logging to files
+	private $siteURL; //public URL of site
 	private $mailHost; //mail server information from config.ini
 	private $mailUsername;
-	private $mailNoReply;
 	private $mailPassword;
 	private $mailPort;
 	private $defaultSubject; //the default subject line for when it isn't specified
@@ -37,17 +37,17 @@ class EmailHelper
 		$this->logger = $logger;
 		$config_url = dirname(__FILE__).'/../config.ini'; //set config file url
 		$settings = parse_ini_file($config_url); //get all settings		
+		$this->siteURL =  $settings["site_url"]; //load public url
+
 		$this->mailHost = $settings["mail_host"]; //load mail host
 		$this->mailUsername = $settings["mail_username"]; //load mail username
-		$this->mailNoReply = $settings["mail_noreply"]; //load mail no-reply address
 		$this->mailPassword = $settings["mail_password"]; //load mail password
 		$this->mailPort = $settings["mail_port"]; //load mail port number
 
-		$this->defaultSubject = "International Scholars Database Update";
+		$this->defaultSubject = "Global Expertise Database Update";
 		$this->customFooter = "
 		
-		<strong>Please do not reply to this email, this account is not being monitored.
-		If you need more information, please contact the International Scholars Database administrator.</strong>";
+		<strong>If you need help or more information, please reply to this message, or send a new message to ".$this->mailUsername.".</strong>";
 	}
 
 	//Send an email to a specific address, with a custom message and subject. If the subject is left blank, a default one is prepared instead.
@@ -87,8 +87,8 @@ class EmailHelper
 				$mail->Port = $this->mailPort;                              // TCP port to connect to
 
 				//Recipients
+				//$mail->AddReplyTo($this->mailUsername, 'Reply to name');
 				$mail->setFrom($this->mailUsername, 'Mailer');
-				$mail->addReplyTo($this->mailNoReply, 'No-Reply');
 					
 				//Content
 				$mail->isHTML(true);                                  // Set email format to HTML
@@ -123,14 +123,14 @@ class EmailHelper
 
 	//The email to send to the profile owner to let them know of their new confirmation code
 	public function codeConfirmationSendEmail($toAddress, $code, $CASbroncoNetID){
-		$subject = "International Scholars Database - Confirmation Code";
+		$subject = "Global Expertise Database - Confirmation Code";
 
 		$body = "Greetings,
-			Here is your confirmation code to create/update your profile in the WMU International Scholars Database:
+			Here is your confirmation code to create/update your profile in the WMU Global Expertise Database:
 
 			#code
 
-			Please paste this code into the box provided on the Profile Confirmation page. You can find this page at globalexpertise.wmich.edu.
+			Please paste this code into the box provided on the Profile Confirmation page. You can find this page at ".$this->siteURL.".
 			This code will expire in 24 hours, or once your profile has been created/updated.
 			If you did not choose to create/update a profile on our site, please ignore this message.";
 		$body = str_replace("#code", nl2br($code), $body); //insert the code into the message
@@ -140,28 +140,28 @@ class EmailHelper
 
 	//The email to send to the profile owner to let them know that their pending profile was approved.
 	public function profileApprovedEmail($toAddress, $message, $CASbroncoNetID){
-		$subject = "International Scholars Database - Pending Profile Approved";
+		$subject = "Global Expertise Database - Pending Profile Approved";
 		return $this->customEmail($toAddress, $message, $subject, $CASbroncoNetID);
 	}
 
 	//The email to send to the profile owner to let them know that their pending profile was denied.
 	public function profileDeniedEmail($toAddress, $message, $CASbroncoNetID){
-		$subject = "International Scholars Database - Pending Profile Denied";
+		$subject = "Global Expertise Database - Pending Profile Denied";
 		return $this->customEmail($toAddress, $message, $subject, $CASbroncoNetID);
 	}
 
 	//The email to send to the profile owner to let them know that their profile was deleted.
 	public function profileDeleteEmail($toAddress, $message, $CASbroncoNetID){
-		$subject = "International Scholars Database - Profile Deleted";
+		$subject = "Global Expertise Database - Profile Deleted";
 		return $this->customEmail($toAddress, $message, $subject, $CASbroncoNetID);
 	}
 
 	//The email to send to all profile owners every X amount of time to remind them to update their profiles if possible
 	public function siteReminderEmail($toAddress, $name, $CASbroncoNetID){
-		$subject = "International Scholars Database - Automatic Website Reminder";
+		$subject = "Global Expertise Database - Automatic Website Reminder";
 
 		$body = "Dear #name,
-			This is an automated message to remind you to check your profile on our site at globalexpertise.wmich.edu to make sure your information is up-to-date.".PHP_EOL.
+			This is an automated message to remind you to check your profile on our site at ".$this->siteURL." to make sure your information is up-to-date.".PHP_EOL.
 			"If you wish, you may update your information or remove your profile from the database by visiting your profile on our site and clicking the 'EDIT PROFILE' button.";
 
 		$body = str_replace("#name", nl2br($name), $body); //insert the code into the message

@@ -118,7 +118,8 @@
 						<h1 class="title" ng-if="state === 'CreatePending' || state === 'EditPending'">Profile Confirmation</h1>
 						<h1 class="title" ng-if="state === 'Create'">Create Profile</h1>
 						<h1 class="title" ng-if="state === 'Edit'">Edit Profile</h1>
-						<h2 class="title expiration" ng-if="expiration_timestamp > 0">Code expires in: {{hoursRemaining}} hour{{hoursRemaining !== 1 ? "s" : ""}}, {{minutesRemaining}} minute{{minutesRemaining !== 1 ? "s" : ""}}</h2>
+						<h2 class="title expiration" ng-if="expiration_timestamp > 0 && totalSecondsRemaining > 0">Code expires in: {{hoursRemaining}} hour{{hoursRemaining !== 1 ? "s" : ""}}, {{minutesRemaining}} minute{{minutesRemaining !== 1 ? "s" : ""}}</h2> <!-- , {{secondsRemaining}} second{{secondsRemaining !== 1 ? "s" : ""}} -->
+						<h2 class="title expiration" ng-if="expiration_timestamp > 0 && totalSecondsRemaining <= 0">Your code has expired! Please exit this form and send a new confirmation code if desired.</h2>
 					</div>
 					<!-- Form for viewing or editing profile information -->
 					<div class="row profile" ng-show="state === 'View' || state === 'AdminReview' || state === 'Create' || state === 'Edit'">
@@ -161,7 +162,7 @@
 								<span class="help-block" ng-show="errors.alternateEmail" aria-live="polite">{{ errors.alternateEmail }}</span> 
 							</div>
 							<div class="form-group" ng-class="{errorHighlight: errors.phone}">
-								<label for="phone">US Phone Number ({{(maxPhone-profile.phone.length)}} digits remaining):</label>
+								<label for="phone">US Phone Number ({{(maxPhone)}} digits):</label>
 								<input type="text" class="form-control" maxlength="{{maxPhone}}" ng-model="profile.phone" id="phone" name="phone" placeholder="Enter US Phone Number" onkeypress='return (event.which >= 48 && event.which <= 57)'/> <!-- restricted to digits only -->
 								<span class="help-block" ng-show="errors.phone" aria-live="polite">{{ errors.phone }}</span> 
 							</div>
@@ -339,7 +340,7 @@
 
 					<!-- For admin to approve, deny, or delete profile -->
 					<div class="profileDecisionBox">
-						<label for="profileDecision">Select what to do with this profile:</label>
+						<label ng-show="isAdmin && state ==='AdminReview'" for="profileDecision">Select what to do with this profile:</label>
 						<select ng-show="isAdmin && state ==='AdminReview'" ng-model="profileDecision" id="profileDecision" name="profileDecision">
 							<option value=""></option>
 							<option value="Approve">Approve Profile</option>

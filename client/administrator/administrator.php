@@ -86,7 +86,7 @@
 							<tr ng-repeat="admin in administrators">
 								<td>{{ admin[0] }}</td>
 								<td>{{ admin[1] }}</td>
-								<td><button type="button" ng-click="removeAdmin(admin[0])" class="btn btn-danger">REMOVE</button></td> 
+								<td><button type="button" ng-click="removeAdmin(admin[0])" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>REMOVE</button></td> 
 							</tr>
 						</tbody>
 					</table>
@@ -101,7 +101,7 @@
 							<label for="addAdminName">Name:</label>
 							<input type="text" ng-model="addAdminName" id="addAdminName" name="addAdminName">
 						</div>
-						<button type="submit" class="btn btn-success">Submit</button>
+						<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>Submit</button>
 					</form>
 
 					<hr>
@@ -115,8 +115,8 @@
 							<label for="siteWarning">Site Warning Message:</label>
 							<textarea class="form-control" ng-model="siteWarning" id="siteWarning" name="siteWarning" placeholder="Enter Warning Message" rows="2"> </textarea>
 						</div>
-						<button type="submit" class="btn btn-success">Save Message</button>
-						<button type="button" class="btn btn-danger" ng-click="clearSiteWarning()">Clear Message</button>
+						<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>Save Message</button>
+						<button type="button" class="btn btn-danger" ng-click="clearSiteWarning()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Clear Message</button>
 					</form>
 					<hr>
 
@@ -133,7 +133,7 @@
 
 
 					<div class="buttons-group bottom-buttons"> 
-						<a href="../home/home.php" class="btn btn-info">LEAVE PAGE</a>
+						<a href="../home/home.php" class="btn btn-info"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>LEAVE PAGE</a>
 					</div>
 
 

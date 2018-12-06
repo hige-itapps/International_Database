@@ -178,59 +178,81 @@ class DatabaseHelper
 
 
 
-    /*Search the database using a wildcard term; returns all matching user summaries. 
-    Also only return approved profiles unless specified otherwise with $approvedOnly = false (denied) or null (pending)*/
-    public function searchByWildcard($wildcard, $approvedOnly = true){
+    public function searchByWildcards($wildcards, $approvedOnly = true){
         //If no wildcard given, don't waste time doing complicated queries, just return all profiles
-        if($wildcard === ""){
-            return  $this->getAllUsersSummaries($approvedOnly);
+        if(empty($wildcards)){
+            return $this->getAllUsersSummaries($approvedOnly);
+        }
+
+        $queries = []; //save sub queries to be later built into 1 very large final query
+        //start with base query
+        $finalQuery = "SELECT res.id, res.firstname, res.lastname, res.affiliations, res.foundIn, COALESCE(res.alternate_email, res.login_email) as email, res.phone, res.social_link, res.issues_expertise_other, res.regions_expertise_other, res.countries_expertise_other FROM (";
+
+        for($i = 0; $i < sizeof($wildcards); $i++){ //for each wildcard term
+            $wildcards[$i] = '%'.$wildcards[$i].'%'; //add percent signs to search all strings
+
+            //This extra long query combines search results from all relevant tables for a given wildcard; consider only the primary email addresses
+            $queries[] = "(SELECT u.*, 'profile summary' as foundIn FROM users u
+                WHERE CONCAT(u.firstname,' ', u.lastname) LIKE :wildcard".$i."
+                OR COALESCE(u.alternate_email, u.login_email) LIKE :wildcard".$i."
+                OR u.affiliations LIKE :wildcard".$i."
+                OR u.phone LIKE :wildcard".$i."
+                OR u.issues_expertise_other LIKE :wildcard".$i."
+                OR u.regions_expertise_other LIKE :wildcard".$i."
+                OR u.countries_expertise_other LIKE :wildcard".$i."
+                OR u.social_link LIKE :wildcard".$i.")
+                UNION DISTINCT
+                (SELECT DISTINCT u.*, 'country experience' as foundIn FROM users u
+                INNER JOIN users_country_experience uce ON u.id = uce.user_id
+                INNER JOIN countries c ON uce.country_id = c.id
+                WHERE c.country_name LIKE :wildcard".$i.")
+                UNION DISTINCT
+                (SELECT DISTINCT u.*, 'countries of expertise' as foundIn FROM users u
+                INNER JOIN users_country_expertise uce ON u.id = uce.user_id
+                INNER JOIN countries c ON uce.country_id = c.id
+                WHERE c.country_name LIKE :wildcard".$i.")
+                UNION DISTINCT
+                (SELECT DISTINCT u.*, 'issues of expertise' as foundIn FROM users u
+                INNER JOIN users_issues ui ON u.id = ui.user_id
+                INNER JOIN issues i ON ui.issue_id = i.id
+                WHERE i.issue LIKE :wildcard".$i.")
+                UNION DISTINCT
+                (SELECT DISTINCT u.*, 'regions of expertise' as foundIn FROM users u
+                INNER JOIN users_regions ur ON u.id = ur.user_id
+                INNER JOIN regions r ON ur.region_id = r.id
+                WHERE r.region LIKE :wildcard".$i.")
+                UNION DISTINCT
+                (SELECT DISTINCT u.*, 'languages' as foundIn FROM users u
+                INNER JOIN users_languages ul ON u.id = ul.user_id
+                INNER JOIN languages l ON ul.language_id = l.id
+                WHERE l.name LIKE :wildcard".$i.")";
+        }
+
+        if(sizeof($queries) == 1){ //only 1 query to consider
+            $finalQuery.=$queries[0];
+        }
+        else{ //multiple sub-queries, build them into 1 long query string with inner-joins
+            for($i = 0; $i < sizeof($queries); $i++){
+                if($i > 0){ //union all following queries
+                    $finalQuery.=" UNION DISTINCT ";
+                }
+
+                $finalQuery.=$queries[$i]; //append subquery to final query
+            }
         }
         
-        $wildcard = '%'.$wildcard.'%'; //add percent signs to search all strings
-        
-        //This extra long query combines search results from all relevant tables; return only the primary email addresses
-        $query = "SELECT res.id, res.firstname, res.lastname, res.affiliations, res.foundIn, COALESCE(res.alternate_email, res.login_email) as email, res.phone, res.social_link, res.issues_expertise_other, res.regions_expertise_other, res.countries_expertise_other FROM 
-        (SELECT u.*, 'profile' as foundIn FROM users u
-        WHERE CONCAT(u.firstname,' ', u.lastname) LIKE :wildcard
-        OR COALESCE(u.alternate_email, u.login_email) LIKE :wildcard
-        OR u.affiliations LIKE :wildcard
-        OR u.phone LIKE :wildcard
-        OR u.issues_expertise_other LIKE :wildcard
-        OR u.regions_expertise_other LIKE :wildcard
-        OR u.countries_expertise_other LIKE :wildcard
-        OR u.social_link LIKE :wildcard
-        UNION DISTINCT
-        SELECT DISTINCT u.*, 'country experience' as foundIn FROM users u
-        INNER JOIN users_country_experience uce ON u.id = uce.user_id
-        INNER JOIN countries c ON uce.country_id = c.id
-        WHERE c.country_name LIKE :wildcard
-        UNION DISTINCT
-        SELECT DISTINCT u.*, 'countries of expertise' as foundIn FROM users u
-        INNER JOIN users_country_expertise uce ON u.id = uce.user_id
-        INNER JOIN countries c ON uce.country_id = c.id
-        WHERE c.country_name LIKE :wildcard
-        UNION DISTINCT
-        SELECT DISTINCT u.*, 'issues of expertise' as foundIn FROM users u
-        INNER JOIN users_issues ui ON u.id = ui.user_id
-        INNER JOIN issues i ON ui.issue_id = i.id
-        WHERE i.issue LIKE :wildcard
-        UNION DISTINCT
-        SELECT DISTINCT u.*, 'regions of expertise' as foundIn FROM users u
-        INNER JOIN users_regions ur ON u.id = ur.user_id
-        INNER JOIN regions r ON ur.region_id = r.id
-        WHERE r.region LIKE :wildcard
-        UNION DISTINCT
-        SELECT DISTINCT u.*, 'languages' as foundIn FROM users u
-        INNER JOIN users_languages ul ON u.id = ul.user_id
-        INNER JOIN languages l ON ul.language_id = l.id
-        WHERE l.name LIKE :wildcard) res";
+        //finish query
+        $finalQuery.=") res";
+        if(!isset($approvedOnly)){$finalQuery.=" WHERE res.approved IS NULL";} //approvedOnly is NULL, so return pending only
+        else if($approvedOnly){$finalQuery.=" WHERE res.approved = 1";} //only approved if necessary
+        else{$finalQuery.=" WHERE res.approved = 0";} //otherwise, denied only
 
-        if(!isset($approvedOnly)){$query.=" WHERE res.approved IS NULL";} //approvedOnly is NULL, so return pending only
-        else if($approvedOnly){$query.=" WHERE res.approved = 1";} //only approved if necessary
-        else{$query.=" WHERE res.approved = 0";} //otherwise, denied only
+        $this->sql = $this->conn->prepare($finalQuery);
 
-        $this->sql = $this->conn->prepare($query);
-        $this->sql->bindParam(':wildcard', $wildcard);
+        for($i = 0; $i < sizeof($wildcards); $i++){ //bind each wildcard term
+            $this->sql->bindParam(':wildcard'.$i, $wildcards[$i]);
+        }
+
         $this->sql->execute();
         $results = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save results
         $editedResults = []; //sort by index to avoid search time

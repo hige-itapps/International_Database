@@ -72,6 +72,8 @@ myApp.controller('adminCtrl', function($scope, $http) {
 
     //remove an admin
     $scope.removeAdmin = function(id){
+        if(!confirm ("Are you sure you want to remove this person with id '"+id+"' from the administrators list?")) {return;} //delete confirmation required
+
         $scope.loadingAlert();
         $http({
             method  : 'POST',

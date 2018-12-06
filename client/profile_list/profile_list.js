@@ -16,9 +16,7 @@ higeApp.controller('listCtrl', function($scope) {
     for (var profile in tempProfiles){
         $scope.profiles.push( tempProfiles[profile] );
     }
-
-    $scope.wildcard = scope_wildcard; //empty by default
-    $scope.oldWildcard = $scope.wildcard; //copy of wildcard, so that the old term can be displayed
+   
     $scope.advancedSearchEnabled = scope_advancedSearchEnabled; //will be false by default
     $scope.issues = scope_issues;
     $scope.countries = scope_countries;
@@ -43,6 +41,12 @@ higeApp.controller('listCtrl', function($scope) {
         currentPage:  1,
         numPerPage: 8
     };
+
+    //init wildcards after function definitions
+    $scope.wildcards = "";//wildcards last used
+    $scope.oldWildcards = "";//copy of wildcards so that the old terms can be displayed
+
+
    
     /*Functions*/
 
@@ -154,6 +158,57 @@ higeApp.controller('listCtrl', function($scope) {
         return retArray;
     }
 
+    /* Simple function that returns an array of strings as a single comma separated string with 'or' between the last 2 elements
+    Also put quotes around each element
+    Source: https://stackoverflow.com/questions/15069587/is-there-a-way-to-join-the-elements-in-an-js-array-but-let-the-last-separator-b/29234240*/
+    $scope.formatTermsArray = function(inputArray){
+        var res = '';
+        if (inputArray.length === 1) {
+            res = inputArray[0];
+        } else if (inputArray.length === 2) {
+            //joins all with "or" but no commas
+            //example: "bob or sam"
+            res = inputArray.join('" or "');
+        } else if (inputArray.length > 2) {
+            //joins all with commas, but last one gets ", or" (oxford comma!)
+            //example: "bob, joe, or sam"
+            res = inputArray.slice(0, -1).join('", "') + '", or "' + inputArray.slice(-1);
+        }
+        if(res !== ''){
+            res = '"' + res + '"'; //put quotes around outside
+        }
+        return res;
+    };
+
+    /* Function that turns a string with space separated terms into an array, and also preserves anything within quotes
+    Regex sources: https://stackoverflow.com/questions/25663683/javascript-split-by-spaces-but-not-those-in-quotes
+    and https://stackoverflow.com/questions/19156148/i-want-to-remove-double-quotes-from-a-string*/
+    $scope.wildcardTermsToArray = function(terms){
+        var tempString = terms.trim();
+        var tempArray = tempString === "" ? [] : tempString.split(/ +(?=(?:(?:[^"]*"){2})*[^"]*$)/g); //only split terms into array if the string isn't empty, otherwise set it to be empty
+
+        for(var i = 0; i < tempArray.length; i++){
+            tempArray[i] = tempArray[i].replace(/"/g,""); //remove redundant quotes on strings in array
+        }
+        return tempArray;
+    }
+
+    /* Function that turns an array of wildcard inputs back into a string similar to what the user would've typed in, separated by spaces. Any string with a space inside it should be put back in quotes.*/
+    $scope.wildcardArrayToString = function(termsArray){
+        var copyArray = termsArray.slice(0); //create a cloned array, no longer passed by reference
+        for(var i = 0; i < copyArray.length; i++){
+            if(copyArray[i].indexOf(' ') >= 0){ //has a space
+                copyArray[i] = '"'+copyArray[i]+'"';
+            }
+        }
+        if(copyArray.length > 0){
+            return copyArray.join(' ');
+        }
+        else{
+            return ""; //empty string if no values
+        }
+    }
+
     /* Function that returns an array of specified languages in the format [[1, 2], 2, 3]. For each value in this array, if it is just 1 integer, then it is just the ID of the language.
     If it is a sub array of 2 values [x, y], the first value is the language ID, and the second is the proficiency ID.*/
     function languageIDsArray(){
@@ -219,13 +274,13 @@ higeApp.controller('listCtrl', function($scope) {
     });
     
     $scope.wildcardSearch = function(){
-        if ($scope.wildcard == null) {$scope.wildcard = "";}
+        var wildcardsArray = encodeURIComponent(JSON.stringify($scope.wildcardTermsToArray($scope.wildcards))); //get wildcard terms as an array, convert to json, and encode them
 
-        if(!$scope.adminPendingProfiles){ //for regular users, redirect with wildcard
-            window.location.replace("?search&wildcard=" + $scope.wildcard);
+        if(!$scope.adminPendingProfiles){ //for regular users, redirect with wildcards
+            window.location.replace("?search&wildcards=" + wildcardsArray);
         }
         else{ //for admins searching pending profiles, specify that with &pending
-            window.location.replace("?search&pending&wildcard=" + $scope.wildcard);
+            window.location.replace("?search&pending&wildcards=" + wildcardsArray);
         }
     }
 
@@ -260,11 +315,24 @@ higeApp.controller('listCtrl', function($scope) {
         window.location.replace(searchURL);
     }
 
-    $scope.turnOnAdvancedSearch = function(){
-        $scope.advancedSearchEnabled = true;
+    //toggle advanced search
+    $scope.toggleAdvancedSearch = function(){
+        $scope.advancedSearchEnabled = !$scope.advancedSearchEnabled;
     }
 
-    $scope.turnOffAdvancedSearch = function(){
-        $scope.advancedSearchEnabled = false;
+    //clear out all search profile fields
+    $scope.clearAdvancedSearch = function(){
+        $scope.searchProfile = [];
+        $scope.searchProfile.issues_expertise = [];
+        $scope.searchProfile.countries_expertise = [];
+        $scope.searchProfile.regions_expertise = [];
+        $scope.searchProfile.languages = [];
+        $scope.searchProfile.countries_experience = {};
     }
+
+
+
+    //On init
+    $scope.wildcards = $scope.wildcardArrayToString(scope_wildcards);//wildcards last used
+    $scope.oldWildcards = $scope.formatTermsArray(scope_wildcards);//copy of wildcards so that the old terms can be displayed
 });

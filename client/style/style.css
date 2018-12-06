@@ -153,6 +153,7 @@ h2.HomeText{
 /*format button groups*/
 .buttons-group{
 	text-align: center;
+	margin-bottom: 5px;
 }
 .delete-button-holder, .deny-button-holder, .approve-button-holder{
 	padding: 30px;
@@ -420,6 +421,23 @@ hr{
 	max-width: 400px;
 	margin: auto;
 }
+/*Format code confirmation page*/
+.profile-code h2{
+	font-size: 1.2em;
+	font-weight: bold;
+}
+.profile-code .input-group{
+	width: 100%;
+}
+.profile-code .input-group-btn:last-child>.btn{
+	width: 150px;
+}
+.profile-code .input-group{
+	margin-bottom: 15px;
+}
+span.glyphicon{
+	margin-right: 5px;
+}
 #profileSearchForm .row{
 	margin: 0; /*override default negative margins*/
 }
@@ -432,6 +450,10 @@ hr{
 }
 #profileSearchForm .advancedSearch ul.user-list{
 	text-align: left;
+}
+
+ul.user-list li{
+    margin-bottom: 5px;
 }
 
 /*Format user profiles*/
@@ -509,14 +531,6 @@ hr{
 	margin-right: 0!important;
 }
 
-/*Format code confirmation page*/
-.profile-code h2{
-	font-size: 1.2em;
-	font-weight: bold;
-}
-.profile-code .input-group{
-	width: 100%;
-}
 /*Format expiration time*/
 .expiration{
 	color: #c92a2a;

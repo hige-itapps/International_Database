@@ -187,7 +187,7 @@
 								</div>
 								<h3 ng-if="state === 'Create' || state === 'Edit'">Selected Issues:</h3>
 								<ul ng-if="state === 'Create' || state === 'Edit'" class="user-list">
-									<li ng-repeat="issue in profile.issues_expertise">{{issue.issue}} <a href ng-click="removeIssueExpertise($index)" class="btn btn-danger">delete</a></li>
+									<li ng-repeat="issue in profile.issues_expertise">{{issue.issue}} <a href ng-click="removeIssueExpertise($index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a></li>
 								</ul>
 								<div ng-if="state === 'Create' || state === 'Edit'" class="form-group">
 									<label for="issuesExpertiseOther">Other Issues of Expertise ({{(maxOtherIssues-profile.issues_expertise_other.length)}} characters remaining):</label>
@@ -209,7 +209,7 @@
 								</div>
 								<h3 ng-if="state === 'Create' || state === 'Edit'">Selected Countries:</h3>
 								<ul ng-if="state === 'Create' || state === 'Edit'" class="user-list">
-									<li ng-repeat="country in profile.countries_expertise">{{country.country_name}} <a href ng-click="removeCountryExpertise($index)" class="btn btn-danger">delete</a></li>
+									<li ng-repeat="country in profile.countries_expertise">{{country.country_name}} <a href ng-click="removeCountryExpertise($index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a></li>
 								</ul>
 								<div ng-if="state === 'Create' || state === 'Edit'" class="form-group">
 									<label for="countriesExpertiseOther">Other Countries of Expertise ({{(maxOtherCountriesExpertise-profile.countries_expertise_other.length)}} characters remaining):</label>
@@ -231,7 +231,7 @@
 								</div>
 								<h3 ng-if="state === 'Create' || state === 'Edit'">Selected Regions:</h3>
 								<ul ng-if="state === 'Create' || state === 'Edit'" class="user-list">
-									<li ng-repeat="region in profile.regions_expertise">{{region.region}} <a href ng-click="removeRegionExpertise($index)" class="btn btn-danger">delete</a></li>
+									<li ng-repeat="region in profile.regions_expertise">{{region.region}} <a href ng-click="removeRegionExpertise($index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a></li>
 								</ul>
 								<div ng-if="state === 'Create' || state === 'Edit'" class="form-group">
 									<label for="regionsExpertiseOther">Other Regions of Expertise ({{(maxOtherRegions-profile.regions_expertise_other.length)}} characters remaining):</label>
@@ -257,7 +257,7 @@
 										<select class="form-control" ng-model="profile.languages[($index)].proficiency_level" id="proficiency{{$index}}" name="proficiency{{$index}}"
 											ng-options="proficiency as proficiency.proficiency_level for proficiency in languageProficiencies track by proficiency.id">
 										</select>
-										<a href ng-click="removeLanguage($index)" class="btn btn-danger">delete</a>
+										<a href ng-click="removeLanguage($index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a>
 										<span class="help-block" ng-show="errors['language '+language.id]" aria-live="polite">{{ errors['language '+language.id] }}</span> 
 									</li>
 								</ul>
@@ -286,11 +286,11 @@
 										<select class="form-control"  ng-change="addCountryExperienceLevel(index)" ng-model="profile.countries_experience[index].selectedExperience" id="countryExperience{{index}}" name="countryExperience{{index}}"
 											ng-options="countryExperience as countryExperience.experience for countryExperience in countryExperiences">
 										</select>
-										<a href ng-click="removeCountryExperience(index)" class="btn btn-danger">delete</a>
+										<a href ng-click="removeCountryExperience(index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a>
 										<h4>Selected Experiences (Required):</h4>
 										<ul>
 											<li ng-repeat="experience in profile.countries_experience[index].experiences">{{experience.experience}} 
-												<a href ng-click="removeCountryExperienceLevel($parent.index, $index)" class="btn btn-danger">delete</a>
+												<a href ng-click="removeCountryExperienceLevel($parent.index, $index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a>
 											</li>
 										</ul>
 										<div class="form-group">
@@ -308,20 +308,26 @@
 					<div class="row profile-code" ng-show="state === 'CreatePending' || state === 'EditPending'">
 						<div class="col-md-4"></div>
 						<div class="col-md-4">
-							<div class="input-group" ng-show="state === 'CreatePending'">
-								<label for="create_email">WMU Email Address:</label>
-								<input type="text" class="form-control" ng-model="create_email" id="create_email" name="create_email" placeholder="Enter your email address" />
+							<label ng-show="state === 'CreatePending'" for="code">WMU email address:</label>
+							<div ng-show="state === 'CreatePending'" class="input-group">
+								<input type="text" class="form-control" ng-show="state === 'CreatePending'" ng-model="create_email" id="create_email" name="create_email" placeholder="Enter your email address">
+								<span class="input-group-btn" ng-show="state === 'CreatePending'">
+									<button class="btn btn-success" ng-disabled="codePending" ng-click="sendCode()" type="button"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>SEND CODE</button>
+								</span>
 							</div>
+							<div class="buttons-group" ng-show="state === 'EditPending'"> 
+								<button class="btn btn-success" ng-disabled="codePending" ng-click="sendCode()" type="button"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>SEND CODE</button>
+							</div>
+
 							<label for="code">To {{state === 'CreatePending' ? "create" : "edit"}} your profile, you must enter your confirmation code:</label>
 							<div class="input-group">
 								<input type="text" class="form-control" ng-model="code" id="code" name="code" placeholder="Enter your confirmation code">
 								<span class="input-group-btn">
-									<button class="btn btn-success" ng-click="confirmCode()" type="button"><span class="glyphicon glyphicon-ok" aria-hidden="true">
-								</span> CONFIRM CODE</button>
-							</span>
+									<button class="btn btn-success" ng-click="confirmCode()" type="button"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>CONFIRM CODE</button>
+								</span>
 							</div>
-							<h2 ng-if="state === 'CreatePending' && !codePending">Click 'SEND CODE' to send a confirmation code to the specified email address.</h2>
-							<h2 ng-if="state === 'EditPending' && !codePending">Click 'SEND CODE' to send a confirmation code to this profile's email address.</h2>
+							<h2 ng-if="state === 'CreatePending' && !codePending">Click 'SEND CODE' to send a confirmation code to the specified email address, then 'CONFIRM CODE' after entering it in the box above.</h2>
+							<h2 ng-if="state === 'EditPending' && !codePending">Click 'SEND CODE' to send a confirmation code to this profile's email address, then 'CONFIRM CODE' after entering it in the box above.</h2>
 							<h2 ng-if="codePending">A confirmation code for this profile was sent to {{profile.email}} and is still pending; another cannot be sent at this time.</h2>
 						</div>
 						<div class="col-md-4"></div>
@@ -343,9 +349,9 @@
 						<label ng-show="isAdmin && state ==='AdminReview'" for="profileDecision">Select what to do with this profile:</label>
 						<select ng-show="isAdmin && state ==='AdminReview'" ng-model="profileDecision" id="profileDecision" name="profileDecision">
 							<option value=""></option>
-							<option value="Approve">Approve Profile</option>
-							<option value="Deny">Deny Profile</option>
-							<option value="Delete">Delete Profile</option>
+							<option value="Approve"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>Approve Profile</option>
+							<option value="Deny"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Deny Profile</option>
+							<option value="Delete"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>Delete Profile</option>
 						</select>
 
 						<div ng-show="profileDecision === 'Approve' && isAdmin && state ==='AdminReview'" class="approve-button-holder"> <!-- Administrator-only approve profile button -->
@@ -388,11 +394,10 @@
 
 
 					<div class="buttons-group bottom-buttons"> 
-						<button ng-show="profile && state === 'View'" type="button" ng-click="initializeEditProfile()" class="btn btn-warning">EDIT PROFILE</button> <!-- To initiate the editing process -->
-						<button ng-show="profile && (state === 'CreatePending' || state === 'EditPending')" ng-disabled="codePending" type="button" ng-click="sendCode()" class="btn btn-warning">SEND CODE</button> <!-- To initiate the editing process -->
-						<button ng-show="state === 'Create'" type="button" ng-click="createProfile()" class="btn btn-success">SUBMIT</button> <!-- For user submitting for first time -->
-						<button ng-show="state === 'Edit'" type="button" ng-click="editProfile()" class="btn btn-success">SUBMIT</button> <!-- For user editing their profile -->
-						<a href="" class="btn btn-info" ng-click="redirectToHomepage(null, null)">LEAVE PAGE</a> <!-- For anyone to leave the page -->
+						<button ng-show="profile && state === 'View'" type="button" ng-click="initializeEditProfile()" class="btn btn-warning"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>EDIT PROFILE</button> <!-- To initiate the editing process -->
+						<button ng-show="state === 'Create'" type="button" ng-click="createProfile()" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>SUBMIT</button> <!-- For user submitting for first time -->
+						<button ng-show="state === 'Edit'" type="button" ng-click="editProfile()" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>SUBMIT</button> <!-- For user editing their profile -->
+						<a href="" class="btn btn-info" ng-click="redirectToHomepage(null, null)"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>LEAVE PAGE</a> <!-- For anyone to leave the page -->
 					</div>
 
 				</form>

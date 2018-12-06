@@ -18,7 +18,7 @@
 	$searchProfile = null;
 	$isSearching = false; //set to true if user is searching at all
 	$profiles = [];
-	$wildcard = "";
+	$wildcards = "";
 	$advancedSearchEnabled = false; //set to true if 'advanced' appears as a GET parameter
 	$issues = $database->getIssues();
 	$countries = $database->getCountries();
@@ -163,20 +163,21 @@
 					$searchCountriesExpertise, $searchCountriesExpertiseOther, $searchRegionsExpertise, $searchRegionsExpertiseOther, $searchLanguages, $searchCountriesExperience, null);
 			}
 		}
-		if(isset($_GET["wildcard"])){
-			$wildcard = $_GET["wildcard"];
+		if(isset($_GET["wildcards"])){
+			$wildcards = json_decode($_GET["wildcards"]); //decode wildcards
+			
 			if(!$adminPendingProfiles){ //for regular users
-				$profiles = $database->searchByWildcard($wildcard);
+				$profiles = $database->searchByWildcards($wildcards);
 			}
 			else{ //admins searching pending profiles
-				$profiles = $database->searchByWildcard($wildcard, null);
+				$profiles = $database->searchByWildcards($wildcards, null);
 			}
 		}
 	}
 
 	if($adminPendingProfiles){ //if the admin is getting pending profiles, go through each profile and determine if it is a new one, or an update to an old one
 
-		if(!isset($_GET["advanced"]) && !isset($_GET["wildcard"])){//if admin hadn't searched anything yet, return all pending profiles by default
+		if(!isset($_GET["advanced"]) && !isset($_GET["wildcards"])){//if admin hadn't searched anything yet, return all pending profiles by default
 			$profiles = $database->getAllUsersSummaries(null);
 		}
 
@@ -215,7 +216,7 @@
 			var scope_searchProfile = <?php echo json_encode($searchProfile); ?>;
 			var scope_isSearching = <?php echo json_encode($isSearching); ?>;
 			var scope_profiles = <?php echo json_encode($profiles); ?>;
-			var scope_wildcard = <?php echo json_encode($wildcard); ?>;
+			var scope_wildcards = <?php echo json_encode($wildcards); ?>;
 			var scope_advancedSearchEnabled = <?php echo json_encode($advancedSearchEnabled); ?>;
 			var scope_issues = <?php echo json_encode($issues); ?>;
 			var scope_countries = <?php echo json_encode($countries); ?>;
@@ -249,12 +250,11 @@
 					<form enctype="multipart/form-data" class="form-horizontal" id="profileSearchForm" name="profileSearchForm" ng-submit="submit()">
 						<!-- Form for regular wildcard search -->
 						<div class="form-group" ng-show="!advancedSearchEnabled">
-							<label for="wildcardSearch">Search for any name, email address, affiliation, phone number, social link, country, region, issue, or language:</label>
+							<label for="wildcardSearch">Search for any names, email addresses, affiliations, phone numbers, countries, regions, issues, languages, etc:</label>
 							<div class="input-group">
-								<input type="search" class="form-control" ng-model="wildcard" id="wildcardSearch" name="wildcardSearch" placeholder="Enter A Key Term To Search For">
+								<input type="search" class="form-control" ng-model="wildcards" id="wildcardSearch" name="wildcardSearch" placeholder="Enter A Key Term To Search For">
 								<span class="input-group-btn">
-									<button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true">
-								</span> Search</button>
+									<button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>Search</button>
 							</span>
 							</div>
 						</div>
@@ -302,7 +302,7 @@
 
 									<h3 ng-show="searchProfile.issues_expertise.length > 0">Selected Issues:</h3>
 									<ul class="user-list">
-										<li ng-repeat="issue in searchProfile.issues_expertise">{{issue.issue}} <a href ng-click="removeIssueExpertise($index)" class="btn btn-danger">delete</a></li>
+										<li ng-repeat="issue in searchProfile.issues_expertise">{{issue.issue}} <a href ng-click="removeIssueExpertise($index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a></li>
 									</ul>
 									<div class="form-group">
 										<label for="issuesExpertiseOther">Other Issues of Expertise:</label>
@@ -320,7 +320,7 @@
 
 									<h3 ng-show="searchProfile.countries_expertise.length > 0">Selected Countries:</h3>
 									<ul class="user-list">
-										<li ng-repeat="country in searchProfile.countries_expertise">{{country.country_name}} <a href ng-click="removeCountryExpertise($index)" class="btn btn-danger">delete</a></li>
+										<li ng-repeat="country in searchProfile.countries_expertise">{{country.country_name}} <a href ng-click="removeCountryExpertise($index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a></li>
 									</ul>
 									<div class="form-group">
 										<label for="countriesExpertiseOther">Other Countries of Expertise:</label>
@@ -338,7 +338,7 @@
 
 									<h3 ng-show="searchProfile.regions_expertise.length > 0">Selected Regions:</h3>
 									<ul class="user-list">
-										<li ng-repeat="region in searchProfile.regions_expertise">{{region.region}} <a href ng-click="removeRegionExpertise($index)" class="btn btn-danger">delete</a></li>
+										<li ng-repeat="region in searchProfile.regions_expertise">{{region.region}} <a href ng-click="removeRegionExpertise($index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a></li>
 									</ul>
 									<div class="form-group">
 										<label for="regionsExpertiseOther">Other Regions of Expertise:</label>
@@ -364,7 +364,7 @@
 												ng-options="proficiency as proficiency.proficiency_level for proficiency in languageProficiencies track by proficiency.id">
 												<option value="">any proficiency</option>
 											</select>
-											<a href ng-click="removeLanguage($index)" class="btn btn-danger">delete</a>
+											<a href ng-click="removeLanguage($index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a>
 										</li>
 									</ul>
 								</div>
@@ -384,11 +384,11 @@
 											<select class="form-control"  ng-change="addCountryExperienceLevel(index)" ng-model="searchProfile.countries_experience[index].selectedExperience" id="countryExperience{{index}}" name="countryExperience{{index}}"
 												ng-options="countryExperience as countryExperience.experience for countryExperience in countryExperiences">
 											</select>
-											<a href ng-click="removeCountryExperience(index)" class="btn btn-danger">delete</a>
+											<a href ng-click="removeCountryExperience(index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a>
 											<h4 ng-show="searchProfile.countries_experience[index].experiences.length > 0">Selected Experiences:</h4>
 											<ul>
 												<li ng-repeat="experience in searchProfile.countries_experience[index].experiences">{{experience.experience}} 
-													<a href ng-click="removeCountryExperienceLevel($parent.index, $index)" class="btn btn-danger">delete</a>
+													<a href ng-click="removeCountryExperienceLevel($parent.index, $index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a>
 												</li>
 											</ul>
 											<div class="form-group">
@@ -401,14 +401,17 @@
 							</div>
 						</div>
 
-						<button type="submit" class="btn btn-primary" ng-if="advancedSearchEnabled"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> SEARCH</button>
+						<button type="submit" class="btn btn-primary" ng-if="advancedSearchEnabled"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>SEARCH</button>
 
-						<button type="button" class="btn btn-warning" ng-if="!advancedSearchEnabled" ng-click="turnOnAdvancedSearch()">ADVANCED SEARCH</button>
-						<button type="button" class="btn btn-warning" ng-if="advancedSearchEnabled" ng-click="turnOffAdvancedSearch()">REGULAR SEARCH</button>
+						<button type="button" class="btn btn-danger" ng-if="advancedSearchEnabled" ng-click="clearAdvancedSearch()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>CLEAR SEARCH</button>
+						<!--<button type="button" class="btn btn-warning" ng-if="!advancedSearchEnabled" ng-click="turnOnAdvancedSearch()"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>ADVANCED SEARCH</button>-->
+						<button type="button" class="btn btn-warning" ng-click="toggleAdvancedSearch()">
+							<span class="glyphicon" ng-class="{'glyphicon-chevron-down': !advancedSearchEnabled, 'glyphicon-chevron-up': advancedSearchEnabled}" aria-hidden="true"></span>{{!advancedSearchEnabled ? "BASIC SEARCH" : "ADVANCED SEARCH"}}
+						</button>
 					</form>
 				</div>
 				<div class="row">
-					<h1 class="title" ng-if="oldWildcard">{{profiles.length}} Result{{profiles.length === 1 ? "" : "s"}} For "{{oldWildcard}}":</h2>
+					<h1 class="title" ng-if="oldWildcards">{{profiles.length}} Result{{profiles.length === 1 ? "" : "s"}} For {{oldWildcards}}:</h2>
 					<nav class="col-md-12" aria-label="Top Page List">
 						<ul ng-if="profiles.length" uib-pagination total-items="profiles.length" ng-model="pagination.currentPage" items-per-page="pagination.numPerPage"></ul>
 					</nav>
@@ -424,8 +427,8 @@
 								<hr>
 								<h3 class="profile-summary-affiliations" >{{profile.affiliations}}</h3>
 								<h3 class="profile-summary-email">{{profile.email}}</h3>
-								<h2 class="profile-summary-foundIn" ng-if="oldWildcard">Key Term Found In</h2>
-								<ul ng-if="oldWildcard" class="compactList profile-summary-wildcard">
+								<h2 class="profile-summary-foundIn" ng-if="oldWildcards">Key Term Found In</h2>
+								<ul ng-if="oldWildcards" class="compactList profile-summary-wildcard">
 									<li ng-repeat="category in profile.foundIn">{{category}}</li>
 								</ul>
 								<div class="profile-button">
@@ -444,7 +447,7 @@
 				</div>
 
 				<div class="buttons-group bottom-buttons">
-					<a href="../home/home.php" class="btn btn-info">LEAVE PAGE</a> <!-- For anyone to leave the page -->
+					<a href="../home/home.php" class="btn btn-info"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>LEAVE PAGE</a> <!-- For anyone to leave the page -->
 				</div>
 
 			</div>

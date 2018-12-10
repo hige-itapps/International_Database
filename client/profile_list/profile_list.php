@@ -404,9 +404,8 @@
 						<button type="submit" class="btn btn-primary" ng-if="advancedSearchEnabled"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>SEARCH</button>
 
 						<button type="button" class="btn btn-danger" ng-if="advancedSearchEnabled" ng-click="clearAdvancedSearch()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>CLEAR SEARCH</button>
-						<!--<button type="button" class="btn btn-warning" ng-if="!advancedSearchEnabled" ng-click="turnOnAdvancedSearch()"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>ADVANCED SEARCH</button>-->
 						<button type="button" class="btn btn-warning" ng-click="toggleAdvancedSearch()">
-							<span class="glyphicon" ng-class="{'glyphicon-chevron-down': !advancedSearchEnabled, 'glyphicon-chevron-up': advancedSearchEnabled}" aria-hidden="true"></span>{{!advancedSearchEnabled ? "BASIC SEARCH" : "ADVANCED SEARCH"}}
+							<span class="glyphicon" ng-class="{'glyphicon-chevron-down': !advancedSearchEnabled, 'glyphicon-chevron-up': advancedSearchEnabled}" aria-hidden="true"></span>{{advancedSearchEnabled ? "BASIC SEARCH" : "ADVANCED SEARCH"}}
 						</button>
 					</form>
 				</div>

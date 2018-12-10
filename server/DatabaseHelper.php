@@ -9,6 +9,7 @@ include_once(dirname(__FILE__) . "/Logger.php");
 
 class DatabaseHelper
 {
+    private $thisLocation; //get current location of file for logging purposes;
     private $logger; //for logging to files
     private $conn; //pdo database connection object
     private $sql; //pdo prepared statement
@@ -17,6 +18,8 @@ class DatabaseHelper
 
     /* Constructior retrieves configurations and sets up a connection */
     public function __construct($logger){
+        $this->thisLocation = dirname(__FILE__).DIRECTORY_SEPARATOR.basename(__FILE__);
+
         $this->logger = $logger;
         $this->config_url = dirname(__FILE__).'/../config.ini'; //set config file url
         $this->settings = parse_ini_file($this->config_url); //get all settings
@@ -160,16 +163,22 @@ class DatabaseHelper
             $this->sql->bindParam(':id', $userID);
             $this->sql->execute();
             $user_country_experience = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save as a temporary array
-            $user["countries_experience"] = []; //initialize country experience array
+            $user["countries_experience"] = new stdClass(); //initialize country experience object
             foreach($user_country_experience as $experience) {
-                if (!array_key_exists($experience["country_id"], $user["countries_experience"])) { //initialize country experience array for a specific country if not yet made
-                    $user["countries_experience"][$experience["country_id"]]["id"] = $experience["country_id"]; //save the country's id
-                    $user["countries_experience"][$experience["country_id"]]["country_name"] = $experience["country_name"]; //save the country's name
-                    $user["countries_experience"][$experience["country_id"]]["experiences"] = []; //create sub array for experiences
-                    $user["countries_experience"][$experience["country_id"]]["other_experience"] = ""; //create empty string for possible other experience
+                if (!property_exists($user["countries_experience"], $experience["country_id"])) {//initialize country experience array for a specific country if not yet made
+                    $user["countries_experience"]->$experience["country_id"] = new stdClass();
+                    $user["countries_experience"]->$experience["country_id"]->id = $experience["country_id"]; //save the country's id
+                    $user["countries_experience"]->$experience["country_id"]->country_name = $experience["country_name"]; //save the country's name
+                    $user["countries_experience"]->$experience["country_id"]->experiences = []; //create sub array for experiences
+                    $user["countries_experience"]->$experience["country_id"]->other_experience = ""; //create empty string for possible other experience
                 }
-                if (!empty($experience["experience"])) {$user["countries_experience"][$experience["country_id"]]["experiences"][] = ["id"=>$experience["experience_id"], "experience"=>$experience["experience"]];} //add experience to country's array
-                if (!empty($experience["other_experience"])) {$user["countries_experience"][$experience["country_id"]]["other_experience"] = $experience["other_experience"];} //add other experience to country's array
+                if (!empty($experience["experience"])) {//add experience to country's array
+                    $newExperience = new stdClass();
+                    $newExperience->id = $experience["experience_id"];
+                    $newExperience->experience = $experience["experience"];
+                    $user["countries_experience"]->$experience["country_id"]->experiences[] = $newExperience;
+                } 
+                if (!empty($experience["other_experience"])) {$user["countries_experience"]->$experience["country_id"]->other_experience = $experience["other_experience"];} //add other experience to country's array
             }
         }
 
@@ -731,7 +740,7 @@ class DatabaseHelper
         if(isset($currentEmail)){ $oldID = $this->doesProfileExist($currentEmail);} //retrieve old ID
 
         if($oldID > 0){ //this was an updated profile, so delete the old one
-            $deleteError = $this->atomicDeleteProfile($userID, $CASbroncoNetID); //delete profile
+            $deleteError = $this->atomicDeleteProfile($oldID, $CASbroncoNetID); //delete profile
             if(!empty($deleteError)){$retval["error"] = $deleteError;} //set $retval["error"] if there was an error
         }
 
@@ -884,7 +893,7 @@ class DatabaseHelper
     /* Add an admin to the administrators table */
 	public function addAdmin($broncoNetID, $name){
 		if ($broncoNetID != "" && $name != ""){//valid params
-			$this->logger->logInfo("Inserting administrator (".$broncoNetID.", ".$name.")", $broncoNetID, dirname(__FILE__));
+			$this->logger->logInfo("Inserting administrator (".$broncoNetID.", ".$name.")", $broncoNetID, $this->thisLocation);
 			$this->sql = $this->conn->prepare("INSERT INTO administrators(BroncoNetID, Name) VALUES(:id, :name)");
 			$this->sql->bindParam(':id', $broncoNetID);
 			$this->sql->bindParam(':name', $name);
@@ -1073,7 +1082,7 @@ class DatabaseHelper
     If this is the login email, check the profile associated with it, otherwise find the profile associated with the given alternate email 
     Returns the id of the existing profile, or 0 if nonexistant*/
     public function doesProfileExist($email, $approvedOnly = true){
-        $query = "SELECT IFNULL( (SELECT id FROM users WHERE (login_email = :email OR login_email = (SELECT u.login_email FROM users u WHERE u.alternate_email = :email))"; //start main query
+        $query = "SELECT IFNULL( (SELECT id FROM users WHERE (login_email = :email OR login_email IN (SELECT u.login_email FROM users u WHERE u.alternate_email = :email))"; //start main query
 
         if(!isset($approvedOnly)){$query.=" AND approved IS NULL";} //approvedOnly is NULL, so return pending only
         else if($approvedOnly){$query.=" AND approved = 1";} //only approved if necessary

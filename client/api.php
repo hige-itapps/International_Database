@@ -1,5 +1,6 @@
 <?php
 /*This file serves as the project's RESTful API. Simply send a get request to this file with a specified function name, with additional POST data when necessary.*/
+$thisLocation = dirname(__FILE__).DIRECTORY_SEPARATOR.basename(__FILE__); //get current location of file for logging purposes;
 
 /*Admin validation*/
 include_once(dirname(__FILE__) . "/../CAS/CAS_session.php");
@@ -318,7 +319,7 @@ else if(array_key_exists('add_admin', $_GET)){
                 $returnVal = $database->addAdmin($broncoNetID, $name);
             }
             catch(Exception $e){
-                $errorMessage = $logger->logError("Unable to insert administrator due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+                $errorMessage = $logger->logError("Unable to insert administrator due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, $thisLocation, true);
 			    $returnVal["error"] = "Error: Unable to insert administrator due to an internal exception. ".$errorMessage;
             }
         }
@@ -340,7 +341,7 @@ else if(array_key_exists('get_admins', $_GET)){
             $returnVal = $database->getAdministrators();
         }
         catch(Exception $e){
-            $errorMessage = $logger->logError("Unable to retrieve administrator due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+            $errorMessage = $logger->logError("Unable to retrieve administrator due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, $thisLocation, true);
 			$returnVal["error"] = "Error: Unable to retrieve administrator due to an internal exception. ".$errorMessage;
         }
     }
@@ -363,7 +364,7 @@ else if(array_key_exists('remove_admin', $_GET)){
                     $returnVal = $database->removeAdmin($broncoNetID);
                 }
                 catch(Exception $e){
-                    $errorMessage = $logger->logError("Unable to remove administrator due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+                    $errorMessage = $logger->logError("Unable to remove administrator due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, $thisLocation, true);
 			        $returnVal["error"] = "Error: Unable to remove administrator due to an internal exception. ".$errorMessage;
                 }
             }
@@ -394,7 +395,7 @@ else if(array_key_exists('save_site_warning', $_GET)){
                     $returnVal = $database->saveSiteWarning(trim($siteWarning));
                 }
                 catch(Exception $e){
-                    $errorMessage = $logger->logError("Unable to save site warning due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+                    $errorMessage = $logger->logError("Unable to save site warning due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, $thisLocation, true);
                     $returnVal["error"] = "Error: Unable to save site warning due to an internal exception. ".$errorMessage;
                 }
             }
@@ -418,7 +419,7 @@ else if(array_key_exists('clear_site_warning', $_GET)){
             $returnVal = $database->saveSiteWarning("");
         }
         catch(Exception $e){
-            $errorMessage = $logger->logError("Unable to clear site warning due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+            $errorMessage = $logger->logError("Unable to clear site warning due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, $thisLocation, true);
             $returnVal["error"] = "Error: Unable to clear site warning due to an internal exception. ".$errorMessage;
         }
     }
@@ -448,14 +449,14 @@ else if(array_key_exists('approve_profile', $_GET)){
                 try{
                     $returnVal["approve"] = $database->approveProfile($userID, $CASbroncoNetID);
                     if(!$returnVal["approve"]["success"]){//failed to approve profile
-                        $errorMessage = $logger->logError("Unable to approve profile.", $CASbroncoNetID, dirname(__FILE__), true);
+                        $errorMessage = $logger->logError("Unable to approve profile.", $CASbroncoNetID, $thisLocation, true);
                         $returnVal["error"] = "Error: Unable to approve profile. ".$errorMessage;
                     }
                     else if($sendEmail && $email !== ''){ //successfully approved profile, so now send the email if specified
                         $returnVal["email"] = $emailHelper->profileApprovedEmail($emailAddress, $email, $CASbroncoNetID); //get results of trying to save/send email message
                     }
                 }catch(Exception $e){
-                    $errorMessage = $logger->logError("Unable to approve application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+                    $errorMessage = $logger->logError("Unable to approve application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, $thisLocation, true);
                     $returnVal["error"] = "Error: Unable to approve application due to an internal exception. ".$errorMessage;
                 }
             }
@@ -490,14 +491,14 @@ else if(array_key_exists('deny_profile', $_GET)){
                 try{
                     $returnVal["deny"] = $database->denyProfile($userID, $CASbroncoNetID);
                     if(!$returnVal["deny"]){//failed to deny profile
-                        $errorMessage = $logger->logError("Unable to deny profile.", $CASbroncoNetID, dirname(__FILE__), true);
+                        $errorMessage = $logger->logError("Unable to deny profile.", $CASbroncoNetID, $thisLocation, true);
                         $returnVal["error"] = "Error: Unable to deny profile. ".$errorMessage;
                     }
                     else if($sendEmail && $email !== ''){ //successfully denied profile, so now send the email if specified
                         $returnVal["email"] = $emailHelper->profileDeniedEmail($emailAddress, $email, $CASbroncoNetID); //get results of trying to save/send email message
                     }
                 }catch(Exception $e){
-                    $errorMessage = $logger->logError("Unable to deny application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+                    $errorMessage = $logger->logError("Unable to deny application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, $thisLocation, true);
                     $returnVal["error"] = "Error: Unable to deny application due to an internal exception. ".$errorMessage;
                 }
             }
@@ -532,14 +533,14 @@ else if(array_key_exists('delete_profile', $_GET)){
                 try{
                     $returnVal["delete"] = $database->deleteProfile($userID, $CASbroncoNetID);
                     if(!$returnVal["delete"]["success"]){//failed to delete profile
-                        $errorMessage = $logger->logError("Unable to delete profile.", $CASbroncoNetID, dirname(__FILE__), true);
+                        $errorMessage = $logger->logError("Unable to delete profile.", $CASbroncoNetID, $thisLocation, true);
                         $returnVal["error"] = "Error: Unable to delete profile. ".$errorMessage;
                     }
                     else if($sendEmail && $email !== ''){ //successfully deleted profile, so now send the email if specified
                         $returnVal["email"] = $emailHelper->profileDeleteEmail($emailAddress, $email, $CASbroncoNetID); //get results of trying to save/send email message
                     }
                 }catch(Exception $e){
-                    $errorMessage = $logger->logError("Unable to delete application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, dirname(__FILE__), true);
+                    $errorMessage = $logger->logError("Unable to delete application due to an internal exception: ".$e->getMessage(), $CASbroncoNetID, $thisLocation, true);
                     $returnVal["error"] = "Error: Unable to delete application due to an internal exception. ".$errorMessage;
                 }
             }

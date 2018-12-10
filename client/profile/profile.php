@@ -349,13 +349,13 @@
 						<label ng-show="isAdmin && state ==='AdminReview'" for="profileDecision">Select what to do with this profile:</label>
 						<select ng-show="isAdmin && state ==='AdminReview'" ng-model="profileDecision" id="profileDecision" name="profileDecision">
 							<option value=""></option>
-							<option value="Approve"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>Approve Profile</option>
-							<option value="Deny"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Deny Profile</option>
-							<option value="Delete"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>Delete Profile</option>
+							<option value="Approve">Approve Profile</option>
+							<option value="Deny">Deny Profile</option>
+							<option value="Delete">Delete Profile</option>
 						</select>
 
 						<div ng-show="profileDecision === 'Approve' && isAdmin && state ==='AdminReview'" class="approve-button-holder"> <!-- Administrator-only approve profile button -->
-							<button type="button" ng-click="approveProfile()" class="btn btn-success">APPROVE PROFILE</button>
+							<button type="button" ng-click="approveProfile()" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>APPROVE PROFILE</button>
 							
 							<div class="checkbox">
 								<label><input ng-model="approveProfileEmailEnable" name="approveProfileEmailEnable" id="approveProfileEmailEnable" type="checkbox" value="approveProfileEmailEnable">Send Email Upon Approval</label>
@@ -367,7 +367,7 @@
 						</div>
 
 						<div ng-show="profileDecision === 'Deny' && isAdmin && state ==='AdminReview'" class="deny-button-holder"> <!-- Administrator-only deny profile button -->
-							<button type="button" ng-click="denyProfile()" class="btn btn-warning">DENY PROFILE</button>
+							<button type="button" ng-click="denyProfile()" class="btn btn-warning"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>DENY PROFILE</button>
 							
 							<div class="checkbox">
 								<label><input ng-model="denyProfileEmailEnable" name="denyProfileEmailEnable" id="denyProfileEmailEnable" type="checkbox" value="denyProfileEmailEnable">Send Email Upon Denying</label>
@@ -379,7 +379,7 @@
 						</div>
 
 						<div ng-show="isAdmin && (state === 'View' || (state ==='AdminReview' && profileDecision === 'Delete'))" class="delete-button-holder"> <!-- Administrator-only delete profile button -->
-							<button type="button" ng-click="deleteProfile()" class="btn btn-danger">DELETE PROFILE</button>
+							<button type="button" ng-click="deleteProfile()" class="btn btn-danger"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>DELETE PROFILE</button>
 							
 							<div class="checkbox">
 								<label><input ng-model="deleteProfileEmailEnable" name="deleteProfileEmailEnable" id="deleteProfileEmailEnable" type="checkbox" value="deleteProfileEmailEnable">Send Email Upon Deletion</label>

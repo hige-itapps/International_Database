@@ -205,6 +205,8 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
                 fd.append(key, JSON.stringify($scope.profile[key]));
             }
         }
+        //append the confirmation code to the formdata
+        fd.append("code", JSON.stringify($scope.code));
 
         $http({
             method  : 'POST',
@@ -261,6 +263,8 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
                 fd.append(key, JSON.stringify($scope.profile[key]));
             }
         }
+        //append the confirmation code to the formdata
+        fd.append("code", JSON.stringify($scope.code));
 
         $http({
             method  : 'POST',
@@ -413,8 +417,52 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
     }
 
 
+    //user deleting their own profile
+    $scope.ownerDeleteProfile = function(){
+        var retVal = prompt("WARNING - BY DELETING THIS PROFILE, EVERYTHING ASSOCIATED WITH THIS PROFILE WILL BE PERMANENTLY WIPED (However, if this is an approved profile that has a separate update pending, the update will not be deleted, and will instead be treated as a new pending profile)! To confirm, please type 'DELETE' into the confirmation box: ", "confirm delete");
+        if(retVal !== "DELETE"){
+            return; //exit early if not confirmed
+        }
+        //continue if confirmed, start a loading alert
+        $scope.loadingAlert();
+
+        $http({
+            method  : 'POST',
+            url     : '../api.php?delete_profile',
+            data    : $.param({email: JSON.stringify($scope.profile.email), code: JSON.stringify($scope.code)}),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
+        })
+        .then(function (response) {
+            console.log(response, 'res');
+            if(typeof response.data.error === 'undefined'){ //ran function as expected
+                var newAlertType = null;
+                var newAlertMessage = null;
+
+                if(response.data.delete.success === true){//updated
+                    newAlertType = "success";
+                    newAlertMessage = "Success! The profile has been permanently deleted.";
+                }
+                else{//didn't update
+                    $scope.alertType = "warning";
+                    $scope.alertMessage = "Warning: The profile may not have been fully deleted. Please determine the profile's status, and let an administrator know if there is a problem.";
+                }
+                $scope.redirectToProfileList(newAlertType, newAlertMessage); //redirect to the homepage with the message
+            }
+            else{ //failure!
+                console.log(response.data.error);
+                $scope.alertType = "danger";
+                $scope.alertMessage = "There was an error with your deletion: " + response.data.error;
+            }
+        },function (error){
+            console.log(error, 'can not get data.');
+            $scope.alertType = "danger";
+            $scope.alertMessage = "There was an unexpected error when trying to delete this profile! Please let an administrator know the details and time of this issue.";
+        });
+    }
+
+
     //delete this entire profile -- only admins are capable of doing this
-    $scope.deleteProfile = function(){
+    $scope.adminDeleteProfile = function(){
         var retVal = prompt("WARNING - BY DELETING THIS PROFILE, EVERYTHING ASSOCIATED WITH THIS PROFILE WILL BE PERMANENTLY WIPED (However, if this is an approved profile that has a separate update pending, the update will not be deleted, and will instead be treated as a new pending profile)! IF ENABLED, AN EMAIL SPECIFIED BELOW WILL BE SENT TO THE PROFILE OWNER! YOU WILL NOT BE ABLE TO UNDO THIS OPERATION! To confirm, please type 'DELETE' into the confirmation box: ", "confirm delete");
         if(retVal !== "DELETE"){
             return; //exit early if not confirmed
@@ -422,8 +470,13 @@ higeApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scop
         //continue if confirmed, start a loading alert
         $scope.loadingAlert();
 
-        var sendAddress = $scope.profile.login_email; //determine which address to send to
-        if($scope.profile.alternate_email) {sendAddress = $scope.profile.alternate_email;}
+        //by default, set the send address to the primary contact address. if it exists, use the alternate email address instead.
+        var sendAddress = $scope.profile.email; 
+
+        if (typeof $scope.profile.login_email !== 'undefined') {
+            sendAddress = $scope.profile.login_email;//default to the login address
+            if($scope.profile.alternate_email) {sendAddress = $scope.profile.alternate_email;} //if the alternate email is specified, use it
+        }
 
         $http({
             method  : 'POST',

@@ -66,13 +66,13 @@ class DatabaseHelper
     /* Get the primary email addresses of all users.
     Also only return approved profiles' addresses unless specified otherwise with $approvedOnly = false (denied) or null (pending) */
     public function getAllPrimaryEmailAddresses($approvedOnly = true){
-        $query = "SELECT COALESCE(u.alternate_email, u.login_email) as email FROM users u";
+        $query = "SELECT COALESCE(u.alternate_email, u.login_email) as email, firstname as name FROM users u";
         if(!isset($approvedOnly)){$query.=" WHERE approved IS NULL";} //approvedOnly is NULL, so return pending only
         else if($approvedOnly){$query.=" WHERE approved = 1";} //only approved if necessary
         else{$query.=" WHERE approved = 0";} //otherwise, denied only
         $this->sql = $this->conn->prepare($query);
         $this->sql->execute();
-        return $this->sql->fetchAll(PDO::FETCH_COLUMN); //return addresses only
+        return $this->sql->fetchAll(PDO::FETCH_ASSOC); //return names as keys
     }
 
 
@@ -991,7 +991,7 @@ class DatabaseHelper
 
     /* Get number of pending profiles */
     public function getNumberOfPendingProfiles(){
-        $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM international.users WHERE approved IS NULL");
+        $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM users WHERE approved IS NULL");
         $this->sql->execute();
         return $this->sql->fetch(PDO::FETCH_COLUMN);
     }
@@ -1055,24 +1055,36 @@ class DatabaseHelper
     public function doesLoginEmailExist($testEmail, $deniedOnly = false){
         $query = "SELECT COUNT(*) FROM users u WHERE u.login_email = :email ";
 
-        if($deniedOnly){$query.=" AND approved = 0";} //only approved if necessary
-        else{$query.=" AND (approved = 1 OR approved IS NULL)";} //otherwise, pending only
+        if($deniedOnly){$query.=" AND approved = 0";} //only denied if necessary
+        else{$query.=" AND (approved = 1 OR approved IS NULL)";} //otherwise, pending or approved only
 
         $this->sql = $this->conn->prepare($query);
         $this->sql->bindParam(':email', $testEmail);
         $this->sql->execute();
         return $this->sql->fetch(PDO::FETCH_COLUMN);
     }
-    /*Return number of users using this alternate email (should be 0 or 1)*/
-    public function doesAlternateEmailExist($testEmail){
-        $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM users u WHERE u.alternate_email = :email");
+    /*Return number of users using this alternate email (should be 0 or 1)
+    By default, only approved and pending profiles are considered, but if $deniedOnly is set to true then only denied profiles are considered.*/
+    public function doesAlternateEmailExist($testEmail, $deniedOnly = false){
+        $query = "SELECT COUNT(*) FROM users u WHERE u.alternate_email = :email ";
+
+        if($deniedOnly){$query.=" AND approved = 0";} //only denied if necessary
+        else{$query.=" AND (approved = 1 OR approved IS NULL)";} //otherwise, pending or approved only
+
+        $this->sql = $this->conn->prepare($query);
         $this->sql->bindParam(':email', $testEmail);
         $this->sql->execute();
         return $this->sql->fetch(PDO::FETCH_COLUMN);
     }
-    /*Return number of users using this alternate email EXCEPT a user with the given login email (should be 0 or 1)*/
-    public function doesAlternateEmailExistIgnoreProfile($testEmail, $profileEmail){
-        $this->sql = $this->conn->prepare("SELECT COUNT(*) FROM users u WHERE u.alternate_email = :testemail AND u.login_email != :profileemail");
+    /*Return number of users using this alternate email EXCEPT a user with the given login email (should be 0 or 1)
+    By default, only approved and pending profiles are considered, but if $deniedOnly is set to true then only denied profiles are considered.*/
+    public function doesAlternateEmailExistIgnoreProfile($testEmail, $profileEmail, $deniedOnly = false){
+        $query = "SELECT COUNT(*) FROM users u WHERE u.alternate_email = :testemail AND u.login_email != :profileemail";
+
+        if($deniedOnly){$query.=" AND approved = 0";} //only denied if necessary
+        else{$query.=" AND (approved = 1 OR approved IS NULL)";} //otherwise, pending or approved only
+
+        $this->sql = $this->conn->prepare($query);
         $this->sql->bindParam(':testemail', $testEmail);
         $this->sql->bindParam(':profileemail', $profileEmail);
         $this->sql->execute();

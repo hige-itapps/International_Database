@@ -75,7 +75,15 @@ INSERT INTO `regions` VALUES (1,'East Africa'),(2,'South Africa'),(3,'West Afric
 /*!40000 ALTER TABLE `regions` ENABLE KEYS */;
 UNLOCK TABLES;
 
+--
+-- Dumping data for table `variables`
+--
 
+LOCK TABLES `variables` WRITE;
+/*!40000 ALTER TABLE `variables` DISABLE KEYS */;
+INSERT INTO `variables` VALUES ('ReminderEmailsLastSent',NULL),('SiteWarning',NULL),('DatabaseLastBackedUp',NULL);
+/*!40000 ALTER TABLE `variables` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -86,4 +94,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-11-02 16:56:21
+-- Dump completed on 2018-12-10 10:27:37

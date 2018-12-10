@@ -49,9 +49,9 @@ class EmailHelper
 		$this->mailPort = $settings["mail_port"]; //load mail port number
 
 		$this->defaultSubject = "Global Expertise Database Update";
-		$this->customFooter = "
-		
-		<strong>If you need help or more information, please reply to this message, or send a new message to ".$this->mailAddress.".</strong>";
+		//skip a line, give a bold contact address, then skip a line and add a thank you message
+		$this->customFooter = PHP_EOL.PHP_EOL."<strong>If you need help or more information, please reply to this message, or send a new message to ".$this->mailAddress.".</strong>".PHP_EOL.PHP_EOL.
+		"Thank you,".PHP_EOL."The Haenicke Institute".PHP_EOL."Western Michigan University";
 	}
 
 	//Send an email to a specific address, with a custom message and subject. If the subject is left blank, a default one is prepared instead.
@@ -165,7 +165,7 @@ class EmailHelper
 		$subject = "Global Expertise Database - Automatic Website Reminder";
 
 		$body = "Dear #name,
-			This is an automated message to remind you to check your profile on our site at ".$this->siteURL." to make sure your information is up-to-date.".PHP_EOL.
+			This is a bi-annual automated message to remind you to keep your profile up-to-date on our site at ".$this->siteURL.".".PHP_EOL.
 			"If you wish, you may update your information or remove your profile from the database by visiting your profile on our site and clicking the 'EDIT PROFILE' button.";
 
 		$body = str_replace("#name", nl2br($name), $body); //insert the code into the message

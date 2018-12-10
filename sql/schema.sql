@@ -18,6 +18,20 @@ USE `international`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `administrators`
+--
+
+DROP TABLE IF EXISTS `administrators`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `administrators` (
+  `broncoNetID` varchar(20) COLLATE utf8_bin NOT NULL,
+  `name` varchar(100) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`broncoNetID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `countries`
 --
 
@@ -47,6 +61,23 @@ CREATE TABLE `country_experience` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `emails`
+--
+
+DROP TABLE IF EXISTS `emails`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `emails` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `address` varchar(254) NOT NULL,
+  `subject` varchar(100) NOT NULL,
+  `message` text NOT NULL,
+  `time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `issues`
 --
 
@@ -71,7 +102,7 @@ CREATE TABLE `language_proficiencies` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `proficiency_level` varchar(25) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -83,24 +114,10 @@ DROP TABLE IF EXISTS `languages`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `languages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` char(49) DEFAULT NULL,
-  `iso_639-1` char(2) DEFAULT NULL,
+  `name` varchar(34) NOT NULL,
+  `iso` varchar(7) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=136 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `other_country_experience`
---
-
-DROP TABLE IF EXISTS `other_country_experience`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `other_country_experience` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `experience` varchar(100) CHARACTER SET latin1 NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=192 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -129,15 +146,35 @@ CREATE TABLE `users` (
   `login_email` varchar(254) CHARACTER SET latin1 NOT NULL,
   `firstname` varchar(50) CHARACTER SET latin1 NOT NULL,
   `lastname` varchar(50) CHARACTER SET latin1 NOT NULL,
-  `alternate_email` varchar(254) CHARACTER SET latin1 NOT NULL,
+  `alternate_email` varchar(254) CHARACTER SET latin1 DEFAULT NULL,
   `affiliations` varchar(300) CHARACTER SET latin1 NOT NULL,
-  `phone` varchar(15) CHARACTER SET latin1 DEFAULT NULL,
+  `phone` varchar(10) CHARACTER SET latin1 DEFAULT NULL,
   `issues_expertise_other` varchar(300) CHARACTER SET latin1 DEFAULT NULL,
   `regions_expertise_other` varchar(300) CHARACTER SET latin1 DEFAULT NULL,
   `countries_expertise_other` varchar(300) CHARACTER SET latin1 DEFAULT NULL,
-  `social_link` varchar(70) CHARACTER SET latin1 DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+  `social_link` varchar(100) CHARACTER SET latin1 DEFAULT NULL,
+  `approved` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQUE_LOGIN_EMAIL` (`login_email`,`approved`),
+  UNIQUE KEY `UNIQUE_ALTERNATE_EMAIL` (`alternate_email`,`approved`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `users_codes`
+--
+
+DROP TABLE IF EXISTS `users_codes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users_codes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(254) NOT NULL,
+  `code` binary(32) NOT NULL,
+  `expiration_timestamp` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email_UNIQUE` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -152,18 +189,58 @@ CREATE TABLE `users_country_experience` (
   `user_id` int(11) NOT NULL,
   `country_id` int(11) NOT NULL,
   `experience_id` int(11) DEFAULT NULL,
-  `other_experience_id` int(11) DEFAULT NULL,
+  `other_experience` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_users_country_experience_user_id` (`user_id`),
   KEY `fk_users_country_experience_country_id` (`country_id`),
   KEY `fk_users_country_experience_experience_id` (`experience_id`),
-  KEY `fk_users_country_experience_other_experience_id` (`other_experience_id`),
   CONSTRAINT `fk_users_country_experience_country_id` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`),
   CONSTRAINT `fk_users_country_experience_experience_id` FOREIGN KEY (`experience_id`) REFERENCES `country_experience` (`id`),
-  CONSTRAINT `fk_users_country_experience_other_experience_id` FOREIGN KEY (`other_experience_id`) REFERENCES `other_country_experience` (`id`),
   CONSTRAINT `fk_users_country_experience_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`exampleuser`@`%`*/ /*!50003 TRIGGER `international`.`users_country_experience_BEFORE_INSERT` BEFORE INSERT ON `users_country_experience` FOR EACH ROW
+BEGIN
+	IF (NEW.experience_id IS NULL AND NEW.other_experience IS NULL) THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = '\'experience_id\' and \'other_experience\' cannot both be null';
+	END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`exampleuser`@`%`*/ /*!50003 TRIGGER `international`.`users_country_experience_BEFORE_UPDATE` BEFORE UPDATE ON `users_country_experience` FOR EACH ROW
+BEGIN
+	IF (NEW.experience_id IS NULL AND NEW.other_experience IS NULL) THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = '\'experience_id\' and \'other_experience\' cannot both be null';
+	END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `users_country_expertise`
@@ -237,7 +314,25 @@ CREATE TABLE `users_regions` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `variables`
+--
+
+DROP TABLE IF EXISTS `variables`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `variables` (
+  `name` varchar(30) COLLATE utf8_bin NOT NULL,
+  `value` text COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping events for database 'international'
+--
+
+--
+-- Dumping routines for database 'international'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -249,4 +344,4 @@ CREATE TABLE `users_regions` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-09-20 14:33:02
+-- Dump completed on 2018-12-10 10:08:36

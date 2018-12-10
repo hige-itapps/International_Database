@@ -66,6 +66,23 @@ if (array_key_exists('create_profile', $_GET)) {
             $returnVal["errors"]["other"] = $noPendingCodeError;
         }
     }
+
+
+    //If no errors yet, confirm the code again to make sure this user is who they say they are
+    if(empty($returnVal["errors"])){
+        if(isset($_POST["code"])){ //if code was sent
+            $code = trim(json_decode($_POST["code"]));
+    
+            $expiration = $database->confirmCode($primaryEmail, $code); //confirm the code, get the expiration timestamp if it exists
+            if(!$expiration){ //code/email combo is incorrect
+                $returnVal["errors"]["other"] = "Incorrect code for this profile!";
+            }else if(time() > $expiration){ //now make sure the expiration date hasn't passed
+                $returnVal["errors"]["other"] = "Expiration time has already passed! You must get a new confirmation code.";
+            }
+        }else{ //email or code not sent
+            $returnVal["errors"]["other"] = "Confirmation code is missing!";
+        }
+    }
     
 
     //If no errors yet, then proceed with data validation
@@ -237,7 +254,8 @@ else if (array_key_exists('send_code', $_GET)) {
                     $expiration_timestamp = strtotime('+1 day', $current_timestamp); //add 1 day to the deadline
                     $result = $database->saveCode($email, $hex, $expiration_timestamp); //save to database
                     if(!$result){ //database error
-                        $returnVal["error"] = "Error inserting new code into database.";
+                        $errorMessage = $logger->logError("Unable to insert new code into database.", null, dirname(__FILE__), true);
+			            $returnVal["error"] = "Error: Unable to insert new code into database. ".$errorMessage;
                     }
                     else{ //no errors so far, continue and send email
                         $emailResult = $emailHelper->codeConfirmationSendEmail($email, $hex, null);
@@ -517,7 +535,7 @@ else if(array_key_exists('deny_profile', $_GET)){
 //To completely delete a profile
 else if(array_key_exists('delete_profile', $_GET)){
     //must have permission to do this
-    if(isset($CASbroncoNetID) && $database->isAdministrator($CASbroncoNetID)){
+    if(isset($CASbroncoNetID) && $database->isAdministrator($CASbroncoNetID)){ //if user is an administrator deleting
         if(isset($_POST["userID"]) && isset($_POST["emailAddress"]) && isset($_POST["sendEmail"])){
             $userID = json_decode($_POST["userID"]);
             $emailAddress = json_decode($_POST["emailAddress"]);
@@ -549,8 +567,42 @@ else if(array_key_exists('delete_profile', $_GET)){
             $returnVal["error"] = "UserID, email address, and/or send email boolean is not set";
         }
     }
-    else{
-        $returnVal["error"] = "Permission denied, you are not permitted to delete this profile.";
+    else{ //if user is the owner deleting
+        //If no errors yet, confirm the code again to make sure this user is who they say they are
+        if(isset($_POST["code"])){ //if email and code were sent
+            $email = trim(json_decode($_POST["email"]));
+            $code = trim(json_decode($_POST["code"]));
+    
+            $expiration = $database->confirmCode($email, $code); //confirm the code, get the expiration timestamp if it exists
+            if(!$expiration){ //code/email combo is incorrect
+                $returnVal["error"] = "Incorrect code for this profile! ";
+            }else if(time() > $expiration){ //now make sure the expiration date hasn't passed
+                $returnVal["error"]= "Expiration time has already passed! You must get a new confirmation code.";
+            }
+            else{ //confirmed code
+                $userID = $database->doesProfileExist($email); //get the id of the profile to delete
+                if($userID > 0){ //correct id
+                    try{
+                        $returnVal["delete"] = $database->deleteProfile($userID, 'owner');
+                        if(!$returnVal["delete"]["success"]){//failed to delete profile
+                            $errorMessage = $logger->logError("Unable to delete profile.", 'owner', $thisLocation, true);
+                            $returnVal["error"] = "Error: Unable to delete profile. ".$errorMessage;
+                        }
+                        else{//success
+                            $database->removeCode($email);
+                        }
+                    }catch(Exception $e){
+                        $errorMessage = $logger->logError("Unable to delete application due to an internal exception: ".$e->getMessage(), 'owner', $thisLocation, true);
+                        $returnVal["error"] = "Error: Unable to delete application due to an internal exception. ".$errorMessage;
+                    }
+                }
+                else{
+                    $returnVal["error"] = "Could not find the public profile's ID!";
+                }
+            }
+        }else{ //email or code not sent
+            $returnVal["error"] = "Confirmation code is missing! This is required to delete your profile.";
+        }
     }
 }
 

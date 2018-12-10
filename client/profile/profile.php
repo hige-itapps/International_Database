@@ -379,7 +379,7 @@
 						</div>
 
 						<div ng-show="isAdmin && (state === 'View' || (state ==='AdminReview' && profileDecision === 'Delete'))" class="delete-button-holder"> <!-- Administrator-only delete profile button -->
-							<button type="button" ng-click="deleteProfile()" class="btn btn-danger"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>DELETE PROFILE</button>
+							<button type="button" ng-click="adminDeleteProfile()" class="btn btn-danger"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>DELETE PROFILE</button>
 							
 							<div class="checkbox">
 								<label><input ng-model="deleteProfileEmailEnable" name="deleteProfileEmailEnable" id="deleteProfileEmailEnable" type="checkbox" value="deleteProfileEmailEnable">Send Email Upon Deletion</label>
@@ -398,6 +398,10 @@
 						<button ng-show="state === 'Create'" type="button" ng-click="createProfile()" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>SUBMIT</button> <!-- For user submitting for first time -->
 						<button ng-show="state === 'Edit'" type="button" ng-click="editProfile()" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>SUBMIT</button> <!-- For user editing their profile -->
 						<a href="" class="btn btn-info" ng-click="redirectToHomepage(null, null)"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>LEAVE PAGE</a> <!-- For anyone to leave the page -->
+
+						<div ng-show="state === 'Edit'" class="delete-button-holder owner-delete"> <!-- owner-only delete profile button -->
+							<button type="button" ng-click="ownerDeleteProfile()" class="btn btn-danger"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>DELETE PROFILE</button>
+						</div>
 					</div>
 
 				</form>

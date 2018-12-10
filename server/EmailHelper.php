@@ -27,7 +27,8 @@ class EmailHelper
 	private $logger; //for logging to files
 	private $siteURL; //public URL of site
 	private $mailHost; //mail server information from config.ini
-	private $mailUsername;
+	private $mailAddress; //public address
+	private $mailUsername; //private login username
 	private $mailPassword;
 	private $mailPort;
 	private $defaultSubject; //the default subject line for when it isn't specified
@@ -42,6 +43,7 @@ class EmailHelper
 		$this->siteURL =  $settings["site_url"]; //load public url
 
 		$this->mailHost = $settings["mail_host"]; //load mail host
+		$this->mailAddress = $settings["mail_address"]; //load mail address
 		$this->mailUsername = $settings["mail_username"]; //load mail username
 		$this->mailPassword = $settings["mail_password"]; //load mail password
 		$this->mailPort = $settings["mail_port"]; //load mail port number
@@ -49,7 +51,7 @@ class EmailHelper
 		$this->defaultSubject = "Global Expertise Database Update";
 		$this->customFooter = "
 		
-		<strong>If you need help or more information, please reply to this message, or send a new message to ".$this->mailUsername.".</strong>";
+		<strong>If you need help or more information, please reply to this message, or send a new message to ".$this->mailAddress.".</strong>";
 	}
 
 	//Send an email to a specific address, with a custom message and subject. If the subject is left blank, a default one is prepared instead.
@@ -89,8 +91,8 @@ class EmailHelper
 				$mail->Port = $this->mailPort;                              // TCP port to connect to
 
 				//Recipients
-				//$mail->AddReplyTo($this->mailUsername, 'Reply to name');
-				$mail->setFrom($this->mailUsername, 'Mailer');
+				//$mail->AddReplyTo($this->mailAddress, 'Reply to name');
+				$mail->setFrom($this->mailAddress, 'Mailer');
 					
 				//Content
 				$mail->isHTML(true);                                  // Set email format to HTML

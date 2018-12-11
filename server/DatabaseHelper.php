@@ -166,19 +166,19 @@ class DatabaseHelper
             $user["countries_experience"] = new stdClass(); //initialize country experience object
             foreach($user_country_experience as $experience) {
                 if (!property_exists($user["countries_experience"], $experience["country_id"])) {//initialize country experience array for a specific country if not yet made
-                    $user["countries_experience"]->$experience["country_id"] = new stdClass();
-                    $user["countries_experience"]->$experience["country_id"]->id = $experience["country_id"]; //save the country's id
-                    $user["countries_experience"]->$experience["country_id"]->country_name = $experience["country_name"]; //save the country's name
-                    $user["countries_experience"]->$experience["country_id"]->experiences = []; //create sub array for experiences
-                    $user["countries_experience"]->$experience["country_id"]->other_experience = ""; //create empty string for possible other experience
+                    $user["countries_experience"]->{$experience["country_id"]} = new stdClass();
+                    $user["countries_experience"]->{$experience["country_id"]}->id = $experience["country_id"]; //save the country's id
+                    $user["countries_experience"]->{$experience["country_id"]}->country_name = $experience["country_name"]; //save the country's name
+                    $user["countries_experience"]->{$experience["country_id"]}->experiences = []; //create sub array for experiences
+                    $user["countries_experience"]->{$experience["country_id"]}->other_experience = ""; //create empty string for possible other experience
                 }
                 if (!empty($experience["experience"])) {//add experience to country's array
                     $newExperience = new stdClass();
                     $newExperience->id = $experience["experience_id"];
                     $newExperience->experience = $experience["experience"];
-                    $user["countries_experience"]->$experience["country_id"]->experiences[] = $newExperience;
+                    $user["countries_experience"]->{$experience["country_id"]}->experiences[] = $newExperience;
                 } 
-                if (!empty($experience["other_experience"])) {$user["countries_experience"]->$experience["country_id"]->other_experience = $experience["other_experience"];} //add other experience to country's array
+                if (!empty($experience["other_experience"])) {$user["countries_experience"]->{$experience["country_id"]}->other_experience = $experience["other_experience"];} //add other experience to country's array
             }
         }
 

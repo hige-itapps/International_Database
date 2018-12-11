@@ -3,10 +3,11 @@
 This web application contains some scripts, found in this directory, that need to be run at scheduled times. This can be done in Linux via *cron jobs* or in Windows via the *task scheduler*
 
 ## Linux Instructions
-1. Open up the root user's cron tab file with the command "sudo crontab -e".
-2. Add in the line "* * * * * <path/to/desired_script.php>", where the 5 asterisks represent Minutes, Hours, Days, Months, and Days of the Week, separated by spaces, and the path is the full filepath to the php script to be run. (NOTE- if using VIM, go into insert mode if you are not already by hitting 'i')
-3. Modify the asterisks to schedule the task as desired. To schedule the task to run every 15 minutes, use "\*/15 * * * * ". To schedule the task to run twice a day at 11:00am and 11:00pm, use "00 11,23 * * * ". To schedule the task to run twice a year (bi-annually) on January 15th and July 15th, both at 10:00am, use "00 10 15 1,7 * ". (example to run daily backup twice a day at 11:00am and 11:00pm: "00 11,23 * * * /var/www/International_Database/scheduled_tasks/DailyBackup.php")
-4. Save and exit the crontab file. (if using VIM, hit 'esc', then ':', then 'x', then enter)
+1. find the php installation directory by typing 'whereis php'. The correct path for our project is '/usr/bin/php'.
+2. Open up the apache user's cron tab file with the command "sudo crontab -e -u apache".
+3. Add in the line "* * * * * <path/to/php.exe> <path/to/desired_script.php>", where the 5 asterisks represent Minutes, Hours, Days, Months, and Days of the Week, separated by spaces. You will input the correct paths for php and the script to be run (NOTE- if using VIM, go into insert mode if you are not already by hitting 'i').
+4. Modify the asterisks to schedule the task as desired. To schedule the task to run every 15 minutes, use "\*/15 * * * * ". To schedule the task to run twice a day at 11:00am and 11:00pm, use "00 11,23 * * * ". To schedule the task to run twice a year (bi-annually) on January 15th and July 15th, both at 10:00am, use "00 10 15 1,7 * ". (example to run daily backup twice a day at 11:00am and 11:00pm: "00 11,23 * * * /usr/bin/php /var/www/International_Database/scheduled_tasks/DailyBackup.php")
+5. Save and exit the crontab file. (if using VIM, hit 'esc', then ':', then 'x', then enter)
 
 ## Windows Instructions
 1. Open the Task Scheduler
@@ -21,3 +22,6 @@ This web application contains some scripts, found in this directory, that need t
 10. Hit 'ok', and if it asks you if you want to use the arguments you specify, click yes.
 11. Change any other configuration settings you want, then hit 'ok'
 12. Input the admin password for approval
+
+
+It is recommended to start each task running every 15 minutes or so to verify their functions.

@@ -10,7 +10,7 @@
 	<!-- Page Body -->
 	<body>
 		<!-- Shared Site Banner -->
-		<?php include 'include/site_banner.html'; ?>
+		<?php include 'include/site_banner.php'; ?>
 	
 		<div id="MainContent" role="main">
 			<h1>This site is currently down for maintenance. Please come back at a later time.</h1>

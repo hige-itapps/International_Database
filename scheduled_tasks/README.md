@@ -7,8 +7,6 @@ This web application contains some scripts, found in this directory, that need t
 2. Add in the line "* * * * * <path/to/desired_script.php>", where the 5 asterisks represent Minutes, Hours, Days, Months, and Days of the Week, separated by spaces, and the path is the full filepath to the php script to be run. (NOTE- if using VIM, go into insert mode if you are not already by hitting 'i')
 3. Modify the asterisks to schedule the task as desired. To schedule the task to run every 15 minutes, use "\*/15 * * * * ". To schedule the task to run twice a day at 11:00am and 11:00pm, use "00 11,23 * * * ". To schedule the task to run twice a year (bi-annually) on January 15th and July 15th, both at 10:00am, use "00 10 15 1,7 * ".
 4. Save and exit the crontab file. (if using VIM, hit 'esc', then ':', then 'x', then enter)
-5. 
-6. 
 
 ## Windows Instructions
 1. Open the Task Scheduler

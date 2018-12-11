@@ -23,6 +23,4 @@ This web application contains some scripts, found in this directory, that need t
 11. Change any other configuration settings you want, then hit 'ok'
 12. Input the admin password for approval
 
-
-
 It is recommended to start each task running every 15 minutes or so to verify their functions.

@@ -208,7 +208,7 @@ CREATE TABLE `users_country_experience` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`exampleuser`@`%`*/ /*!50003 TRIGGER `international`.`users_country_experience_BEFORE_INSERT` BEFORE INSERT ON `users_country_experience` FOR EACH ROW
+/*!50003 CREATE*/ /*!50003 TRIGGER `international`.`users_country_experience_BEFORE_INSERT` BEFORE INSERT ON `users_country_experience` FOR EACH ROW
 BEGIN
 	IF (NEW.experience_id IS NULL AND NEW.other_experience IS NULL) THEN
 		SIGNAL SQLSTATE '45000'
@@ -229,7 +229,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`exampleuser`@`%`*/ /*!50003 TRIGGER `international`.`users_country_experience_BEFORE_UPDATE` BEFORE UPDATE ON `users_country_experience` FOR EACH ROW
+/*!50003 CREATE*/ /*!50003 TRIGGER `international`.`users_country_experience_BEFORE_UPDATE` BEFORE UPDATE ON `users_country_experience` FOR EACH ROW
 BEGIN
 	IF (NEW.experience_id IS NULL AND NEW.other_experience IS NULL) THEN
 		SIGNAL SQLSTATE '45000'

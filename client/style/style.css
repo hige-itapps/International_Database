@@ -440,9 +440,6 @@ hr{
 .profile-code .input-group{
 	margin-bottom: 15px;
 }
-span.glyphicon{
-	margin-right: 5px;
-}
 #profileSearchForm .row{
 	margin: 0; /*override default negative margins*/
 }
@@ -610,4 +607,9 @@ Source: https://codepen.io/scottloway/pen/Xjazjw*/
 .pagination>.disabled>a{
 	color: black!important;
 	background-color: #f6f6f6!important;
+}
+
+/*give margin to glyphicon spans so words don't need to have hard-coded spaces*/
+span.glyphicon{
+	margin-right: 5px;
 }

@@ -62,7 +62,7 @@
 			<?php include '../include/noscript.html'; ?> <!-- show site error if javascript is disabled -->
 	
 				<!--AngularJS Controller-->
-				<div class="container-fluid" ng-controller="adminCtrl" id="adminCtrl">
+				<div class="container-fluid" ng-controller="adminCtrl" id="adminCtrl" ng-cloak>
 				
 					<h1 class="title">Administrator View</h1>
 

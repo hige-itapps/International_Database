@@ -52,7 +52,7 @@
 			<?php include '../include/noscript.html'; ?> <!-- show site error if javascript is disabled -->
 
 			<!--AngularJS Controller-->
-			<div class="container-fluid" ng-controller="homeCtrl" id="homeCtrl">
+			<div class="container-fluid" ng-controller="homeCtrl" id="homeCtrl" ng-cloak>
 
 				<div class="row">
 					<div class="col-md-4"></div>

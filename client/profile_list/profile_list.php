@@ -242,7 +242,7 @@
 			<script src="../include/outdatedbrowser.js" nomodule></script> <!-- show site error if outdated -->
 			<?php include '../include/noscript.html'; ?> <!-- show site error if javascript is disabled -->
 
-			<div class="container-fluid" ng-controller="listCtrl" id="listCtrl">
+			<div class="container-fluid" ng-controller="listCtrl" id="listCtrl" ng-cloak>
 				<div class="row">
 					<h1 class="title" ng-if="!adminPendingProfiles">Search The Database</h1>
 					<h1 class="title" ng-if="adminPendingProfiles">Search Pending Profiles And Updates</h1>

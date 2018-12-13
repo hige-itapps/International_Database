@@ -104,7 +104,7 @@
 			<?php include '../include/noscript.html'; ?> <!-- show site error if javascript is disabled -->
 
 			<!--AngularJS Controller-->
-			<div class="container-fluid" ng-controller="profileCtrl" id="profileCtrl">
+			<div class="container-fluid" ng-controller="profileCtrl" id="profileCtrl" ng-cloak>
 
 				<!-- Form base used for different profile purposes -->
 				<form enctype="multipart/form-data" class="form-horizontal" id="profileForm" name="profileForm" ng-submit="submit()">

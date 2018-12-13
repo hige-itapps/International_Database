@@ -172,6 +172,18 @@ class EmailHelper
 
 		return $this->customEmail($toAddress, $body, $subject, $CASbroncoNetID);
 	}
+
+	//The email to send to the Global Expertise address if there is at least 1 pending profile
+	public function pendingProfilesEmail($numberOfProfiles, $CASbroncoNetID){
+		$subject = "Pending Profiles Reminder - #numberOfProfiles Pending";
+		$subject = str_replace("#numberOfProfiles", nl2br($numberOfProfiles), $subject); //insert the pending number into the subject
+
+		$body = "This is an automated reminder that there are currently pending profiles in the database waiting for your approval.".PHP_EOL.
+		"Current # pending: #numberOfProfiles.";
+		$body = str_replace("#numberOfProfiles", nl2br($numberOfProfiles), $body); //insert the pending number into the message
+
+		return $this->customEmail($this->mailAddress, $body, $subject, $CASbroncoNetID); //sebd email to this site's own address
+	}
 }
 	
 ?>

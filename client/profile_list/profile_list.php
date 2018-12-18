@@ -410,7 +410,7 @@
 					</form>
 				</div>
 				<div class="row">
-					<h1 class="title" ng-if="oldWildcards">{{profiles.length}} Result{{profiles.length === 1 ? "" : "s"}} For {{oldWildcards}}:</h2>
+					<h1 class="title" ng-show="isSearching">{{profiles.length}} Result{{profiles.length === 1 ? "" : "s"}}{{oldWildcards ? " For "+oldWildcards : ""}}:</h1>
 					<nav class="col-md-12" aria-label="Top Page List">
 						<ul ng-if="profiles.length" uib-pagination total-items="profiles.length" ng-model="pagination.currentPage" items-per-page="pagination.numPerPage"></ul>
 					</nav>

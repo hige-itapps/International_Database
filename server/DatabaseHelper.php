@@ -87,17 +87,16 @@ class DatabaseHelper
 
 
     /* Full user profiles- still only return the primary email addresses. 
-    Only return 1 general coalesced 'email' field unless specified otherwise with $coalesceEmails = false
+    By default, only return 1 general coalesced 'email' field. If $coalesceEmails == false, also return login_email and alternate_email alongside the public email.
     Also only return approved profiles unless specified otherwise with $approvedOnly = false (denied) or null (pending) */
     public function getUserProfile($userID, $coalesceEmails = true, $approvedOnly = true){
         //initialize user object
         $user = null;
 
         //start with summary
-        $query = "Select u.id, u.firstname, u.lastname, u.affiliations, ";
+        $query = "Select u.id, u.firstname, u.lastname, u.affiliations, COALESCE(u.alternate_email, u.login_email) as email, "; //by default, coalesce email addresses so that the primary contact email is the only one to show
 
-        if($coalesceEmails){$query.="COALESCE(u.alternate_email, u.login_email) as email, ";} //coalesce email addresses so that the primary contact email is the only one to show
-        else{$query.="u.login_email, u.alternate_email, ";} //return both addresses
+        if(!$coalesceEmails){$query.="u.login_email, u.alternate_email, ";} //return both addresses if necessary
         
         $query.="u.phone, u.social_link, u.issues_expertise_other, u.regions_expertise_other, u.countries_expertise_other FROM users u WHERE u.id = :id";
 

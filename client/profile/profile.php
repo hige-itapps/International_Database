@@ -43,8 +43,12 @@
 				$state = 'AdminReview'; //enter the admin reviw state
 			}
 		}
-		else{ //regular user
-			$profile = $database->getUserProfile($_GET["id"]);
+		else{ //not an admin reviewing
+			if($isAdmin){ //Admin is just viewing
+				$profile = $database->getUserProfile($_GET["id"], false); //get both email addresses
+			}else{ //regular user
+				$profile = $database->getUserProfile($_GET["id"]);
+			}
 			if ($profile) {
 				$loaded_profile = true;
 				$codePending = $database->isCodePending($profile["email"]);
@@ -345,16 +349,16 @@
 
 
 					<!-- For admin to approve, deny, or delete profile -->
-					<div class="profileDecisionBox">
-						<label ng-show="isAdmin && state ==='AdminReview'" for="profileDecision">Select what to do with this profile:</label>
-						<select ng-show="isAdmin && state ==='AdminReview'" ng-model="profileDecision" id="profileDecision" name="profileDecision">
+					<div class="profileDecisionBox" ng-show="isAdmin && (state === 'View' || state === 'AdminReview')">
+						<label for="profileDecision">Select what to do with this profile:</label>
+						<select ng-model="profileDecision" id="profileDecision" name="profileDecision">
 							<option value=""></option>
-							<option value="Approve">Approve Profile</option>
+							<option value="Approve" ng-show="state ==='AdminReview'">Approve Profile</option>
 							<option value="Deny">Deny Profile</option>
 							<option value="Delete">Delete Profile</option>
 						</select>
 
-						<div ng-show="profileDecision === 'Approve' && isAdmin && state ==='AdminReview'" class="approve-button-holder"> <!-- Administrator-only approve profile button -->
+						<div ng-show="profileDecision === 'Approve'" class="approve-button-holder"> <!-- Administrator-only approve profile button -->
 							<button type="button" ng-click="approveProfile()" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>APPROVE PROFILE</button>
 							
 							<div class="checkbox">
@@ -366,7 +370,7 @@
 							</div>	
 						</div>
 
-						<div ng-show="profileDecision === 'Deny' && isAdmin && state ==='AdminReview'" class="deny-button-holder"> <!-- Administrator-only deny profile button -->
+						<div ng-show="profileDecision === 'Deny'" class="deny-button-holder"> <!-- Administrator-only deny profile button -->
 							<button type="button" ng-click="denyProfile()" class="btn btn-warning"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>DENY PROFILE</button>
 							
 							<div class="checkbox">
@@ -378,7 +382,7 @@
 							</div>	
 						</div>
 
-						<div ng-show="isAdmin && (state === 'View' || (state ==='AdminReview' && profileDecision === 'Delete'))" class="delete-button-holder"> <!-- Administrator-only delete profile button -->
+						<div ng-show="profileDecision === 'Delete'" class="delete-button-holder"> <!-- Administrator-only delete profile button -->
 							<button type="button" ng-click="adminDeleteProfile()" class="btn btn-danger"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>DELETE PROFILE</button>
 							
 							<div class="checkbox">

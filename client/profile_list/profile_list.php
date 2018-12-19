@@ -250,7 +250,7 @@
 					<form enctype="multipart/form-data" class="form-horizontal" id="profileSearchForm" name="profileSearchForm" ng-submit="submit()">
 						<!-- Form for regular wildcard search -->
 						<div class="form-group" ng-show="!advancedSearchEnabled">
-							<label for="wildcardSearch">Search for any names, email addresses, affiliations, phone numbers, countries, regions, issues, languages, etc:</label>
+							<label for="wildcardSearch">Search for any names, email addresses, affiliations, phone numbers, countries/territories, regions, areas, languages, etc:</label>
 							<div class="input-group">
 								<input type="search" class="form-control" ng-model="wildcards" id="wildcardSearch" name="wildcardSearch" placeholder="Enter A Key Term To Search For">
 								<span class="input-group-btn">
@@ -270,7 +270,7 @@
 									<input type="text" class="form-control" ng-model="searchProfile.name" id="name" name="name" placeholder="Enter Name"/>
 								</div>
 								<div class="col-md-4 form-group">
-									<label for="affiliations">Affiliations:</label>
+									<label for="affiliations">Professional Affiliations:</label>
 									<input type="text" class="form-control" ng-model="searchProfile.affiliations" id="affiliations" name="affiliations" placeholder="Enter Affiliations"/>
 								</div>
 								<div class="col-md-4 form-group">
@@ -294,37 +294,37 @@
 								<!-- Issues of Expertise -->
 								<div class="col-md-4">
 									<div class="form-group">
-										<label for="issuesExpertise">Issues of Expertise:</label>
+										<label for="issuesExpertise">Areas of Expertise:</label>
 										<select class="form-control" ng-change="addIssueExpertise()" ng-model="selectIssuesExpertise" id="issuesExpertise" name="issuesExpertise"
 											ng-options="issue as issue.issue for issue in issues">
 										</select>
 									</div>
 
-									<h3 ng-show="searchProfile.issues_expertise.length > 0">Selected Issues:</h3>
+									<h3 ng-show="searchProfile.issues_expertise.length > 0">Selected Areas:</h3>
 									<ul class="user-list">
 										<li ng-repeat="issue in searchProfile.issues_expertise">{{issue.issue}} <a href ng-click="removeIssueExpertise($index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a></li>
 									</ul>
 									<div class="form-group">
-										<label for="issuesExpertiseOther">Other Issues of Expertise:</label>
-										<input type="text" class="form-control" ng-model="searchProfile.issues_expertise_other" id="issuesExpertiseOther" name="issuesExpertiseOther" placeholder="Enter Any Other Issues Of Expertise" />
+										<label for="issuesExpertiseOther">Other Areas of Expertise:</label>
+										<input type="text" class="form-control" ng-model="searchProfile.issues_expertise_other" id="issuesExpertiseOther" name="issuesExpertiseOther" placeholder="Enter Any Other Areas Of Expertise" />
 									</div>
 								</div>
-								<!-- Countries of Expertise -->
+								<!-- Countries and Territories of Expertise -->
 								<div class="col-md-4">
 									<div class="form-group">
-										<label for="countriesExpertise">Countries of Expertise:</label>
+										<label for="countriesExpertise">Countries and Territories of Expertise:</label>
 										<select class="form-control" ng-change="addCountryExpertise()" ng-model="selectCountriesExpertise" id="countriesExpertise" name="countriesExpertise"
 											ng-options="country as country.country_name for country in countries">
 										</select>
 									</div>
 
-									<h3 ng-show="searchProfile.countries_expertise.length > 0">Selected Countries:</h3>
+									<h3 ng-show="searchProfile.countries_expertise.length > 0">Selected Countries and Territories:</h3>
 									<ul class="user-list">
 										<li ng-repeat="country in searchProfile.countries_expertise">{{country.country_name}} <a href ng-click="removeCountryExpertise($index)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>delete</a></li>
 									</ul>
 									<div class="form-group">
-										<label for="countriesExpertiseOther">Other Countries of Expertise:</label>
-										<input type="text" class="form-control" ng-model="searchProfile.countries_expertise_other" id="countriesExpertiseOther" name="countriesExpertiseOther" placeholder="Enter Any Other Countries Of Expertise" />
+										<label for="countriesExpertiseOther">Other Countries and Territories of Expertise:</label>
+										<input type="text" class="form-control" ng-model="searchProfile.countries_expertise_other" id="countriesExpertiseOther" name="countriesExpertiseOther" placeholder="Enter Any Other Countries Or Territories Of Expertise" />
 									</div>
 								</div>
 								<!-- Regions of Expertise -->
@@ -368,16 +368,16 @@
 										</li>
 									</ul>
 								</div>
-								<!-- Country Experience -->
+								<!-- Country and Territory Experience -->
 								<div class="col-md-6">
 									<div class="form-group">
-										<label for="countriesExperience">Country Experience:</label>
+										<label for="countriesExperience">Country and Territory Experience:</label>
 										<select class="form-control" ng-change="addCountryExperience()" ng-model="selectCountriesExperience" id="countriesExperience" name="countriesExperience"
 											ng-options="country as country.country_name for country in countries">
 										</select>
 									</div>
 
-									<h3 ng-show="!isObjectEmpty(searchProfile.countries_experience)">Selected Countries:</h3>
+									<h3 ng-show="!isObjectEmpty(searchProfile.countries_experience)">Selected Countries and Territories:</h3>
 									<ul class="user-list">
 										<li ng-repeat="(index, country) in searchProfile.countries_experience">{{country.country_name}} 
 											<label for="countryExperience{{index}}">Experiences:</label>
@@ -393,7 +393,7 @@
 											</ul>
 											<div class="form-group">
 												<label for="countryExperienceOther{{index}}">Other Experience:</label>
-												<input type="text" class="form-control" ng-model="searchProfile.countries_experience[index].other_experience" id="countryExperienceOther{{index}}" name="countryExperienceOther{{index}}" placeholder="Enter Any Other Experiences Had In This Country" />
+												<input type="text" class="form-control" ng-model="searchProfile.countries_experience[index].other_experience" id="countryExperienceOther{{index}}" name="countryExperienceOther{{index}}" placeholder="Enter Any Other Experiences Had In This Country Or Territory" />
 											</div>
 										</li>
 									</ul>

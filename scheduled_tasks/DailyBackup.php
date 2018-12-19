@@ -43,11 +43,12 @@ if(sizeof($filenames) >= $number_of_backups_saved){
 
 
 //database credentials
+$database_name = $settings["database_name"];
 $database_username = $settings["database_username"];
 $database_password = $settings["database_password"];
 $hostname = $settings["hostname"];
 
-$mysqldumpCommand = $mysqldump_path." --user=".$database_username." --password=".$database_password." --host=".$hostname." --single-transaction --no-create-info --no-create-db --skip-triggers --replace international users users_codes users_country_experience users_country_expertise users_issues users_languages users_regions variables administrators emails > ".$backup_directory.$backup_filename;
+$mysqldumpCommand = $mysqldump_path." --user=".$database_username." --password=".$database_password." --host=".$hostname." --single-transaction --no-create-info --no-create-db --skip-triggers --replace ".$database_name." users users_codes users_country_experience users_country_expertise users_issues users_languages users_regions variables administrators emails > ".$backup_directory.$backup_filename;
 
 //echo $mysqldumpCommand;
 $backupResults = exec($mysqldumpCommand); //run the backup command, save any results

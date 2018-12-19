@@ -254,7 +254,7 @@ else if (array_key_exists('send_code', $_GET)) {
                     $expiration_timestamp = strtotime('+1 day', $current_timestamp); //add 1 day to the deadline
                     $result = $database->saveCode($email, $hex, $expiration_timestamp); //save to database
                     if(!$result){ //database error
-                        $errorMessage = $logger->logError("Unable to insert new code into database.", null, dirname(__FILE__), true);
+                        $errorMessage = $logger->logError("Unable to insert new code into database.", null, $thisLocation, true);
 			            $returnVal["error"] = "Error: Unable to insert new code into database. ".$errorMessage;
                     }
                     else{ //no errors so far, continue and send email

@@ -46,6 +46,7 @@ class DatabaseHelper
         if(!isset($approvedOnly)){$query.=" WHERE approved IS NULL";} //approvedOnly is NULL, so return pending only
         else if($approvedOnly){$query.=" WHERE approved = 1";} //only approved if necessary
         else{$query.=" WHERE approved = 0";} //otherwise, denied only
+        $query.=" ORDER BY u.lastname"; //return in alphabetical order
         $this->sql = $this->conn->prepare($query);
         $this->sql->execute();
         return $this->sql->fetchAll(PDO::FETCH_ASSOC); //return names as keys
@@ -254,6 +255,9 @@ class DatabaseHelper
         if(!isset($approvedOnly)){$finalQuery.=" WHERE res.approved IS NULL";} //approvedOnly is NULL, so return pending only
         else if($approvedOnly){$finalQuery.=" WHERE res.approved = 1";} //only approved if necessary
         else{$finalQuery.=" WHERE res.approved = 0";} //otherwise, denied only
+        $finalQuery.=" ORDER BY res.lastname"; //return in alphabetical order
+
+        //echo $finalQuery;
 
         $this->sql = $this->conn->prepare($finalQuery);
 
@@ -263,15 +267,21 @@ class DatabaseHelper
 
         $this->sql->execute();
         $results = $this->sql->fetchAll(PDO::FETCH_ASSOC); //save results
-        $editedResults = []; //sort by index to avoid search time
-        //remove duplicate ids while saving the foundIn categories, so we can remember which category the string was found in
+
+        $editedResults = []; //only keep 1 profile summary for each id
         foreach($results as $result) {
-            if (!array_key_exists($result["id"], $editedResults)) { //push profile summary if new
-                $editedResults[$result["id"]] = $result;
-                $editedResults[$result["id"]]["foundIn"] = [];
+            $key = array_search($result["id"], array_column($editedResults, 'id')); //search for an existing id, returns false if none
+
+            if($key !== FALSE){ //user already exists (have to explicitely check for FALSE because it is possible to receive 0 as a legitimate key)
+                $editedResults[$key]["foundIn"][] = $result["foundIn"]; //push the foundIn category
             }
-            $editedResults[$result["id"]]["foundIn"][] = $result["foundIn"]; //push the foundIn category
+            else{ //user is new
+                $newProfile = $result;
+                $newProfile["foundIn"] = [$result["foundIn"]]; //convert result's string into an array with this string as just 1 value
+                $editedResults[] = $newProfile; //push this new profile
+            }
         }
+        
         return $editedResults;
     }
 
@@ -502,6 +512,7 @@ class DatabaseHelper
         if(!isset($approvedOnly)){$query.=" WHERE res.approved IS NULL";} //approvedOnly is NULL, so return pending only
         else if($approvedOnly){$query.=" WHERE res.approved = 1";} //only approved if necessary
         else{$query.=" WHERE res.approved = 0";} //otherwise, denied only
+        $query.=" ORDER BY res.lastname"; //return in alphabetical order
 
         //return $query;
 

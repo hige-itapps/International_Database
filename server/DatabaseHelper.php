@@ -922,28 +922,28 @@ class DatabaseHelper
 
     //get all issues, with ids as keys
     public function getIssues(){
-        $this->sql = $this->conn->prepare("Select issues.id, issues.* FROM issues");
+        $this->sql = $this->conn->prepare("Select issues.id, issues.* FROM issues ORDER BY issue");
         $this->sql->execute();
         return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
     }
 
     //get all countries, with ids as keys
     public function getCountries(){
-        $this->sql = $this->conn->prepare("Select countries.id, countries.* FROM countries");
+        $this->sql = $this->conn->prepare("Select countries.id, countries.* FROM countries ORDER BY country_name");
         $this->sql->execute();
         return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
     }
 
     //get all regions, with ids as keys
     public function getRegions(){
-        $this->sql = $this->conn->prepare("Select regions.id, regions.* FROM regions");
+        $this->sql = $this->conn->prepare("Select regions.id, regions.* FROM regions ORDER BY region");
         $this->sql->execute();
         return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
     }
 
     //get all languages, with ids as keys
     public function getLanguages(){
-        $this->sql = $this->conn->prepare("Select languages.id, languages.* FROM languages");
+        $this->sql = $this->conn->prepare("Select languages.id, languages.* FROM languages ORDER BY name");
         $this->sql->execute();
         return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
     }
@@ -957,7 +957,7 @@ class DatabaseHelper
 
     //get all country experiences, with ids as keys
     public function getCountryExperiences(){
-        $this->sql = $this->conn->prepare("Select country_experience.id, country_experience.* FROM country_experience");
+        $this->sql = $this->conn->prepare("Select country_experience.id, country_experience.* FROM country_experience ORDER BY experience");
         $this->sql->execute();
         return $this->sql->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_ASSOC); //order with id as key
     }

@@ -51,7 +51,7 @@ class EmailHelper
 		$this->defaultSubject = "Global Expertise Database Update";
 		//skip a line, give a bold contact address, then skip a line and add a thank you message
 		$this->customFooter = PHP_EOL.PHP_EOL."<strong>If you need help or more information, please reply to this message, or send a new message to ".$this->mailAddress.".</strong>".PHP_EOL.PHP_EOL.
-		"Thank you,".PHP_EOL."The Haenicke Institute".PHP_EOL."Western Michigan University";
+		"Thank you,".PHP_EOL."The Haenicke Institute for Global Education".PHP_EOL."Western Michigan University";
 	}
 
 	//Send an email to a specific address, with a custom message and subject. If the subject is left blank, a default one is prepared instead.
